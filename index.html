@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bitolpoka — Live Insect Feed</title>
+<meta name="description" content="Live mealworms, superworms and breeder beetles, farmed weekly in Khulna, Bangladesh. Cash on delivery, nationwide.">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --soil:        #2B1E14;
+    --kraft:       #D9C2A0;
+    --kraft-light: #F2E8D5;
+    --amber:       #E8A33D;
+    --rust:        #C84B27;
+    --ink:         #1E140C;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  body { font-family: 'Inter', system-ui, sans-serif; background: var(--kraft-light); color: var(--ink); margin: 0; }
+  .font-display { font-family: 'Fraunces', serif; }
+  .font-mono    { font-family: 'IBM Plex Mono', monospace; }
+
+  /* stamp circle */
+  .stamp { border: 1.5px dashed currentColor; border-radius: 9999px; }
+
+  /* primary CTA button */
+  .btn-rust {
+    background: var(--rust); color: var(--kraft-light);
+    border: none; cursor: pointer;
+    transition: background .15s, transform .15s;
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  }
+  .btn-rust:hover:not(:disabled) { background: #AE3B1C; transform: translateY(-1px); }
+  .btn-rust:disabled { opacity: .65; cursor: not-allowed; }
+
+  /* product card */
+  .product-card {
+    background: var(--kraft-light);
+    border: 1px solid rgba(30,20,12,0.12);
+    border-radius: 1rem; padding: 1.25rem;
+    display: flex; flex-direction: column; gap: 1rem;
+    transition: transform .2s, box-shadow .2s;
+  }
+  .product-card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(30,20,12,0.12); }
+
+  /* package selector buttons */
+  .pkg-btn {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: .8rem; font-weight: 600;
+    padding: .35rem .7rem; border-radius: .45rem; cursor: pointer;
+    border: 1.5px solid rgba(30,20,12,0.22);
+    background: rgba(255,255,255,0.55); color: var(--ink);
+    transition: border-color .12s, background .12s, color .12s, transform .1s;
+    white-space: nowrap;
+  }
+  .pkg-btn:hover   { border-color: var(--rust); background: rgba(200,75,39,0.07); }
+  .pkg-btn.active  {
+    border-color: var(--rust); background: var(--rust);
+    color: var(--kraft-light); transform: scale(1.04);
+  }
+  .pkg-error { font-size: .75rem; color: var(--rust); margin-top: .25rem; display: none; }
+
+  /* form inputs */
+  .input-field {
+    width: 100%; border: 1px solid rgba(30,20,12,0.18);
+    background: rgba(255,255,255,0.65); border-radius: .65rem;
+    padding: .6rem .8rem; font-size: .9rem; color: var(--ink);
+    outline: none; transition: border-color .15s; font-family: inherit;
+  }
+  .input-field:focus   { border-color: var(--rust); }
+  .input-field::placeholder { color: rgba(30,20,12,0.38); }
+
+  /* skeleton */
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.42} }
+  .skeleton { border-radius: .75rem; background: rgba(30,20,12,0.09); animation: pulse 1.6s ease-in-out infinite; }
+
+  /* spinner */
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .spinner {
+    display: inline-block; width: 16px; height: 16px; border-radius: 9999px;
+    border: 2px solid rgba(242,232,213,0.35); border-top-color: var(--kraft-light);
+    animation: spin .7s linear infinite;
+  }
+
+  /* product grid */
+  #products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+
+  /* image slider */
+  .slider-main {
+    position: relative; border-radius: .75rem; overflow: hidden;
+    aspect-ratio: 4/3; background: rgba(30,20,12,0.07);
+  }
+  .slider-main img { width:100%; height:100%; object-fit:cover; display:block; }
+  .slider-arrow {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    width: 30px; height: 30px; border-radius: 9999px;
+    background: rgba(242,232,213,0.88); border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; color: var(--ink);
+  }
+  .slider-arrow.left  { left: 8px; }
+  .slider-arrow.right { right: 8px; }
+  .slider-thumbs { display: flex; gap: .4rem; margin-top: .4rem; flex-wrap: wrap; }
+  .slider-thumb {
+    width: 44px; height: 44px; border-radius: .4rem; overflow: hidden;
+    border: 2px solid transparent; opacity: .55; cursor: pointer;
+    transition: border-color .13s, opacity .13s; padding: 0; background: none;
+  }
+  .slider-thumb.active { border-color: var(--rust); opacity: 1; }
+  .slider-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
+
+  /* modal */
+  #modal-overlay {
+    display: none; position: fixed; inset: 0; z-index: 50;
+    align-items: center; justify-content: center; padding: 1rem;
+    background: rgba(20,14,8,.66); backdrop-filter: blur(2px);
+  }
+  #modal-overlay.open { display: flex; }
+  #modal-box {
+    background: var(--kraft-light); border-radius: 1.1rem;
+    width: 100%; max-width: 440px; max-height: 90vh; overflow-y: auto;
+  }
+
+  /* price breakdown rows in modal */
+  .price-row {
+    display: flex; justify-content: space-between; align-items: center;
+    gap: .75rem; padding: .4rem 0; font-size: .875rem;
+    border-bottom: 1px solid rgba(30,20,12,0.08);
+  }
+  .price-row span:first-child { color: rgba(30,20,12,.55); }
+  .price-row span:last-child  { color: var(--ink); font-weight: 500; }
+  .price-row.total-line {
+    border-bottom: none; border-top: 1.5px solid rgba(30,20,12,0.15);
+    margin-top: .15rem; padding-top: .55rem; font-size: 1rem; font-weight: 700;
+  }
+  .price-row.total-line span:last-child { color: var(--rust); font-size: 1.1rem; }
+
+  /* success summary rows */
+  .sum-row {
+    display: flex; justify-content: space-between; gap: .75rem;
+    padding: .4rem 0; font-size: .875rem;
+    border-bottom: 1px solid rgba(30,20,12,0.08);
+  }
+  .sum-row span:first-child { color: rgba(30,20,12,.55); }
+  .sum-row span:last-child  { color: var(--ink); font-weight: 500; text-align: right; }
+  .sum-row.total-line {
+    border-bottom: none; border-top: 1.5px solid rgba(30,20,12,0.15);
+    margin-top: .1rem; padding-top: .5rem; font-weight: 700;
+  }
+  .sum-row.total-line span:last-child { color: var(--rust); }
+
+  /* floating WhatsApp button */
+  #wa-fab {
+    position: fixed; bottom: 1.4rem; right: 1.4rem; z-index: 60;
+    width: 56px; height: 56px; border-radius: 9999px;
+    background: #25D366; box-shadow: 0 4px 18px rgba(0,0,0,0.22);
+    display: flex; align-items: center; justify-content: center;
+    text-decoration: none;
+    transition: transform .2s, box-shadow .2s;
+  }
+  #wa-fab:hover { transform: scale(1.1); box-shadow: 0 6px 24px rgba(0,0,0,0.3); }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════ HEADER ═══════════════════ -->
+<header id="site-header">
+  <div style="max-width:72rem;margin:0 auto;padding:.9rem 1.25rem;display:flex;align-items:center;justify-content:space-between;">
+    <div style="display:flex;align-items:center;gap:.55rem;">
+      <div style="width:34px;height:34px;border-radius:9999px;background:var(--soil);display:flex;align-items:center;justify-content:center;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E8A33D" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22V12"/><path d="M12 12C12 7 8 5 4 5c0 5 3 8 8 8"/><path d="M12 12c0-5 4-7 8-7 0 5-3 8-8 8"/>
+        </svg>
+      </div>
+      <span class="font-display" style="font-size:1.2rem;font-weight:700;color:var(--ink);">Bitolpoka</span>
+    </div>
+    <button class="btn-rust" style="border-radius:9999px;padding:.45rem 1.1rem;font-size:.82rem;font-weight:600;"
+            onclick="scrollToProducts()">Order Now</button>
+  </div>
+</header>
+<script>
+  document.getElementById('site-header').style.cssText =
+    'position:sticky;top:0;z-index:40;background:rgba(242,232,213,0.92);backdrop-filter:blur(8px);border-bottom:1px solid rgba(30,20,12,0.1);';
+</script>
+
+<!-- ═══════════════════ HERO ═══════════════════ -->
+<section style="background:var(--soil);padding:3.5rem 1.25rem 4.5rem;">
+  <div style="max-width:72rem;margin:0 auto;display:grid;grid-template-columns:1fr;gap:3rem;align-items:center;">
+    <div>
+      <p class="font-mono" style="font-size:.7rem;text-transform:uppercase;letter-spacing:.12em;color:var(--amber);">
+        Live Insect Feed &middot; Khulna, Bangladesh
+      </p>
+      <h1 class="font-display" style="font-size:clamp(2.4rem,6vw,3.8rem);line-height:1.13;font-weight:700;color:var(--kraft-light);margin:.75rem 0 1rem;">
+        Bred Fresh.<br>Delivered Live.
+      </h1>
+      <p style="color:rgba(242,232,213,.74);max-width:34rem;line-height:1.65;margin-bottom:2rem;">
+        Bitolpoka farms mealworms, superworms and breeder beetles in small weekly batches,
+        then gets them to your door before they ever sit in a warehouse.
+      </p>
+      <div style="display:flex;flex-wrap:wrap;align-items:center;gap:1rem;">
+        <button class="btn-rust" style="border-radius:9999px;padding:.7rem 1.5rem;font-size:.9rem;font-weight:600;"
+                onclick="scrollToProducts()">Browse Live Feed</button>
+        <span style="color:rgba(242,232,213,.55);font-size:.85rem;">Cash on delivery, anywhere in Bangladesh</span>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:1rem;margin-top:2.2rem;">
+        <div class="stamp" style="width:96px;height:96px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--amber);text-align:center;padding:.4rem;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22V12"/><path d="M12 12C12 7 8 5 4 5c0 5 3 8 8 8"/><path d="M12 12c0-5 4-7 8-7 0 5-3 8-8 8"/></svg>
+          <span class="font-mono" style="font-size:.65rem;text-transform:uppercase;letter-spacing:.04em;margin-top:.3rem;color:var(--kraft-light);line-height:1.3;">Farmed<br>Weekly</span>
+        </div>
+        <div class="stamp" style="width:96px;height:96px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--amber);text-align:center;padding:.4rem;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="6" width="14" height="11"/><path d="M15 10h4l3 3v4h-7z"/><circle cx="6" cy="18.5" r="2"/><circle cx="18" cy="18.5" r="2"/></svg>
+          <span class="font-mono" style="font-size:.65rem;text-transform:uppercase;letter-spacing:.04em;margin-top:.3rem;color:var(--kraft-light);line-height:1.3;">Cash On<br>Delivery</span>
+        </div>
+        <div class="stamp" style="width:96px;height:96px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--amber);text-align:center;padding:.4rem;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg>
+          <span class="font-mono" style="font-size:.65rem;text-transform:uppercase;letter-spacing:.04em;margin-top:.3rem;color:var(--kraft-light);line-height:1.3;">Nationwide<br>Shipping</span>
+        </div>
+      </div>
+    </div>
+    <!-- hero illustration -->
+    <div style="position:relative;width:300px;height:300px;max-width:100%;margin:0 auto;">
+      <svg width="300" height="300" viewBox="0 0 320 320" style="position:absolute;inset:0;">
+        <circle cx="160" cy="160" r="150" fill="none" stroke="#E8A33D" stroke-width="2" stroke-dasharray="6 7" opacity=".55"/>
+        <circle cx="160" cy="160" r="118" fill="#3D2B1C"/>
+      </svg>
+      <svg width="160" height="180" viewBox="0 0 170 190" style="position:absolute;left:50%;top:54%;transform:translate(-50%,-50%);">
+        <path d="M30 60 Q20 150 50 180 Q85 195 120 180 Q150 150 140 60 Q145 30 110 20 L60 20 Q25 30 30 60 Z" fill="#D9C2A0" stroke="#8B5A2B" stroke-width="2"/>
+        <path d="M60 20 Q85 5 110 20" fill="none" stroke="#8B5A2B" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="85" cy="14" r="6" fill="#8B5A2B"/>
+        <line x1="42" y1="70" x2="128" y2="70" stroke="#8B5A2B" stroke-width="1.4" opacity=".38"/>
+        <line x1="38" y1="95" x2="132" y2="95" stroke="#8B5A2B" stroke-width="1.4" opacity=".38"/>
+        <line x1="38" y1="120" x2="130" y2="120" stroke="#8B5A2B" stroke-width="1.4" opacity=".38"/>
+        <line x1="44" y1="145" x2="120" y2="145" stroke="#8B5A2B" stroke-width="1.4" opacity=".38"/>
+      </svg>
+      <svg width="62" height="30" viewBox="0 0 100 50" fill="none" style="position:absolute;left:34%;top:5%;transform:rotate(-18deg);">
+        <ellipse cx="14" cy="25" rx="11" ry="9" fill="#C9862A"/><ellipse cx="30" cy="23" rx="12" ry="10" fill="#E8A33D"/>
+        <ellipse cx="48" cy="26" rx="12" ry="10" fill="#E8A33D"/><ellipse cx="66" cy="22" rx="12" ry="10" fill="#E8A33D"/>
+        <ellipse cx="83" cy="27" rx="11" ry="9" fill="#E8A33D"/>
+        <circle cx="9" cy="22" r="1.6" fill="#2B1E14"/><circle cx="14" cy="20" r="1.6" fill="#2B1E14"/>
+        <line x1="6" y1="18" x2="2" y2="13" stroke="#2B1E14" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="10" y1="17" x2="8" y2="11" stroke="#2B1E14" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <svg width="56" height="30" viewBox="0 0 110 60" fill="none" style="position:absolute;left:53%;top:-1%;transform:rotate(14deg);">
+        <ellipse cx="16" cy="32" rx="14" ry="11" fill="#3D2B1C"/><ellipse cx="36" cy="28" rx="14" ry="12" fill="#8B5A2B"/>
+        <ellipse cx="57" cy="33" rx="15" ry="12" fill="#8B5A2B"/><ellipse cx="79" cy="27" rx="14" ry="12" fill="#8B5A2B"/>
+        <ellipse cx="98" cy="33" rx="11" ry="9" fill="#8B5A2B"/>
+        <circle cx="9" cy="28" r="1.8" fill="#F2E8D5"/><circle cx="16" cy="26" r="1.8" fill="#F2E8D5"/>
+        <line x1="6" y1="22" x2="1" y2="15" stroke="#2B1E14" stroke-width="1.8" stroke-linecap="round"/>
+        <line x1="12" y1="20" x2="10" y2="12" stroke="#2B1E14" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+      <div style="position:absolute;left:18%;top:82%;width:8px;height:8px;border-radius:9999px;background:var(--amber);"></div>
+      <div style="position:absolute;right:18%;top:88%;width:6px;height:6px;border-radius:9999px;background:var(--rust);"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ PRODUCTS ═══════════════════ -->
+<section id="products-section" style="padding:4.5rem 1.25rem;">
+  <div style="max-width:72rem;margin:0 auto;">
+    <div style="max-width:36rem;margin-bottom:2.5rem;">
+      <p class="font-mono" style="font-size:.7rem;text-transform:uppercase;letter-spacing:.12em;color:var(--rust);">Our Feed Stock</p>
+      <h2 class="font-display" style="font-size:clamp(1.8rem,4vw,2.6rem);font-weight:700;margin:.5rem 0 .6rem;color:var(--ink);">Choose Your Live Feed</h2>
+      <p style="color:rgba(30,20,12,.62);line-height:1.6;">Every batch is weighed, packed and shipped within 48 hours of harvest.</p>
+    </div>
+
+    <!-- skeleton cards shown during load -->
+    <div id="products-loading" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.5rem;">
+      <div style="border-radius:1rem;padding:1.25rem;background:var(--kraft-light);border:1px solid rgba(30,20,12,0.1);">
+        <div class="skeleton" style="aspect-ratio:4/3;margin-bottom:.9rem;"></div>
+        <div class="skeleton" style="height:1.2rem;width:55%;margin-bottom:.5rem;"></div>
+        <div class="skeleton" style="height:.9rem;width:85%;margin-bottom:.5rem;"></div>
+        <div class="skeleton" style="height:2rem;width:70%;margin-bottom:1.2rem;border-radius:.5rem;"></div>
+        <div class="skeleton" style="height:2.5rem;border-radius:9999px;"></div>
+      </div>
+      <div style="border-radius:1rem;padding:1.25rem;background:var(--kraft-light);border:1px solid rgba(30,20,12,0.1);">
+        <div class="skeleton" style="aspect-ratio:4/3;margin-bottom:.9rem;"></div>
+        <div class="skeleton" style="height:1.2rem;width:60%;margin-bottom:.5rem;"></div>
+        <div class="skeleton" style="height:.9rem;width:90%;margin-bottom:.5rem;"></div>
+        <div class="skeleton" style="height:2rem;width:80%;margin-bottom:1.2rem;border-radius:.5rem;"></div>
+        <div class="skeleton" style="height:2.5rem;border-radius:9999px;"></div>
+      </div>
+      <div style="border-radius:1rem;padding:1.25rem;background:var(--kraft-light);border:1px solid rgba(30,20,12,0.1);">
+        <div class="skeleton" style="aspect-ratio:4/3;margin-bottom:.9rem;"></div>
+        <div class="skeleton" style="height:1.2rem;width:50%;margin-bottom:.5rem;"></div>
+        <div class="skeleton" style="height:.9rem;width:80%;margin-bottom:.5rem;"></div>
+        <div class="skeleton" style="height:2rem;width:60%;margin-bottom:1.2rem;border-radius:.5rem;"></div>
+        <div class="skeleton" style="height:2.5rem;border-radius:9999px;"></div>
+      </div>
+    </div>
+
+    <!-- error banner -->
+    <div id="products-error" style="display:none;margin-top:1.5rem;padding:1.1rem 1.25rem;border-radius:.9rem;background:rgba(200,75,39,.08);border:1px solid rgba(200,75,39,.28);">
+      <p style="font-weight:600;color:var(--rust);margin:0 0 .25rem;">Couldn't load products</p>
+      <p id="products-error-msg" style="font-size:.875rem;color:rgba(30,20,12,.65);margin:0;"></p>
+    </div>
+
+    <!-- empty state -->
+    <p id="products-empty" style="display:none;margin-top:1.5rem;color:rgba(30,20,12,.55);font-size:.9rem;">
+      No products found. Add rows to the <code>products</code> table in Supabase.
+    </p>
+
+    <!-- live product grid (injected by JS) -->
+    <div id="products-grid" style="display:none;"></div>
+  </div>
+</section>
+
+<!-- ═══════════════════ HOW IT WORKS ═══════════════════ -->
+<section style="background:var(--kraft);padding:3.5rem 1.25rem;">
+  <div style="max-width:72rem;margin:0 auto;">
+    <h3 class="font-display" style="font-size:clamp(1.4rem,3.5vw,2rem);font-weight:700;text-align:center;color:var(--ink);margin-bottom:2.5rem;">
+      How Cash-On-Delivery Works
+    </h3>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:2rem;">
+      <div style="text-align:center;padding:0 .5rem;">
+        <div class="stamp" style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;margin:0 auto;color:var(--rust);">
+          <span class="font-mono" style="font-weight:600;font-size:.9rem;">1</span>
+        </div>
+        <p style="font-weight:600;margin:.75rem 0 .3rem;color:var(--ink);">Place Your Order</p>
+        <p style="font-size:.875rem;color:rgba(30,20,12,.6);line-height:1.55;">Pick your feed, choose a package size, and share your delivery details.</p>
+      </div>
+      <div style="text-align:center;padding:0 .5rem;">
+        <div class="stamp" style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;margin:0 auto;color:var(--rust);">
+          <span class="font-mono" style="font-weight:600;font-size:.9rem;">2</span>
+        </div>
+        <p style="font-weight:600;margin:.75rem 0 .3rem;color:var(--ink);">We Pack It Fresh</p>
+        <p style="font-size:.875rem;color:rgba(30,20,12,.6);line-height:1.55;">Your batch is pulled and packed the same day — never old stock.</p>
+      </div>
+      <div style="text-align:center;padding:0 .5rem;">
+        <div class="stamp" style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;margin:0 auto;color:var(--rust);">
+          <span class="font-mono" style="font-weight:600;font-size:.9rem;">3</span>
+        </div>
+        <p style="font-weight:600;margin:.75rem 0 .3rem;color:var(--ink);">Pay When It Arrives</p>
+        <p style="font-size:.875rem;color:rgba(30,20,12,.6);line-height:1.55;">Inspect your order at the door, then pay the rider in cash.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ FOOTER ═══════════════════ -->
+<footer style="background:var(--soil);padding:2.5rem 1.25rem;">
+  <div style="max-width:72rem;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:1rem;">
+    <div style="display:flex;align-items:center;gap:.6rem;">
+      <div style="width:30px;height:30px;border-radius:9999px;background:var(--amber);display:flex;align-items:center;justify-content:center;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2B1E14" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22V12"/><path d="M12 12C12 7 8 5 4 5c0 5 3 8 8 8"/><path d="M12 12c0-5 4-7 8-7 0 5-3 8-8 8"/>
+        </svg>
+      </div>
+      <div>
+        <p class="font-display" style="font-weight:600;color:var(--kraft-light);margin:0;font-size:.95rem;">Bitolpoka</p>
+        <p style="font-size:.72rem;color:rgba(242,232,213,.5);margin:0;">Paikgacha, Khulna, Bangladesh</p>
+      </div>
+    </div>
+    <p style="font-size:.72rem;color:rgba(242,232,213,.42);margin:0;">&copy; 2026 Bitolpoka Farms. All rights reserved.</p>
+  </div>
+</footer>
+
+<!-- ═══════════════════ CHECKOUT MODAL ═══════════════════ -->
+<div id="modal-overlay" onclick="overlayClick(event)">
+  <div id="modal-box">
+
+    <!-- ── FORM VIEW ── -->
+    <div id="modal-form" style="padding:1.6rem;">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.2rem;">
+        <div>
+          <p class="font-mono" style="font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:var(--rust);margin:0 0 .3rem;">Cash on Delivery</p>
+          <h3 class="font-display" style="font-size:1.6rem;font-weight:700;color:var(--ink);margin:0;">Confirm Your Order</h3>
+        </div>
+        <button onclick="closeModal()" aria-label="Close" style="background:none;border:none;cursor:pointer;color:var(--ink);padding:.25rem;line-height:0;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- product thumbnail + name -->
+      <div id="modal-recap" style="display:flex;align-items:center;gap:.75rem;padding:.75rem;border-radius:.75rem;margin-bottom:.75rem;background:rgba(232,163,61,.17);border:1px solid rgba(200,75,39,.22);"></div>
+
+      <!-- subtotal / delivery / total -->
+      <div id="modal-price-breakdown" style="margin-bottom:1.25rem;padding:.25rem .1rem 0;"></div>
+
+      <!-- customer fields -->
+      <div style="display:flex;flex-direction:column;gap:1rem;">
+        <div>
+          <label style="font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:rgba(30,20,12,.55);">Full Name</label>
+          <input id="f-name" type="text" placeholder="e.g. Rafiqul Islam" class="input-field" style="margin-top:.4rem;">
+          <span id="e-name" style="display:none;font-size:.75rem;color:var(--rust);margin-top:.25rem;display:none;"></span>
+        </div>
+        <div>
+          <label style="font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:rgba(30,20,12,.55);">Phone Number</label>
+          <input id="f-phone" type="tel" inputmode="numeric" maxlength="11" placeholder="01XXXXXXXXX" class="input-field" style="margin-top:.4rem;">
+          <span id="e-phone" style="display:none;font-size:.75rem;color:var(--rust);margin-top:.25rem;"></span>
+        </div>
+        <div>
+          <label style="font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:rgba(30,20,12,.55);">Full Delivery Address</label>
+          <textarea id="f-address" rows="3" placeholder="House no., road, area, upazila, district" class="input-field" style="margin-top:.4rem;resize:none;"></textarea>
+          <span id="e-address" style="display:none;font-size:.75rem;color:var(--rust);margin-top:.25rem;"></span>
+        </div>
+      </div>
+
+      <p id="submit-error" style="display:none;font-size:.78rem;color:var(--rust);margin-top:.75rem;"></p>
+
+      <button id="confirm-btn" class="btn-rust" onclick="submitOrder()"
+              style="width:100%;border-radius:9999px;padding:.8rem 1rem;font-size:.9rem;font-weight:600;margin-top:1.4rem;">
+        <span id="btn-spinner" class="spinner" style="display:none;"></span>
+        <svg id="btn-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="1" y="6" width="14" height="11"/><path d="M15 10h4l3 3v4h-7z"/><circle cx="6" cy="18.5" r="2"/><circle cx="18" cy="18.5" r="2"/>
+        </svg>
+        <span id="btn-text">Confirm Cash on Delivery Order</span>
+      </button>
+      <p style="text-align:center;font-size:.75rem;color:rgba(30,20,12,.5);margin-top:.65rem;">
+        Pay in cash when your order arrives. No advance payment needed.
+      </p>
+    </div>
+
+    <!-- ── SUCCESS VIEW ── -->
+    <div id="modal-success" style="display:none;padding:1.6rem;text-align:center;">
+      <div class="stamp" style="width:88px;height:88px;display:flex;align-items:center;justify-content:center;margin:0 auto;color:var(--rust);transform:rotate(-8deg);">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+        </svg>
+      </div>
+      <h3 class="font-display" style="font-size:1.6rem;font-weight:700;color:var(--ink);margin:1rem 0 .2rem;">Order Confirmed!</h3>
+      <p id="order-ref" class="font-mono" style="font-size:.72rem;color:rgba(30,20,12,.5);margin:0 0 1.25rem;"></p>
+      <div id="success-rows" style="text-align:left;border-radius:.75rem;padding:1rem;background:rgba(30,20,12,.05);"></div>
+      <p style="font-size:.875rem;color:rgba(30,20,12,.65);margin:1.1rem 0 0;line-height:1.6;">
+        We'll call you to confirm before your order ships out fresh.
+      </p>
+      <button class="btn-rust" onclick="closeModal()"
+              style="width:100%;border-radius:9999px;padding:.8rem;font-size:.9rem;font-weight:600;margin-top:1.25rem;">Done</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════ WHATSAPP FAB ═══════════════════ -->
+<!-- href is set dynamically after store_settings loads -->
+<a id="wa-fab" href="#" target="_blank" rel="noopener noreferrer" aria-label="Chat on WhatsApp" style="display:none;">
+  <svg width="30" height="30" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path fill="#fff" d="M16 2.933C8.832 2.933 3.008 8.757 3.008 15.925c0 2.31.627 4.572 1.817 6.543L2.667 29.333l7.07-2.115a13.014 13.014 0 006.263 1.6c7.168 0 12.992-5.824 12.992-12.992C29.008 8.757 23.168 2.933 16 2.933z"/>
+    <path fill="#25D366" d="M16 4.8c-6.144 0-11.125 4.98-11.125 11.125 0 2.057.573 4.06 1.657 5.797l.258.41-1.096 4.007 4.116-1.08.397.236A11.065 11.065 0 0016 27.2c6.144 0 11.125-4.98 11.125-11.125S22.144 4.8 16 4.8z"/>
+    <path fill="#fff" fill-rule="evenodd" d="M12.29 10.573c-.27-.6-.55-.612-.806-.623-.208-.009-.447-.009-.685-.009-.238 0-.625.09-.952.447-.327.358-1.25 1.22-1.25 2.974s1.279 3.448 1.458 3.686c.179.238 2.48 3.97 6.117 5.407 3.026 1.194 3.638 1.044 4.295.98.657-.065 2.12-.867 2.42-1.704.298-.837.298-1.554.208-1.703-.09-.15-.328-.238-.685-.417-.358-.179-2.12-1.046-2.448-1.165-.328-.12-.566-.179-.804.179-.238.357-.923 1.164-1.132 1.402-.208.238-.417.268-.775.09-.358-.18-1.51-.556-2.876-1.774-1.063-.948-1.78-2.118-1.988-2.476-.208-.357-.022-.55.157-.728.16-.16.358-.417.537-.626.179-.208.238-.357.358-.595.119-.238.06-.447-.03-.626-.09-.179-.785-1.942-1.12-2.703z" clip-rule="evenodd"/>
+  </svg>
+</a>
+
+<!-- ═══════════════════ JAVASCRIPT ═══════════════════ -->
+<script>
+'use strict';
+
+/* ── Supabase client ── */
+var SUPABASE_URL      = 'https://frifscjexvqhtptiwear.supabase.co';
+var SUPABASE_ANON_KEY = 'sb_publishable_BQFducZtr7aIkYW4G8t7VA_p77ORs24';
+var db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+/* ── App-wide state ── */
+var PRODUCTS         = [];    // rows from products table
+var CARD_STATE       = [];    // per-card: { activeImg, packages[], selectedPkg }
+var ACTIVE_IDX       = -1;    // index of product being checked out
+var DELIVERY_CHARGE  = 150;   // fallback; overwritten by store_settings row 1
+
+/* ═══════════════════════════════════════════════
+   UTILITIES
+   ═══════════════════════════════════════════════ */
+function esc(s) {
+  if (s == null) return '';
+  return String(s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+function fmtBDT(n) {
+  var v = Math.round((Number(n) + Number.EPSILON) * 100) / 100;
+  return Number.isInteger(v) ? v.toString() : v.toFixed(2);
+}
+
+function getImages(product) {
+  var arr = product.image_urls;
+  if (!arr) return [];
+  if (typeof arr === 'string') { try { arr = JSON.parse(arr); } catch(e) { return []; } }
+  if (!Array.isArray(arr)) return [];
+  return arr.filter(function(x){ return x && typeof x === 'string'; });
+}
+
+/**
+ * Parse "30:300, 50:500, 100:900, 200:1600"
+ * → [ {qty:30, totalPrice:300}, {qty:50, totalPrice:500}, … ]
+ * Silently drops any token that doesn't have a valid qty:price pair.
+ */
+function parsePackages(raw) {
+  if (!raw) return [];
+  return raw.split(',').reduce(function(acc, token) {
+    var parts = token.trim().split(':');
+    var qty   = parseInt(parts[0], 10);
+    var price = parseFloat(parts[1]);
+    if (!isNaN(qty) && qty > 0 && !isNaN(price) && price >= 0) {
+      acc.push({ qty: qty, totalPrice: price });
+    }
+    return acc;
+  }, []);
+}
+
+function scrollToProducts() {
+  var el = document.getElementById('products-section');
+  if (el) el.scrollIntoView({ behavior: 'smooth' });
+}
+
+/* ═══════════════════════════════════════════════
+   IMAGE SLIDER
+   ═══════════════════════════════════════════════ */
+function buildSlider(imgs, i) {
+  if (!imgs.length) {
+    return '<div class="slider-main" style="display:flex;align-items:center;justify-content:center;">'
+      + '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(30,20,12,0.28)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'
+      + '<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/>'
+      + '</svg></div>';
+  }
+  var arrows = imgs.length > 1
+    ? '<button class="slider-arrow left"  onclick="imgStep(' + i + ',-1)" aria-label="Previous photo">'
+        + '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg></button>'
+      + '<button class="slider-arrow right" onclick="imgStep(' + i + ',1)"  aria-label="Next photo">'
+        + '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg></button>'
+    : '';
+  var thumbs = '';
+  if (imgs.length > 1) {
+    thumbs = '<div class="slider-thumbs">';
+    for (var j = 0; j < imgs.length; j++) {
+      thumbs += '<button class="slider-thumb' + (j === 0 ? ' active' : '') + '"'
+        + ' id="thumb-' + i + '-' + j + '"'
+        + ' onclick="imgSelect(' + i + ',' + j + ')"'
+        + ' aria-label="Photo ' + (j+1) + '">'
+        + '<img src="' + esc(imgs[j]) + '" alt="photo ' + (j+1) + '"></button>';
+    }
+    thumbs += '</div>';
+  }
+  return '<div class="slider-main">'
+    + '<img id="slide-' + i + '" src="' + esc(imgs[0]) + '" alt="' + esc(PRODUCTS[i].name) + '">'
+    + '<div class="stamp" style="position:absolute;top:10px;right:10px;width:50px;height:50px;'
+    +   'color:var(--rust);background:rgba(242,232,213,0.92);transform:rotate(-8deg);'
+    +   'display:flex;flex-direction:column;align-items:center;justify-content:center;">'
+    +   '<span class="font-mono" style="font-size:.58rem;font-weight:600;line-height:1.1;">FARM</span>'
+    +   '<span class="font-mono" style="font-size:.58rem;font-weight:600;line-height:1.1;">FRESH</span>'
+    + '</div>'
+    + arrows
+    + '</div>' + thumbs;
+}
+
+function imgStep(i, dir) {
+  var imgs = getImages(PRODUCTS[i]);
+  var idx  = CARD_STATE[i].activeImg + dir;
+  if (idx < 0) idx = imgs.length - 1;
+  if (idx >= imgs.length) idx = 0;
+  imgSet(i, idx, imgs);
+}
+
+function imgSelect(i, j) { imgSet(i, j, getImages(PRODUCTS[i])); }
+
+function imgSet(i, idx, imgs) {
+  CARD_STATE[i].activeImg = idx;
+  var el = document.getElementById('slide-' + i);
+  if (el) el.src = imgs[idx];
+  for (var k = 0; k < imgs.length; k++) {
+    var t = document.getElementById('thumb-' + i + '-' + k);
+    if (!t) continue;
+    t.classList.toggle('active', k === idx);
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   PACKAGE SELECTOR
+   ═══════════════════════════════════════════════ */
+/**
+ * Called when the customer clicks a package button.
+ * Updates CARD_STATE, toggles .active class, refreshes the subtotal shown on the card.
+ */
+/**
+ * pkgIdx = index into CARD_STATE[cardIdx].packages array.
+ * Stores the selected {qty, totalPrice} object, highlights the button,
+ * refreshes the live per-unit price and subtotal on the card.
+ */
+function selectPkg(cardIdx, pkgIdx) {
+  var pkgs = CARD_STATE[cardIdx].packages;
+  var pkg  = pkgs[pkgIdx];
+  CARD_STATE[cardIdx].selectedPkg = pkg;   /* {qty, totalPrice} */
+
+  /* toggle button highlight */
+  for (var k = 0; k < pkgs.length; k++) {
+    var btn = document.getElementById('pkg-' + cardIdx + '-' + k);
+    if (btn) btn.classList.toggle('active', k === pkgIdx);
+  }
+
+  /* hide validation error */
+  var errEl = document.getElementById('pkg-err-' + cardIdx);
+  if (errEl) errEl.style.display = 'none';
+
+  /* update dynamic per-unit price at the top of the card */
+  var unit     = PRODUCTS[cardIdx].unit_type || 'pcs';
+  var perUnit  = pkg.totalPrice / pkg.qty;
+  var priceEl  = document.getElementById('price-display-' + cardIdx);
+  if (priceEl) {
+    priceEl.innerHTML =
+      '<span class="font-display" style="font-size:1.7rem;font-weight:700;color:var(--ink);">&#2547;' + fmtBDT(perUnit) + '</span>'
+      + '<span style="font-size:.75rem;color:rgba(30,20,12,.5);">per ' + esc(unit) + '</span>';
+  }
+
+  /* update subtotal at the bottom of the card */
+  var subEl = document.getElementById('sub-' + cardIdx);
+  if (subEl) subEl.innerHTML = '&#2547;' + fmtBDT(pkg.totalPrice);
+}
+
+/* ═══════════════════════════════════════════════
+   BUILD A PRODUCT CARD
+   ═══════════════════════════════════════════════ */
+function buildCard(product, i) {
+  var imgs = getImages(product);
+  var pkgs = parsePackages(product.packages);
+
+  CARD_STATE[i] = { activeImg: 0, packages: pkgs, selectedPkg: null };
+
+  /* package buttons row */
+  var pkgSection;
+  if (!pkgs.length) {
+    /* no packages defined — show a notice rather than crashing */
+    pkgSection =
+      '<p style="font-size:.78rem;color:rgba(30,20,12,.45);font-style:italic;">No package options set for this product.</p>';
+  } else {
+    var btnHtml = '';
+    for (var k = 0; k < pkgs.length; k++) {
+      btnHtml +=
+        '<button id="pkg-' + i + '-' + k + '" class="pkg-btn"'
+        + ' onclick="selectPkg(' + i + ',' + k + ')"'
+        + ' aria-label="Select ' + pkgs[k].qty + ' ' + esc(product.unit_type || 'pcs') + '">'
+        + pkgs[k].qty + ' ' + esc(product.unit_type || 'pcs')
+        + '</button>';
+    }
+    pkgSection =
+      '<div>'
+      +   '<p style="font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:rgba(30,20,12,.5);margin:0 0 .45rem;">Select Package</p>'
+      +   '<div style="display:flex;flex-wrap:wrap;gap:.45rem;">' + btnHtml + '</div>'
+      +   '<p id="pkg-err-' + i + '" class="pkg-error">Please select a package size.</p>'
+      + '</div>';
+  }
+
+  return '<div class="product-card" id="card-' + i + '">'
+    + buildSlider(imgs, i)
+    + '<div>'
+    +   '<h3 class="font-display" style="font-size:1.45rem;font-weight:700;color:var(--ink);margin:0 0 .3rem;">' + esc(product.name) + '</h3>'
+    +   (product.description ? '<p style="font-size:.875rem;color:rgba(30,20,12,.62);margin:0;line-height:1.55;">' + esc(product.description) + '</p>' : '')
+    + '</div>'
+    + '<div id="price-display-' + i + '" style="display:flex;align-items:baseline;gap:.4rem;">'
+    +   '<span class="font-display" style="font-size:1.7rem;font-weight:700;color:var(--ink);">&#2547;' + fmtBDT(product.price) + '</span>'
+    +   '<span style="font-size:.75rem;color:rgba(30,20,12,.5);">per ' + esc(product.unit_type || 'pcs') + '</span>'
+    + '</div>'
+    + pkgSection
+    + '<div style="border-top:1px solid rgba(30,20,12,0.09);padding-top:.9rem;display:flex;align-items:center;justify-content:space-between;">'
+    +   '<div>'
+    +     '<div style="font-size:.72rem;color:rgba(30,20,12,.5);">Subtotal</div>'
+    +     '<div id="sub-' + i + '" class="font-mono" style="font-size:.95rem;font-weight:600;color:var(--ink);">—</div>'
+    +   '</div>'
+    +   '<button class="btn-rust" style="border-radius:9999px;padding:.55rem 1.1rem;font-size:.82rem;font-weight:600;" onclick="openModal(' + i + ')">'
+    +     '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>'
+    +     ' Buy Now'
+    +   '</button>'
+    + '</div>'
+    + '</div>';
+}
+
+/* ═══════════════════════════════════════════════
+   CHECKOUT MODAL — OPEN
+   ═══════════════════════════════════════════════ */
+function openModal(i) {
+  var state = CARD_STATE[i];
+
+  /* validate: a package must be selected */
+  if (!state.selectedPkg) {
+    var errEl = document.getElementById('pkg-err-' + i);
+    if (errEl) errEl.style.display = 'block';
+    /* scroll the card into view so the user sees the error */
+    var cardEl = document.getElementById('card-' + i);
+    if (cardEl) cardEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+
+  ACTIVE_IDX = i;
+  var product  = PRODUCTS[i];
+  var pkgData  = state.selectedPkg;          /* {qty, totalPrice} */
+  var unit     = product.unit_type || 'pcs';
+  var subtotal = pkgData.totalPrice;         /* the exact package price, no multiplication */
+  var total    = Math.round((subtotal + DELIVERY_CHARGE + Number.EPSILON) * 100) / 100;
+  var perUnit  = Math.round((subtotal / pkgData.qty + Number.EPSILON) * 100) / 100;
+  var imgs     = getImages(product);
+
+  /* reset form */
+  ['f-name','f-phone','f-address'].forEach(function(id){ document.getElementById(id).value = ''; });
+  ['e-name','e-phone','e-address'].forEach(function(id){ document.getElementById(id).style.display = 'none'; });
+  document.getElementById('submit-error').style.display = 'none';
+  setBusy(false);
+
+  /* product thumbnail + name row */
+  var imgHtml = imgs.length
+    ? '<img src="' + esc(imgs[0]) + '" alt="' + esc(product.name) + '" style="width:100%;height:100%;object-fit:cover;border-radius:.4rem;">'
+    : '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(30,20,12,0.35)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>';
+
+  document.getElementById('modal-recap').innerHTML =
+    '<div style="width:48px;height:48px;flex-shrink:0;background:rgba(30,20,12,.08);border-radius:.4rem;display:flex;align-items:center;justify-content:center;overflow:hidden;">' + imgHtml + '</div>'
+    + '<div style="flex:1;min-width:0;">'
+    +   '<p style="font-weight:600;font-size:.9rem;margin:0 0 .12rem;color:var(--ink);">' + esc(product.name) + '</p>'
+    +   '<p style="font-size:.75rem;color:rgba(30,20,12,.55);margin:0;">' + pkgData.qty + ' ' + esc(unit) + ' &times; &#2547;' + fmtBDT(perUnit) + ' each</p>'
+    + '</div>';
+
+  /* subtotal / delivery / total breakdown */
+  document.getElementById('modal-price-breakdown').innerHTML =
+    '<div class="price-row"><span>Subtotal</span><span>&#2547;' + fmtBDT(subtotal) + '</span></div>'
+    + '<div class="price-row"><span>Delivery Charge</span><span>&#2547;' + fmtBDT(DELIVERY_CHARGE) + '</span></div>'
+    + '<div class="price-row total-line"><span>Total</span><span>&#2547;' + fmtBDT(total) + '</span></div>';
+
+  document.getElementById('modal-form').style.display    = '';
+  document.getElementById('modal-success').style.display = 'none';
+
+  document.getElementById('modal-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+  ACTIVE_IDX = -1;
+}
+
+function overlayClick(e) {
+  if (e.target.id === 'modal-overlay') closeModal();
+}
+
+/* ═══════════════════════════════════════════════
+   FORM VALIDATION
+   ═══════════════════════════════════════════════ */
+function setErr(field, msg) {
+  var el = document.getElementById('e-' + field);
+  el.textContent    = msg;
+  el.style.display  = 'block';
+}
+function clearErr(field) { document.getElementById('e-' + field).style.display = 'none'; }
+
+function validate() {
+  clearErr('name'); clearErr('phone'); clearErr('address');
+  var name    = document.getElementById('f-name').value.trim();
+  var phone   = document.getElementById('f-phone').value.trim();
+  var address = document.getElementById('f-address').value.trim();
+  var ok = true;
+  if (!name)                           { setErr('name',    'Please enter your full name.');                    ok = false; }
+  if (!/^01[3-9]\d{8}$/.test(phone))  { setErr('phone',   'Enter a valid BD number, e.g. 01712345678.');     ok = false; }
+  if (!address || address.length < 10) { setErr('address', 'Please enter your full delivery address.');        ok = false; }
+  return ok ? { name: name, phone: phone, address: address } : null;
+}
+
+/* ═══════════════════════════════════════════════
+   ORDER SUBMISSION
+   Column mapping matches orders table exactly.
+   ═══════════════════════════════════════════════ */
+async function submitOrder() {
+  var fields = validate();
+  if (!fields || ACTIVE_IDX < 0) return;
+
+  var product  = PRODUCTS[ACTIVE_IDX];
+  var pkgData  = CARD_STATE[ACTIVE_IDX].selectedPkg;   /* {qty, totalPrice} */
+  var unit     = product.unit_type || 'pcs';
+  var subtotal = pkgData.totalPrice;                    /* exact package price */
+  var perUnit  = Math.round((subtotal / pkgData.qty + Number.EPSILON) * 100) / 100;
+  var total    = Math.round((subtotal + DELIVERY_CHARGE + Number.EPSILON) * 100) / 100;
+
+  setBusy(true);
+  document.getElementById('submit-error').style.display = 'none';
+
+  /* ── Duplicate-order guard ──────────────────────────────────────────
+     Check whether this phone number already has a pending order.
+     If so, abort immediately with an inline error — no INSERT fired.
+  ──────────────────────────────────────────────────────────────────── */
+  var dupCheck = await db
+    .from('orders')
+    .select('id')
+    .eq('customer_phone', fields.phone)
+    .eq('order_status', 'pending');
+
+  if (dupCheck.data && dupCheck.data.length > 0) {
+    setBusy(false);
+    var errEl = document.getElementById('submit-error');
+    errEl.textContent   = 'You already have an active order being processed. Please wait for delivery before placing a new one.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  /* ── Duplicate-order guard ── */
+  var dupeCheck = await db
+    .from('orders')
+    .select('id')
+    .eq('customer_phone', fields.phone)
+    .eq('order_status', 'pending');
+
+  if (dupeCheck.data && dupeCheck.data.length > 0) {
+    setBusy(false);
+    var errEl = document.getElementById('submit-error');
+    errEl.textContent   = 'You already have an active order being processed. Please wait for delivery before placing a new one.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  /* ── Proceed with INSERT ── */
+  var payload = {
+    product_id:       product.id,
+    product_name:     product.name,
+    quantity:         pkgData.qty,
+    unit_type:        unit,
+    unit_price:       perUnit,         /* discounted per-unit price for this package */
+    total_amount:     total,           /* package total price + delivery_charge */
+    customer_name:    fields.name,
+    customer_phone:   fields.phone,
+    delivery_address: fields.address
+  };
+
+  var result = await db.from('orders').insert([payload]).select();
+  setBusy(false);
+
+  if (result.error) {
+    var errEl = document.getElementById('submit-error');
+    errEl.textContent   = result.error.message || 'Something went wrong. Please try again.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  var row   = result.data && result.data[0];
+  var refId = row && row.id
+    ? 'BP-' + String(row.id).replace(/-/g,'').slice(0,8).toUpperCase()
+    : 'BP-' + Math.floor(100000 + Math.random() * 900000);
+
+  document.getElementById('order-ref').textContent = 'Reference ' + refId;
+
+  document.getElementById('success-rows').innerHTML =
+    sRow('Item',            esc(product.name))
+    + sRow('Package',       pkgData.qty + ' ' + esc(unit))
+    + sRow('Unit Price',    '&#2547;' + fmtBDT(perUnit) + ' each')
+    + sRow('Subtotal',      '&#2547;' + fmtBDT(subtotal))
+    + sRow('Delivery',      '&#2547;' + fmtBDT(DELIVERY_CHARGE))
+    + '<div class="sum-row total-line"><span>Total (COD)</span><span>&#2547;' + fmtBDT(total) + '</span></div>'
+    + sRow('Name',    esc(fields.name))
+    + sRow('Phone',   esc(fields.phone))
+    + sRow('Address', esc(fields.address));
+
+  document.getElementById('modal-form').style.display    = 'none';
+  document.getElementById('modal-success').style.display = '';
+}
+
+function sRow(label, value) {
+  return '<div class="sum-row"><span>' + label + '</span><span>' + value + '</span></div>';
+}
+
+/* ═══════════════════════════════════════════════
+   UI HELPERS
+   ═══════════════════════════════════════════════ */
+function setBusy(busy) {
+  document.getElementById('confirm-btn').disabled          = busy;
+  document.getElementById('btn-spinner').style.display     = busy ? 'inline-block' : 'none';
+  document.getElementById('btn-icon').style.display        = busy ? 'none' : '';
+  document.getElementById('btn-text').textContent          = busy ? 'Placing order…' : 'Confirm Cash on Delivery Order';
+}
+
+/* ═══════════════════════════════════════════════
+   BOOTSTRAP — load settings + products in parallel
+   ═══════════════════════════════════════════════ */
+async function init() {
+
+  /* run both fetches at the same time */
+  var results = await Promise.all([
+    db.from('store_settings').select('whatsapp_number, delivery_charge').eq('id', 1).single(),
+    db.from('products').select('*')
+  ]);
+
+  var settingsResult = results[0];
+  var productsResult = results[1];
+
+  /* ── Apply store settings ── */
+  if (!settingsResult.error && settingsResult.data) {
+    var s = settingsResult.data;
+
+    /* delivery charge */
+    if (s.delivery_charge !== null && s.delivery_charge !== undefined) {
+      DELIVERY_CHARGE = Number(s.delivery_charge);
+    }
+
+    /* WhatsApp FAB — build link and show button */
+    if (s.whatsapp_number) {
+      /* strip non-digits, ensure country code prefix */
+      var num = String(s.whatsapp_number).replace(/\D/g, '');
+      var fab = document.getElementById('wa-fab');
+      fab.href         = 'https://wa.me/' + num;
+      fab.style.display = 'flex';
+    }
+  } else {
+    /* settings fetch failed — keep defaults, don't show the FAB so href stays '#' */
+    console.warn('store_settings fetch failed:', settingsResult.error && settingsResult.error.message);
+  }
+
+  /* ── Render products ── */
+  document.getElementById('products-loading').style.display = 'none';
+
+  if (productsResult.error) {
+    document.getElementById('products-error-msg').textContent = productsResult.error.message;
+    document.getElementById('products-error').style.display   = '';
+    return;
+  }
+
+  PRODUCTS = productsResult.data || [];
+
+  if (!PRODUCTS.length) {
+    document.getElementById('products-empty').style.display = '';
+    return;
+  }
+
+  var grid = document.getElementById('products-grid');
+  grid.innerHTML    = PRODUCTS.map(buildCard).join('');
+  grid.style.display = 'grid';
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+
+</body>
+</html>
