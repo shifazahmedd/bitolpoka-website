@@ -183,8 +183,17 @@
       </div>
       <span class="font-display" style="font-size:1.2rem;font-weight:700;color:var(--ink);">Bitolpoka</span>
     </div>
-    <button class="btn-rust" style="border-radius:9999px;padding:.45rem 1.1rem;font-size:.82rem;font-weight:600;"
-            onclick="scrollToProducts()">Order Now</button>
+    
+    <div style="display:flex; align-items:center; gap:0.6rem;">
+      <!-- Dynamic Cart Button -->
+      <button id="cart-header-btn" class="btn-rust" style="background:rgba(200,75,39,.1); color:var(--rust); border:1.5px solid var(--rust); border-radius:9999px;padding:.4rem .8rem;font-size:.82rem;font-weight:600;display:none;align-items:center;gap:.3rem;" onclick="openCartModal()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+        <span>Cart (<span id="cart-count">0</span>)</span>
+      </button>
+      
+      <button class="btn-rust" style="border-radius:9999px;padding:.45rem 1.1rem;font-size:.82rem;font-weight:600;"
+              onclick="scrollToProducts()">Order Now</button>
+    </div>
   </div>
 </header>
 <script>
@@ -269,7 +278,7 @@
     <div style="max-width:36rem;margin-bottom:2.5rem;">
       <p class="font-mono" style="font-size:.7rem;text-transform:uppercase;letter-spacing:.12em;color:var(--rust);">Our Feed Stock</p>
       <h2 class="font-display" style="font-size:clamp(1.8rem,4vw,2.6rem);font-weight:700;margin:.5rem 0 .6rem;color:var(--ink);">Choose Your Live Feed</h2>
-      <p style="color:rgba(30,20,12,.62);line-height:1.6;">Every batch is weighed, packed and shipped within 48 hours of harvest.</p>
+      <p style="color:rgba(30,20,12,.62);line-height:1.6;">Mix and match different items into your cart. Delivery is a single flat rate.</p>
     </div>
 
     <!-- skeleton cards shown during load -->
@@ -325,7 +334,7 @@
           <span class="font-mono" style="font-weight:600;font-size:.9rem;">1</span>
         </div>
         <p style="font-weight:600;margin:.75rem 0 .3rem;color:var(--ink);">Place Your Order</p>
-        <p style="font-size:.875rem;color:rgba(30,20,12,.6);line-height:1.55;">Pick your feed, choose a package size, and share your delivery details.</p>
+        <p style="font-size:.875rem;color:rgba(30,20,12,.6);line-height:1.55;">Mix items in your cart, checkout once, and share your delivery details.</p>
       </div>
       <div style="text-align:center;padding:0 .5rem;">
         <div class="stamp" style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;margin:0 auto;color:var(--rust);">
@@ -367,12 +376,12 @@
 <div id="modal-overlay" onclick="overlayClick(event)">
   <div id="modal-box">
 
-    <!-- ── FORM VIEW ── -->
-    <div id="modal-form" style="padding:1.6rem;">
+    <!-- ── CART VIEW ── -->
+    <div id="modal-cart" style="display:none;padding:1.6rem;">
       <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.2rem;">
         <div>
-          <p class="font-mono" style="font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:var(--rust);margin:0 0 .3rem;">Cash on Delivery</p>
-          <h3 class="font-display" style="font-size:1.6rem;font-weight:700;color:var(--ink);margin:0;">Confirm Your Order</h3>
+          <p class="font-mono" style="font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:var(--rust);margin:0 0 .3rem;">Your Selection</p>
+          <h3 class="font-display" style="font-size:1.6rem;font-weight:700;color:var(--ink);margin:0;">Shopping Cart</h3>
         </div>
         <button onclick="closeModal()" aria-label="Close" style="background:none;border:none;cursor:pointer;color:var(--ink);padding:.25rem;line-height:0;">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -381,10 +390,40 @@
         </button>
       </div>
 
-      <!-- product thumbnail + name -->
-      <div id="modal-recap" style="display:flex;align-items:center;gap:.75rem;padding:.75rem;border-radius:.75rem;margin-bottom:.75rem;background:rgba(232,163,61,.17);border:1px solid rgba(200,75,39,.22);"></div>
+      <!-- list of items -->
+      <div id="cart-items-container" style="margin-bottom:1rem; max-height: 38vh; overflow-y: auto;"></div>
 
-      <!-- subtotal / delivery / total -->
+      <!-- cart subtotal / delivery / total -->
+      <div id="cart-price-breakdown" style="margin-bottom:1.25rem;padding:.25rem .1rem 0;"></div>
+
+      <button class="btn-rust" onclick="proceedToCheckout()" style="width:100%;border-radius:9999px;padding:.8rem 1rem;font-size:.9rem;font-weight:600;">
+        Proceed to Checkout
+      </button>
+      <button onclick="closeModal()" style="width:100%;background:none;border:none;color:rgba(30,20,12,.6);font-size:.85rem;font-weight:600;margin-top:.75rem;cursor:pointer;padding:.5rem;">
+        Continue Shopping
+      </button>
+    </div>
+
+    <!-- ── FORM VIEW ── -->
+    <div id="modal-form" style="display:none;padding:1.6rem;">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.2rem;">
+        <div>
+          <button onclick="openCartModal()" style="background:none;border:none;color:var(--rust);font-size:.75rem;font-weight:600;cursor:pointer;padding:0 0 .4rem 0;display:flex;align-items:center;gap:.2rem;">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg> Back to Cart
+          </button>
+          <h3 class="font-display" style="font-size:1.6rem;font-weight:700;color:var(--ink);margin:0;">Delivery Details</h3>
+        </div>
+        <button onclick="closeModal()" aria-label="Close" style="background:none;border:none;cursor:pointer;color:var(--ink);padding:.25rem;line-height:0;margin-top: 1.5rem;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- cart items recap -->
+      <div id="modal-recap" style="margin-bottom:.75rem;"></div>
+
+      <!-- final subtotal / delivery / total -->
       <div id="modal-price-breakdown" style="margin-bottom:1.25rem;padding:.25rem .1rem 0;"></div>
 
       <!-- customer fields -->
@@ -463,7 +502,7 @@ var db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 /* ── App-wide state ── */
 var PRODUCTS         = [];    // rows from products table
 var CARD_STATE       = [];    // per-card: { activeImg, packages[], selectedPkg }
-var ACTIVE_IDX       = -1;    // index of product being checked out
+var CART             = [];    // Holds multiple products added by the user
 var DELIVERY_CHARGE  = 150;   // fallback; overwritten by store_settings row 1
 
 /* ═══════════════════════════════════════════════
@@ -489,11 +528,6 @@ function getImages(product) {
   return arr.filter(function(x){ return x && typeof x === 'string'; });
 }
 
-/**
- * Parse "30:300, 50:500, 100:900, 200:1600"
- * → [ {qty:30, totalPrice:300}, {qty:50, totalPrice:500}, … ]
- * Silently drops any token that doesn't have a valid qty:price pair.
- */
 function parsePackages(raw) {
   if (!raw) return [];
   return raw.split(',').reduce(function(acc, token) {
@@ -576,31 +610,19 @@ function imgSet(i, idx, imgs) {
 /* ═══════════════════════════════════════════════
    PACKAGE SELECTOR
    ═══════════════════════════════════════════════ */
-/**
- * Called when the customer clicks a package button.
- * Updates CARD_STATE, toggles .active class, refreshes the subtotal shown on the card.
- */
-/**
- * pkgIdx = index into CARD_STATE[cardIdx].packages array.
- * Stores the selected {qty, totalPrice} object, highlights the button,
- * refreshes the live per-unit price and subtotal on the card.
- */
 function selectPkg(cardIdx, pkgIdx) {
   var pkgs = CARD_STATE[cardIdx].packages;
   var pkg  = pkgs[pkgIdx];
   CARD_STATE[cardIdx].selectedPkg = pkg;   /* {qty, totalPrice} */
 
-  /* toggle button highlight */
   for (var k = 0; k < pkgs.length; k++) {
     var btn = document.getElementById('pkg-' + cardIdx + '-' + k);
     if (btn) btn.classList.toggle('active', k === pkgIdx);
   }
 
-  /* hide validation error */
   var errEl = document.getElementById('pkg-err-' + cardIdx);
   if (errEl) errEl.style.display = 'none';
 
-  /* update dynamic per-unit price at the top of the card */
   var unit     = PRODUCTS[cardIdx].unit_type || 'pcs';
   var perUnit  = pkg.totalPrice / pkg.qty;
   var priceEl  = document.getElementById('price-display-' + cardIdx);
@@ -610,7 +632,6 @@ function selectPkg(cardIdx, pkgIdx) {
       + '<span style="font-size:.75rem;color:rgba(30,20,12,.5);">per ' + esc(unit) + '</span>';
   }
 
-  /* update subtotal at the bottom of the card */
   var subEl = document.getElementById('sub-' + cardIdx);
   if (subEl) subEl.innerHTML = '&#2547;' + fmtBDT(pkg.totalPrice);
 }
@@ -624,12 +645,9 @@ function buildCard(product, i) {
 
   CARD_STATE[i] = { activeImg: 0, packages: pkgs, selectedPkg: null };
 
-  /* package buttons row */
   var pkgSection;
   if (!pkgs.length) {
-    /* no packages defined — show a notice rather than crashing */
-    pkgSection =
-      '<p style="font-size:.78rem;color:rgba(30,20,12,.45);font-style:italic;">No package options set for this product.</p>';
+    pkgSection = '<p style="font-size:.78rem;color:rgba(30,20,12,.45);font-style:italic;">No package options set for this product.</p>';
   } else {
     var btnHtml = '';
     for (var k = 0; k < pkgs.length; k++) {
@@ -664,74 +682,134 @@ function buildCard(product, i) {
     +     '<div style="font-size:.72rem;color:rgba(30,20,12,.5);">Subtotal</div>'
     +     '<div id="sub-' + i + '" class="font-mono" style="font-size:.95rem;font-weight:600;color:var(--ink);">—</div>'
     +   '</div>'
-    +   '<button class="btn-rust" style="border-radius:9999px;padding:.55rem 1.1rem;font-size:.82rem;font-weight:600;" onclick="openModal(' + i + ')">'
-    +     '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>'
-    +     ' Buy Now'
+    +   '<button class="btn-rust" style="border-radius:9999px;padding:.55rem 1.1rem;font-size:.82rem;font-weight:600;" onclick="addToCart(' + i + ')">'
+    +     '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>'
+    +     ' Add to Cart'
     +   '</button>'
     + '</div>'
     + '</div>';
 }
 
 /* ═══════════════════════════════════════════════
-   CHECKOUT MODAL — OPEN
+   CART LOGIC & MODALS
    ═══════════════════════════════════════════════ */
-function openModal(i) {
+function updateCartHeader() {
+  var btn = document.getElementById('cart-header-btn');
+  var countEl = document.getElementById('cart-count');
+  if (CART.length > 0) {
+    countEl.textContent = CART.length;
+    btn.style.display = 'flex';
+  } else {
+    btn.style.display = 'none';
+  }
+}
+
+function addToCart(i) {
   var state = CARD_STATE[i];
 
-  /* validate: a package must be selected */
   if (!state.selectedPkg) {
     var errEl = document.getElementById('pkg-err-' + i);
     if (errEl) errEl.style.display = 'block';
-    /* scroll the card into view so the user sees the error */
     var cardEl = document.getElementById('card-' + i);
     if (cardEl) cardEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
     return;
   }
 
-  ACTIVE_IDX = i;
-  var product  = PRODUCTS[i];
-  var pkgData  = state.selectedPkg;          /* {qty, totalPrice} */
-  var unit     = product.unit_type || 'pcs';
-  var subtotal = pkgData.totalPrice;         /* the exact package price, no multiplication */
-  var total    = Math.round((subtotal + DELIVERY_CHARGE + Number.EPSILON) * 100) / 100;
-  var perUnit  = Math.round((subtotal / pkgData.qty + Number.EPSILON) * 100) / 100;
-  var imgs     = getImages(product);
+  var product = PRODUCTS[i];
+  var pkgData = state.selectedPkg;
+  
+  CART.push({
+    productId: product.id,
+    name: product.name,
+    qty: pkgData.qty,
+    unit: product.unit_type || 'pcs',
+    total: pkgData.totalPrice,
+    img: getImages(product)[0] || ''
+  });
 
-  /* reset form */
-  ['f-name','f-phone','f-address'].forEach(function(id){ document.getElementById(id).value = ''; });
-  ['e-name','e-phone','e-address'].forEach(function(id){ document.getElementById(id).style.display = 'none'; });
-  document.getElementById('submit-error').style.display = 'none';
-  setBusy(false);
+  updateCartHeader();
+  openCartModal();
+}
 
-  /* product thumbnail + name row */
-  var imgHtml = imgs.length
-    ? '<img src="' + esc(imgs[0]) + '" alt="' + esc(product.name) + '" style="width:100%;height:100%;object-fit:cover;border-radius:.4rem;">'
-    : '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(30,20,12,0.35)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>';
+function removeFromCart(index) {
+  CART.splice(index, 1);
+  updateCartHeader();
+  if (CART.length === 0) {
+    closeModal();
+  } else {
+    openCartModal(); // re-render
+  }
+}
 
-  document.getElementById('modal-recap').innerHTML =
-    '<div style="width:48px;height:48px;flex-shrink:0;background:rgba(30,20,12,.08);border-radius:.4rem;display:flex;align-items:center;justify-content:center;overflow:hidden;">' + imgHtml + '</div>'
-    + '<div style="flex:1;min-width:0;">'
-    +   '<p style="font-weight:600;font-size:.9rem;margin:0 0 .12rem;color:var(--ink);">' + esc(product.name) + '</p>'
-    +   '<p style="font-size:.75rem;color:rgba(30,20,12,.55);margin:0;">' + pkgData.qty + ' ' + esc(unit) + ' &times; &#2547;' + fmtBDT(perUnit) + ' each</p>'
-    + '</div>';
+function openCartModal() {
+  if (CART.length === 0) return;
+  
+  var itemsHtml = '';
+  var subtotal = 0;
+  
+  CART.forEach(function(item, idx) {
+    subtotal += item.total;
+    var perUnit = item.total / item.qty;
+    itemsHtml += 
+      '<div style="display:flex;align-items:center;gap:.75rem;padding:.75rem;border-bottom:1px solid rgba(30,20,12,.08);">' +
+        '<div style="width:48px;height:48px;flex-shrink:0;background:rgba(30,20,12,.08);border-radius:.4rem;display:flex;align-items:center;justify-content:center;overflow:hidden;">' +
+          (item.img ? '<img src="' + esc(item.img) + '" style="width:100%;height:100%;object-fit:cover;">' : '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(30,20,12,0.35)" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>') +
+        '</div>' +
+        '<div style="flex:1;min-width:0;">' +
+          '<p style="font-weight:600;font-size:.9rem;margin:0 0 .12rem;color:var(--ink);">' + esc(item.name) + '</p>' +
+          '<p style="font-size:.75rem;color:rgba(30,20,12,.55);margin:0;">' + item.qty + ' ' + esc(item.unit) + ' &times; &#2547;' + fmtBDT(perUnit) + ' each</p>' +
+        '</div>' +
+        '<div style="text-align:right;">' +
+          '<p style="font-weight:600;font-size:.95rem;margin:0 0 .3rem;color:var(--ink);">&#2547;' + fmtBDT(item.total) + '</p>' +
+          '<button onclick="removeFromCart(' + idx + ')" style="background:none;border:none;color:var(--rust);font-size:.75rem;font-weight:600;cursor:pointer;padding:0;text-decoration:underline;">Remove</button>' +
+        '</div>' +
+      '</div>';
+  });
 
-  /* subtotal / delivery / total breakdown */
-  document.getElementById('modal-price-breakdown').innerHTML =
-    '<div class="price-row"><span>Subtotal</span><span>&#2547;' + fmtBDT(subtotal) + '</span></div>'
-    + '<div class="price-row"><span>Delivery Charge</span><span>&#2547;' + fmtBDT(DELIVERY_CHARGE) + '</span></div>'
-    + '<div class="price-row total-line"><span>Total</span><span>&#2547;' + fmtBDT(total) + '</span></div>';
+  document.getElementById('cart-items-container').innerHTML = itemsHtml;
 
-  document.getElementById('modal-form').style.display    = '';
+  var grandTotal = subtotal + DELIVERY_CHARGE;
+  document.getElementById('cart-price-breakdown').innerHTML =
+    '<div class="price-row"><span>Cart Subtotal</span><span>&#2547;' + fmtBDT(subtotal) + '</span></div>' +
+    '<div class="price-row"><span>Delivery (Flat Rate)</span><span>&#2547;' + fmtBDT(DELIVERY_CHARGE) + '</span></div>' +
+    '<div class="price-row total-line"><span>Grand Total</span><span>&#2547;' + fmtBDT(grandTotal) + '</span></div>';
+
+  document.getElementById('modal-cart').style.display    = '';
+  document.getElementById('modal-form').style.display    = 'none';
   document.getElementById('modal-success').style.display = 'none';
 
   document.getElementById('modal-overlay').classList.add('open');
   document.body.style.overflow = 'hidden';
 }
 
+function proceedToCheckout() {
+  // Prep form view details
+  var subtotal = CART.reduce(function(sum, item){ return sum + item.total; }, 0);
+  var grandTotal = subtotal + DELIVERY_CHARGE;
+
+  document.getElementById('modal-recap').innerHTML =
+    '<div style="padding:.75rem;border-radius:.75rem;background:rgba(232,163,61,.17);border:1px solid rgba(200,75,39,.22);">' +
+      '<p style="font-weight:600;font-size:.9rem;color:var(--ink);margin:0;">🛒 ' + CART.length + ' item(s) selected for Cash on Delivery</p>' +
+    '</div>';
+
+  document.getElementById('modal-price-breakdown').innerHTML =
+    '<div class="price-row"><span>Cart Subtotal</span><span>&#2547;' + fmtBDT(subtotal) + '</span></div>' +
+    '<div class="price-row"><span>Delivery (Flat Rate)</span><span>&#2547;' + fmtBDT(DELIVERY_CHARGE) + '</span></div>' +
+    '<div class="price-row total-line"><span>Grand Total</span><span>&#2547;' + fmtBDT(grandTotal) + '</span></div>';
+
+  // reset error fields
+  ['f-name','f-phone','f-address'].forEach(function(id){ document.getElementById(id).value = ''; });
+  ['e-name','e-phone','e-address'].forEach(function(id){ document.getElementById(id).style.display = 'none'; });
+  document.getElementById('submit-error').style.display = 'none';
+  setBusy(false);
+
+  document.getElementById('modal-cart').style.display = 'none';
+  document.getElementById('modal-form').style.display = '';
+}
+
 function closeModal() {
   document.getElementById('modal-overlay').classList.remove('open');
   document.body.style.overflow = '';
-  ACTIVE_IDX = -1;
 }
 
 function overlayClick(e) {
@@ -762,47 +840,16 @@ function validate() {
 
 /* ═══════════════════════════════════════════════
    ORDER SUBMISSION
-   Column mapping matches orders table exactly.
    ═══════════════════════════════════════════════ */
 async function submitOrder() {
   var fields = validate();
-  if (!fields || ACTIVE_IDX < 0) return;
-
-  var product  = PRODUCTS[ACTIVE_IDX];
-  var pkgData  = CARD_STATE[ACTIVE_IDX].selectedPkg;   /* {qty, totalPrice} */
-  var unit     = product.unit_type || 'pcs';
-  var subtotal = pkgData.totalPrice;                    /* exact package price */
-  var perUnit  = Math.round((subtotal / pkgData.qty + Number.EPSILON) * 100) / 100;
-  var total    = Math.round((subtotal + DELIVERY_CHARGE + Number.EPSILON) * 100) / 100;
+  if (!fields || CART.length === 0) return;
 
   setBusy(true);
   document.getElementById('submit-error').style.display = 'none';
 
-  /* ── Duplicate-order guard ──────────────────────────────────────────
-     Check whether this phone number already has a pending order.
-     If so, abort immediately with an inline error — no INSERT fired.
-  ──────────────────────────────────────────────────────────────────── */
-  var dupCheck = await db
-    .from('orders')
-    .select('id')
-    .eq('customer_phone', fields.phone)
-    .eq('order_status', 'pending');
-
-  if (dupCheck.data && dupCheck.data.length > 0) {
-    setBusy(false);
-    var errEl = document.getElementById('submit-error');
-    errEl.textContent   = 'You already have an active order being processed. Please wait for delivery before placing a new one.';
-    errEl.style.display = 'block';
-    return;
-  }
-
   /* ── Duplicate-order guard ── */
-  var dupeCheck = await db
-    .from('orders')
-    .select('id')
-    .eq('customer_phone', fields.phone)
-    .eq('order_status', 'pending');
-
+  var dupeCheck = await db.from('orders').select('id').eq('customer_phone', fields.phone).eq('order_status', 'pending');
   if (dupeCheck.data && dupeCheck.data.length > 0) {
     setBusy(false);
     var errEl = document.getElementById('submit-error');
@@ -811,20 +858,27 @@ async function submitOrder() {
     return;
   }
 
-  /* ── Proceed with INSERT ── */
-  var payload = {
-    product_id:       product.id,
-    product_name:     product.name,
-    quantity:         pkgData.qty,
-    unit_type:        unit,
-    unit_price:       perUnit,         /* discounted per-unit price for this package */
-    total_amount:     total,           /* package total price + delivery_charge */
-    customer_name:    fields.name,
-    customer_phone:   fields.phone,
-    delivery_address: fields.address
-  };
+  /* ── Proceed with Bulk INSERT ── */
+  // Create a separate row in the DB for each item in the cart.
+  // The first item gets the Delivery Charge attached to its total so your Admin Panel accounting is perfect!
+  var payloads = CART.map(function(item, index) {
+    var perUnit = Math.round((item.total / item.qty + Number.EPSILON) * 100) / 100;
+    var rowTotal = (index === 0) ? (item.total + DELIVERY_CHARGE) : item.total; 
+    
+    return {
+      product_id:       item.productId,
+      product_name:     item.name,
+      quantity:         item.qty,
+      unit_type:        item.unit,
+      unit_price:       perUnit,
+      total_amount:     rowTotal,
+      customer_name:    fields.name,
+      customer_phone:   fields.phone,
+      delivery_address: fields.address
+    };
+  });
 
-  var result = await db.from('orders').insert([payload]).select();
+  var result = await db.from('orders').insert(payloads).select();
   setBusy(false);
 
   if (result.error) {
@@ -834,6 +888,7 @@ async function submitOrder() {
     return;
   }
 
+  // Create Reference Number based on the first inserted row
   var row   = result.data && result.data[0];
   var refId = row && row.id
     ? 'BP-' + String(row.id).replace(/-/g,'').slice(0,8).toUpperCase()
@@ -841,19 +896,29 @@ async function submitOrder() {
 
   document.getElementById('order-ref').textContent = 'Reference ' + refId;
 
-  document.getElementById('success-rows').innerHTML =
-    sRow('Item',            esc(product.name))
-    + sRow('Package',       pkgData.qty + ' ' + esc(unit))
-    + sRow('Unit Price',    '&#2547;' + fmtBDT(perUnit) + ' each')
-    + sRow('Subtotal',      '&#2547;' + fmtBDT(subtotal))
-    + sRow('Delivery',      '&#2547;' + fmtBDT(DELIVERY_CHARGE))
-    + '<div class="sum-row total-line"><span>Total (COD)</span><span>&#2547;' + fmtBDT(total) + '</span></div>'
-    + sRow('Name',    esc(fields.name))
-    + sRow('Phone',   esc(fields.phone))
-    + sRow('Address', esc(fields.address));
+  // Render the final success receipt
+  var successHtml = '';
+  var subtotal = 0;
+  CART.forEach(function(item) {
+    subtotal += item.total;
+    successHtml += sRow(item.qty + ' ' + esc(item.unit) + ' ' + esc(item.name), '&#2547;' + fmtBDT(item.total));
+  });
+  
+  var grandTotal = subtotal + DELIVERY_CHARGE;
+  successHtml += sRow('Delivery', '&#2547;' + fmtBDT(DELIVERY_CHARGE));
+  successHtml += '<div class="sum-row total-line"><span>Total (COD)</span><span>&#2547;' + fmtBDT(grandTotal) + '</span></div>';
+  successHtml += sRow('Name',    esc(fields.name));
+  successHtml += sRow('Phone',   esc(fields.phone));
+  successHtml += sRow('Address', esc(fields.address));
+
+  document.getElementById('success-rows').innerHTML = successHtml;
 
   document.getElementById('modal-form').style.display    = 'none';
   document.getElementById('modal-success').style.display = '';
+
+  // Clear Cart once successful
+  CART = [];
+  updateCartHeader();
 }
 
 function sRow(label, value) {
