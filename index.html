@@ -118,54 +118,51 @@
   .slider-thumb.active { border-color: var(--rust); opacity: 1; }
   .slider-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
 
-  /* modal */
-  #modal-overlay {
+  /* modal styles */
+  .modal-overlay {
     display: none; position: fixed; inset: 0; z-index: 50;
     align-items: center; justify-content: center; padding: 1rem;
     background: rgba(20,14,8,.66); backdrop-filter: blur(2px);
   }
-  #modal-overlay.open { display: flex; }
-  #modal-box {
+  .modal-overlay.open { display: flex; }
+  .modal-box {
     background: var(--kraft-light); border-radius: 1.1rem;
     width: 100%; max-width: 440px; max-height: 90vh; overflow-y: auto;
   }
+  .guide-modal-box {
+    background: var(--kraft-light); border-radius: 1.1rem;
+    width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto;
+  }
 
-  /* price breakdown rows in modal */
-  .price-row {
-    display: flex; justify-content: space-between; align-items: center;
-    gap: .75rem; padding: .4rem 0; font-size: .875rem;
-    border-bottom: 1px solid rgba(30,20,12,0.08);
+  /* guide card styles */
+  .guide-card {
+    background: rgba(255,255,255,0.4); border: 2px solid rgba(30,20,12,0.1);
+    border-radius: 1rem; padding: 1.5rem; cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex; align-items: center; gap: 1rem;
   }
-  .price-row span:first-child { color: rgba(30,20,12,.55); }
-  .price-row span:last-child  { color: var(--ink); font-weight: 500; }
-  .price-row.total-line {
-    border-bottom: none; border-top: 1.5px solid rgba(30,20,12,0.15);
-    margin-top: .15rem; padding-top: .55rem; font-size: 1rem; font-weight: 700;
-  }
-  .price-row.total-line span:last-child { color: var(--rust); font-size: 1.1rem; }
+  .guide-card:hover { transform: translateY(-3px); border-color: var(--rust); background: white; box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+  
+  /* guide text formatting */
+  .guide-text h4 { color: var(--rust); font-size: 1.1rem; font-weight: 700; margin-top: 1.5rem; margin-bottom: 0.5rem; font-family: 'Fraunces', serif; }
+  .guide-text p { color: rgba(30,20,12,.75); font-size: 0.95rem; line-height: 1.6; margin-bottom: 1rem; }
+  .guide-text ul { padding-left: 1.2rem; margin-bottom: 1rem; }
+  .guide-text li { color: rgba(30,20,12,.75); font-size: 0.95rem; line-height: 1.6; margin-bottom: 0.4rem; list-style-type: disc; }
+  .guide-text .highlight-box { background: rgba(200,75,39,.1); border-left: 4px solid var(--rust); padding: 1rem; border-radius: 0 0.5rem 0.5rem 0; margin: 1.5rem 0; }
 
-  /* success summary rows */
-  .sum-row {
-    display: flex; justify-content: space-between; gap: .75rem;
-    padding: .4rem 0; font-size: .875rem;
-    border-bottom: 1px solid rgba(30,20,12,0.08);
-  }
-  .sum-row span:first-child { color: rgba(30,20,12,.55); }
-  .sum-row span:last-child  { color: var(--ink); font-weight: 500; text-align: right; }
-  .sum-row.total-line {
-    border-bottom: none; border-top: 1.5px solid rgba(30,20,12,0.15);
-    margin-top: .1rem; padding-top: .5rem; font-weight: 700;
-  }
-  .sum-row.total-line span:last-child { color: var(--rust); }
+  /* checkout rows */
+  .price-row, .sum-row { display: flex; justify-content: space-between; gap: .75rem; padding: .4rem 0; font-size: .875rem; border-bottom: 1px solid rgba(30,20,12,0.08); }
+  .price-row span:first-child, .sum-row span:first-child { color: rgba(30,20,12,.55); }
+  .price-row span:last-child, .sum-row span:last-child  { color: var(--ink); font-weight: 500; text-align: right; }
+  .price-row.total-line, .sum-row.total-line { border-bottom: none; border-top: 1.5px solid rgba(30,20,12,0.15); margin-top: .1rem; padding-top: .5rem; font-weight: 700; }
+  .price-row.total-line span:last-child, .sum-row.total-line span:last-child { color: var(--rust); font-size: 1.1rem; }
 
-  /* floating WhatsApp button */
   #wa-fab {
     position: fixed; bottom: 1.4rem; right: 1.4rem; z-index: 60;
     width: 56px; height: 56px; border-radius: 9999px;
     background: #25D366; box-shadow: 0 4px 18px rgba(0,0,0,0.22);
     display: flex; align-items: center; justify-content: center;
-    text-decoration: none;
-    transition: transform .2s, box-shadow .2s;
+    text-decoration: none; transition: transform .2s, box-shadow .2s;
   }
   #wa-fab:hover { transform: scale(1.1); box-shadow: 0 6px 24px rgba(0,0,0,0.3); }
 </style>
@@ -290,20 +287,6 @@
         <div class="skeleton" style="height:2rem;width:70%;margin-bottom:1.2rem;border-radius:.5rem;"></div>
         <div class="skeleton" style="height:2.5rem;border-radius:9999px;"></div>
       </div>
-      <div style="border-radius:1rem;padding:1.25rem;background:var(--kraft-light);border:1px solid rgba(30,20,12,0.1);">
-        <div class="skeleton" style="aspect-ratio:4/3;margin-bottom:.9rem;"></div>
-        <div class="skeleton" style="height:1.2rem;width:60%;margin-bottom:.5rem;"></div>
-        <div class="skeleton" style="height:.9rem;width:90%;margin-bottom:.5rem;"></div>
-        <div class="skeleton" style="height:2rem;width:80%;margin-bottom:1.2rem;border-radius:.5rem;"></div>
-        <div class="skeleton" style="height:2.5rem;border-radius:9999px;"></div>
-      </div>
-      <div style="border-radius:1rem;padding:1.25rem;background:var(--kraft-light);border:1px solid rgba(30,20,12,0.1);">
-        <div class="skeleton" style="aspect-ratio:4/3;margin-bottom:.9rem;"></div>
-        <div class="skeleton" style="height:1.2rem;width:50%;margin-bottom:.5rem;"></div>
-        <div class="skeleton" style="height:.9rem;width:80%;margin-bottom:.5rem;"></div>
-        <div class="skeleton" style="height:2rem;width:60%;margin-bottom:1.2rem;border-radius:.5rem;"></div>
-        <div class="skeleton" style="height:2.5rem;border-radius:9999px;"></div>
-      </div>
     </div>
 
     <!-- error banner -->
@@ -311,11 +294,6 @@
       <p style="font-weight:600;color:var(--rust);margin:0 0 .25rem;">Couldn't load products</p>
       <p id="products-error-msg" style="font-size:.875rem;color:rgba(30,20,12,.65);margin:0;"></p>
     </div>
-
-    <!-- empty state -->
-    <p id="products-empty" style="display:none;margin-top:1.5rem;color:rgba(30,20,12,.55);font-size:.9rem;">
-      No products found. Add rows to the <code>products</code> table in Supabase.
-    </p>
 
     <!-- live product grid (injected by JS) -->
     <div id="products-grid" style="display:none;"></div>
@@ -354,6 +332,43 @@
   </div>
 </section>
 
+<!-- ═══════════════════ EDUCATIONAL GUIDES SECTION ═══════════════════ -->
+<section style="padding:4.5rem 1.25rem; background: var(--kraft-light);">
+  <div style="max-width:72rem;margin:0 auto;">
+    <div style="text-align:center; margin-bottom: 2.5rem;">
+      <p class="font-mono" style="font-size:.7rem;text-transform:uppercase;letter-spacing:.12em;color:var(--rust);">Learn to Breed at Home</p>
+      <h2 class="font-display" style="font-size:clamp(1.6rem,4vw,2.4rem);font-weight:700;margin:.5rem 0 .6rem;color:var(--ink);">Free Farming Guides (A-Z)</h2>
+      <p style="color:rgba(30,20,12,.62);line-height:1.6; max-width: 400px; margin: 0 auto;">Read our step-by-step instructions to successfully breed your own live feed right at home.</p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; max-width: 800px; margin: 0 auto;">
+      
+      <!-- Superworm Guide Card -->
+      <div class="guide-card" onclick="openGuideModal('superworm')">
+        <div style="width: 60px; height: 60px; border-radius: 50%; background: rgba(200,75,39,.1); display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--rust);">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12a10 10 0 0 1 10-10c5.52 0 10 4.48 10 10s-4.48 10-10 10S2 17.52 2 12z"/><path d="M12 8v8"/><path d="M8 12h8"/></svg>
+        </div>
+        <div>
+          <h3 class="font-display" style="font-size: 1.25rem; font-weight: 700; color: var(--ink); margin: 0 0 0.25rem;">Superworm Guide</h3>
+          <p style="font-size: 0.85rem; color: rgba(30,20,12,.6); margin: 0;">Learn the step-by-step cup separation method for breeding.</p>
+        </div>
+      </div>
+
+      <!-- Mealworm Guide Card -->
+      <div class="guide-card" onclick="openGuideModal('mealworm')">
+        <div style="width: 60px; height: 60px; border-radius: 50%; background: rgba(232,163,61,.15); display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--amber);">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+        </div>
+        <div>
+          <h3 class="font-display" style="font-size: 1.25rem; font-weight: 700; color: var(--ink); margin: 0 0 0.25rem;">Mealworm Guide</h3>
+          <p style="font-size: 0.85rem; color: rgba(30,20,12,.6); margin: 0;">The easier, box-bred method for quick and continuous harvesting.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
 <!-- ═══════════════════ FOOTER ═══════════════════ -->
 <footer style="background:var(--soil);padding:2.5rem 1.25rem;">
   <div style="max-width:72rem;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:1rem;">
@@ -372,11 +387,10 @@
   </div>
 </footer>
 
-<!-- ═══════════════════ CHECKOUT MODAL ═══════════════════ -->
-<div id="modal-overlay" onclick="overlayClick(event)">
-  <div id="modal-box">
-
-    <!-- ── CART VIEW ── -->
+<!-- ═══════════════════ CHECKOUT CART MODAL ═══════════════════ -->
+<div id="modal-overlay" class="modal-overlay" onclick="overlayClick(event)">
+  <div id="modal-box" class="modal-box">
+    <!-- CART VIEW -->
     <div id="modal-cart" style="display:none;padding:1.6rem;">
       <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.2rem;">
         <div>
@@ -389,22 +403,13 @@
           </svg>
         </button>
       </div>
-
-      <!-- list of items -->
       <div id="cart-items-container" style="margin-bottom:1rem; max-height: 38vh; overflow-y: auto;"></div>
-
-      <!-- cart subtotal / delivery / total -->
       <div id="cart-price-breakdown" style="margin-bottom:1.25rem;padding:.25rem .1rem 0;"></div>
-
-      <button class="btn-rust" onclick="proceedToCheckout()" style="width:100%;border-radius:9999px;padding:.8rem 1rem;font-size:.9rem;font-weight:600;">
-        Proceed to Checkout
-      </button>
-      <button onclick="closeModal()" style="width:100%;background:none;border:none;color:rgba(30,20,12,.6);font-size:.85rem;font-weight:600;margin-top:.75rem;cursor:pointer;padding:.5rem;">
-        Continue Shopping
-      </button>
+      <button class="btn-rust" onclick="proceedToCheckout()" style="width:100%;border-radius:9999px;padding:.8rem 1rem;font-size:.9rem;font-weight:600;">Proceed to Checkout</button>
+      <button onclick="closeModal()" style="width:100%;background:none;border:none;color:rgba(30,20,12,.6);font-size:.85rem;font-weight:600;margin-top:.75rem;cursor:pointer;padding:.5rem;">Continue Shopping</button>
     </div>
 
-    <!-- ── FORM VIEW ── -->
+    <!-- FORM VIEW -->
     <div id="modal-form" style="display:none;padding:1.6rem;">
       <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.2rem;">
         <div>
@@ -413,20 +418,9 @@
           </button>
           <h3 class="font-display" style="font-size:1.6rem;font-weight:700;color:var(--ink);margin:0;">Delivery Details</h3>
         </div>
-        <button onclick="closeModal()" aria-label="Close" style="background:none;border:none;cursor:pointer;color:var(--ink);padding:.25rem;line-height:0;margin-top: 1.5rem;">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-          </svg>
-        </button>
       </div>
-
-      <!-- cart items recap -->
       <div id="modal-recap" style="margin-bottom:.75rem;"></div>
-
-      <!-- final subtotal / delivery / total -->
       <div id="modal-price-breakdown" style="margin-bottom:1.25rem;padding:.25rem .1rem 0;"></div>
-
-      <!-- customer fields -->
       <div style="display:flex;flex-direction:column;gap:1rem;">
         <div>
           <label style="font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:rgba(30,20,12,.55);">Full Name</label>
@@ -444,44 +438,125 @@
           <span id="e-address" style="display:none;font-size:.75rem;color:var(--rust);margin-top:.25rem;"></span>
         </div>
       </div>
-
       <p id="submit-error" style="display:none;font-size:.78rem;color:var(--rust);margin-top:.75rem;"></p>
-
-      <button id="confirm-btn" class="btn-rust" onclick="submitOrder()"
-              style="width:100%;border-radius:9999px;padding:.8rem 1rem;font-size:.9rem;font-weight:600;margin-top:1.4rem;">
+      <button id="confirm-btn" class="btn-rust" onclick="submitOrder()" style="width:100%;border-radius:9999px;padding:.8rem 1rem;font-size:.9rem;font-weight:600;margin-top:1.4rem;">
         <span id="btn-spinner" class="spinner" style="display:none;"></span>
-        <svg id="btn-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="1" y="6" width="14" height="11"/><path d="M15 10h4l3 3v4h-7z"/><circle cx="6" cy="18.5" r="2"/><circle cx="18" cy="18.5" r="2"/>
-        </svg>
         <span id="btn-text">Confirm Cash on Delivery Order</span>
       </button>
-      <p style="text-align:center;font-size:.75rem;color:rgba(30,20,12,.5);margin-top:.65rem;">
-        Pay in cash when your order arrives. No advance payment needed.
-      </p>
     </div>
 
-    <!-- ── SUCCESS VIEW ── -->
+    <!-- SUCCESS VIEW -->
     <div id="modal-success" style="display:none;padding:1.6rem;text-align:center;">
-      <div class="stamp" style="width:88px;height:88px;display:flex;align-items:center;justify-content:center;margin:0 auto;color:var(--rust);transform:rotate(-8deg);">
-        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
-        </svg>
-      </div>
       <h3 class="font-display" style="font-size:1.6rem;font-weight:700;color:var(--ink);margin:1rem 0 .2rem;">Order Confirmed!</h3>
       <p id="order-ref" class="font-mono" style="font-size:.72rem;color:rgba(30,20,12,.5);margin:0 0 1.25rem;"></p>
       <div id="success-rows" style="text-align:left;border-radius:.75rem;padding:1rem;background:rgba(30,20,12,.05);"></div>
-      <p style="font-size:.875rem;color:rgba(30,20,12,.65);margin:1.1rem 0 0;line-height:1.6;">
-        We'll call you to confirm before your order ships out fresh.
-      </p>
-      <button class="btn-rust" onclick="closeModal()"
-              style="width:100%;border-radius:9999px;padding:.8rem;font-size:.9rem;font-weight:600;margin-top:1.25rem;">Done</button>
+      <button class="btn-rust" onclick="closeModal()" style="width:100%;border-radius:9999px;padding:.8rem;font-size:.9rem;font-weight:600;margin-top:1.25rem;">Done</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ GUIDES MODAL (NATIVE READING) ═══════════════════ -->
+<div id="guide-modal-overlay" class="modal-overlay" onclick="closeGuideOverlay(event)">
+  <div class="guide-modal-box">
+    
+    <!-- Superworm Content -->
+    <div id="guide-superworm" class="guide-text" style="display:none; padding: 2rem;">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom: 1rem;">
+        <div>
+          <p class="font-mono" style="font-size:.7rem;text-transform:uppercase;color:var(--rust);margin:0;">Bitolpoka.com · Farm Guide</p>
+          <h2 class="font-display" style="font-size: 1.8rem; font-weight: 700; color: var(--ink); margin: 0.5rem 0;">সুপারওয়ার্ম চাষের সম্পূর্ণ গাইডলাইন</h2>
+          <p style="margin:0; font-size: 0.9rem;">ডিম থেকে বিটাল পর্যন্ত — সম্পূর্ণ (A-Z) ধাপে ধাপে নির্দেশিকা।</p>
+        </div>
+        <button onclick="closeGuide()" style="background:none;border:none;cursor:pointer;color:var(--ink);">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <h4>❓ সুপারওয়ার্ম কী ও এর উপকারিতা</h4>
+      <p>সুপারওয়ার্ম (Zophobas morio) হলো একধরনের ডার্কলিং বিটল প্রজাতির লার্ভা, যা আকারে মিলওয়ার্মের চেয়ে বড় ও পুষ্টিগুণে সমৃদ্ধ। এটি ইউরোপিয়ান উনীয়নের সার্টিফাইড একটি পোকা যা মুরগি, কোয়েল পাখি, ব্যাঙ ও অ্যাকুরিয়ামের মাছের জন্য উচ্চ-প্রোটিনযুক্ত জীবন্ত খাবার হিসেবে বিশ্বব্যাপী ব্যবহৃত হয়। ঘরে বসে অল্প জায়গায় এটি লাভজনকভাবে চাষ করা সম্ভব, তবে পিউপা তৈরির জন্য কিছুটা বাড়তি যত্ন প্রয়োজন হয়।</p>
+
+      <h4>🐞 ধাপ ১: মাদার বিটাল চাষের নিয়ম</h4>
+      <ul>
+        <li><strong>সেটআপ:</strong> মাদারগুলো পাওয়ার পর একটি গামলায় ১ ইঞ্চি গমের ভুসি দিয়ে তার ভেতর ছেড়ে দিন।</li>
+        <li><strong>খাবার:</strong> এদের পানির চাহিদা মেটাতে সস্তা সবজি যেমন—আলু, পেঁপে বা শসা পাতলা করে কেটে ভুসির উপরে দিন। সবজি পচে যাবার আগে তুলে ফেলুন।</li>
+        <li><strong>ডিম/বাচ্চা সংগ্রহ:</strong> প্রতি ১৫-২০ দিন পরপর গামলার পুরনো ভুসিগুলো চেলে বা আলাদা করে অন্য একটি পাত্রে সরিয়ে রাখুন (এতেই ডিম থাকে)। এরপর মাদারগুলোকে আবার নতুন ভুসিতে রাখুন।</li>
+      </ul>
+
+      <h4>📦 ধাপ ২: ডিম ফোটা ও লার্ভা বৃদ্ধি</h4>
+      <p>মাদার থেকে ১৫-২০ দিনের ভিতর ডিম ফোটে। এই লার্ভাই মূল বিক্রয়যোগ্য পণ্য এবং পশু পাখির খাবার। ডিম থেকে ফোটার পর ১-১.৫ মাস হলে লারভা গুলো খাওয়ানোর উপযোগী হয় এবং মাদার বানানোর উপযোগী পূর্ণাঙ্গ লার্ভা হতে প্রায় ৪-৫ মাস সময় লাগে।</p>
+      <ul>
+        <li><strong>বক্স:</strong> মসৃণ দেয়ালযুক্ত প্লাস্টিকের ট্রে বা গামলা ব্যবহার করুন।</li>
+        <li><strong>বেডিং:</strong> বক্সের নিচে ২-৩ ইঞ্চি গমের ভুষি (Wheat Bran) দিন।</li>
+        <li><strong>পানির উৎস:</strong> সরাসরি পানি নয় — মিষ্টি কুমড়া, গাজর বা আলু দিন।</li>
+      </ul>
+
+      <div class="highlight-box">
+        <h4 style="margin-top:0;">🛌 ধাপ ৩: পিউপা তৈরি (সবচেয়ে গুরুত্বপূর্ণ ধাপ)</h4>
+        <p style="margin-bottom:0.5rem;">সুপারওয়ার্ম একসাথে থাকলে পিউপা হয় না — ৩-৪ মাস বয়সী বড় লার্ভাগুলোকে আলাদা ছোট সসের কাপে একটি একটি করে রাখতে হবে।</p>
+        <ul>
+          <li>কাপে কোনো খাবার বা পানি দেওয়া যাবে না।</li>
+          <li>অন্ধকার জায়গায় রাখলে ১-২ সপ্তাহের মধ্যে পিউপা হবে।</li>
+          <li>পিউপা হবার ৭-১০ দিনের ভিতর মাদার হবে।</li>
+        </ul>
+      </div>
+
+      <h4>🔄 ধাপ ৪: নতুন বিটল ও চক্র পুনরাবৃত্তি</h4>
+      <p>পিউপা থেকে নতুন মাদার বিটাল বের হলে তাদের আবার মূল ভুষির বক্সে দিন। এখান থেকেই ধাপ ১ আবার শুরু হয় — বিটল ডিম পাড়ে, ডিম লার্ভা হয়, আর খামার চলতেই থাকে।</p>
+
+      <h4>⚠️ সতর্কতা (Safety & Maintenance)</h4>
+      <p>বক্সে কখনোই পানি স্প্রে করবেন না — মাইটস বা ফাঙ্গাস আক্রমণ করবে। সবজিগুলো যেন পচে না যায় সেদিকে খেয়াল রাখবেন।</p>
+    </div>
+
+    <!-- Mealworm Content -->
+    <div id="guide-mealworm" class="guide-text" style="display:none; padding: 2rem;">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom: 1rem;">
+        <div>
+          <p class="font-mono" style="font-size:.7rem;text-transform:uppercase;color:var(--amber);margin:0;">Bitolpoka.com · Farm Guide</p>
+          <h2 class="font-display" style="font-size: 1.8rem; font-weight: 700; color: var(--ink); margin: 0.5rem 0;">মিলওয়ার্ম চাষের সম্পূর্ণ গাইডলাইন</h2>
+          <p style="margin:0; font-size: 0.9rem;">ডিম থেকে বিটাল পর্যন্ত — সম্পূর্ণ (A-Z) ধাপে ধাপে নির্দেশিকা।</p>
+        </div>
+        <button onclick="closeGuide()" style="background:none;border:none;cursor:pointer;color:var(--ink);">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <h4>❓ মিলওয়ার্ম কী ও এর উপকারিতা</h4>
+      <p>মিলওয়ার্ম (Tenebrio molitor) হলো সুপারওয়ার্মের মতোই একই ডার্কলিং বিটল পরিবারের লার্ভা, তবে আকারে ছোট। এটি পোষা সরীসৃপ, পাখি, ব্যাঙ ও অ্যাকুরিয়ামের মাছের জন্য জনপ্রিয় উচ্চ-প্রোটিনযুক্ত জীবন্ত খাবার। সবচেয়ে বড় সুবিধা হলো — মিলওয়ার্ম চাষ সুপারওয়ার্মের চেয়ে অনেক সহজ ও কম পরিশ্রমসাধ্য।</p>
+      <p><strong>কেন সহজ?</strong> মিলওয়ার্ম সুপারওয়ার্মের চেয়ে সহজ চাষযোগ্য কারণ প্রতিটি লার্ভাকে আলাদা কাপে রাখার কোনো প্রয়োজন নেই — এরা বক্সেই একসাথে পিউপা হয়ে যায়। জীবনচক্রও সুপারওয়ার্মের চেয়ে প্রায় দ্বিগুণ দ্রুত — মাত্র ২-২.৫ মাসে পূর্ণাঙ্গ হয়।</p>
+
+      <h4>🐞 ধাপ ১: মাদার বিটাল চাষের নিয়ম</h4>
+      <ul>
+        <li><strong>সেটআপ:</strong> মাদারগুলো পাওয়ার পর একটি গামলায় ১ ইঞ্চি গমের ভুসি দিয়ে তার ভেতর ছেড়ে দিন।</li>
+        <li><strong>খাবার:</strong> এদের পানির চাহিদা মেটাতে সস্তা সবজি যেমন—আলু, পেঁপে বা শসা পাতলা করে কেটে ভুসির উপরে দিন। সবজি পচে যাবার আগে তুলে ফেলুন।</li>
+        <li><strong>ডিম/বাচ্চা সংগ্রহ:</strong> প্রতি ১৫-২০ দিন পরপর গামলার পুরনো ভুসিগুলো চেলে বা আলাদা করে অন্য একটি পাত্রে সরিয়ে রাখুন (এতেই ডিম থাকে)। এরপর মাদারগুলোকে আবার নতুন ভুসিতে রাখুন।</li>
+      </ul>
+
+      <h4>📦 ধাপ ২: ডিম ফোটা ও লার্ভা বৃদ্ধি</h4>
+      <p>ডিম ফুটে বের হওয়া লার্ভাই মূল ফিড ও বিক্রয়যোগ্য পণ্য। লারভা খাবারের উপযুগত হতে মাত্র ১-১.৫ মাস সময় লাগে এবং মাদার হওয়ার উপযুগত পূর্ণাঙ্গ লার্ভা হতে প্রায় ২-২.৫ মাস সময় লাগে — সুপারওয়ার্মের প্রায় অর্ধেক সময়।</p>
+      <ul>
+        <li><strong>বক্স ও বেডিং:</strong> মসৃণ প্লাস্টিকের বক্সে ১-২ ইঞ্চি গমের ভুষি ও সবজি দিন।</li>
+      </ul>
+
+      <div class="highlight-box" style="background: rgba(232,163,61,.1); border-left-color: var(--amber);">
+        <h4 style="margin-top:0; color:var(--amber);">🛌 ধাপ ৩: পিউপা তৈরি (সবচেয়ে সহজ ধাপ)</h4>
+        <p style="margin-bottom:0.5rem;">আলাদা কাপে রাখার প্রয়োজন নেই — বক্সেই একসাথে পিউপা হয়ে যায়।</p>
+        <ul>
+          <li>চোখে পড়লে পিউপাগুলো আলাদা বক্সে তুলে রাখা ভালো, তবে এটি বাধ্যতামূলক নয়।</li>
+          <li>সুপারওয়ার্মের মতো একক কাপে রাখার কোনোই প্রয়োজন নেই।</li>
+        </ul>
+      </div>
+
+      <h4>🔄 ধাপ ৪: নতুন বিটাল ও চক্র পুনরাবৃত্তি</h4>
+      <p>পিউপা থেকে নতুন বিটাল বের হলে তাদের আবার মূল ভুষির বক্সে দিন। এখান থেকেই ধাপ ১ আবার শুরু হয় — বিটাল ডিম পাড়ে, ডিম লার্ভা হয়, আর খামার চলতেই থাকে।</p>
+
+      <h4>⚠️ সতর্কতা (Safety & Maintenance)</h4>
+      <p>বক্সে কখনোই পানি স্প্রে করবেন না — মাইটস বা ফাঙ্গাস আক্রমণ করবে। অতিরিক্ত আর্দ্রতা থেকে খামারকে দূরে রাখুন।</p>
     </div>
 
   </div>
 </div>
 
 <!-- ═══════════════════ WHATSAPP FAB ═══════════════════ -->
-<!-- href is set dynamically after store_settings loads -->
 <a id="wa-fab" href="#" target="_blank" rel="noopener noreferrer" aria-label="Chat on WhatsApp" style="display:none;">
   <svg width="30" height="30" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path fill="#fff" d="M16 2.933C8.832 2.933 3.008 8.757 3.008 15.925c0 2.31.627 4.572 1.817 6.543L2.667 29.333l7.07-2.115a13.014 13.014 0 006.263 1.6c7.168 0 12.992-5.824 12.992-12.992C29.008 8.757 23.168 2.933 16 2.933z"/>
@@ -500,19 +575,44 @@ var SUPABASE_ANON_KEY = 'sb_publishable_BQFducZtr7aIkYW4G8t7VA_p77ORs24';
 var db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 /* ── App-wide state ── */
-var PRODUCTS         = [];    // rows from products table
-var CARD_STATE       = [];    // per-card: { activeImg, packages[], selectedPkg }
-var CART             = [];    // Holds multiple products added by the user
-var DELIVERY_CHARGE  = 150;   // fallback; overwritten by store_settings row 1
+var PRODUCTS         = [];
+var CARD_STATE       = [];
+var CART             = [];
+var DELIVERY_CHARGE  = 150;
+
+/* ═══════════════════════════════════════════════
+   GUIDES MODAL LOGIC
+   ═══════════════════════════════════════════════ */
+function openGuideModal(type) {
+  document.getElementById('guide-superworm').style.display = 'none';
+  document.getElementById('guide-mealworm').style.display = 'none';
+  
+  if (type === 'superworm') {
+    document.getElementById('guide-superworm').style.display = 'block';
+  } else if (type === 'mealworm') {
+    document.getElementById('guide-mealworm').style.display = 'block';
+  }
+
+  document.getElementById('guide-modal-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeGuide() {
+  document.getElementById('guide-modal-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function closeGuideOverlay(e) {
+  if (e.target.id === 'guide-modal-overlay') closeGuide();
+}
+
 
 /* ═══════════════════════════════════════════════
    UTILITIES
    ═══════════════════════════════════════════════ */
 function esc(s) {
   if (s == null) return '';
-  return String(s)
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
 
 function fmtBDT(n) {
@@ -608,12 +708,12 @@ function imgSet(i, idx, imgs) {
 }
 
 /* ═══════════════════════════════════════════════
-   PACKAGE SELECTOR
+   PACKAGE SELECTOR & CART
    ═══════════════════════════════════════════════ */
 function selectPkg(cardIdx, pkgIdx) {
   var pkgs = CARD_STATE[cardIdx].packages;
   var pkg  = pkgs[pkgIdx];
-  CARD_STATE[cardIdx].selectedPkg = pkg;   /* {qty, totalPrice} */
+  CARD_STATE[cardIdx].selectedPkg = pkg;
 
   for (var k = 0; k < pkgs.length; k++) {
     var btn = document.getElementById('pkg-' + cardIdx + '-' + k);
@@ -636,9 +736,6 @@ function selectPkg(cardIdx, pkgIdx) {
   if (subEl) subEl.innerHTML = '&#2547;' + fmtBDT(pkg.totalPrice);
 }
 
-/* ═══════════════════════════════════════════════
-   BUILD A PRODUCT CARD
-   ═══════════════════════════════════════════════ */
 function buildCard(product, i) {
   var imgs = getImages(product);
   var pkgs = parsePackages(product.packages);
@@ -690,9 +787,6 @@ function buildCard(product, i) {
     + '</div>';
 }
 
-/* ═══════════════════════════════════════════════
-   CART LOGIC & MODALS
-   ═══════════════════════════════════════════════ */
 function updateCartHeader() {
   var btn = document.getElementById('cart-header-btn');
   var countEl = document.getElementById('cart-count');
@@ -706,7 +800,6 @@ function updateCartHeader() {
 
 function addToCart(i) {
   var state = CARD_STATE[i];
-
   if (!state.selectedPkg) {
     var errEl = document.getElementById('pkg-err-' + i);
     if (errEl) errEl.style.display = 'block';
@@ -737,7 +830,7 @@ function removeFromCart(index) {
   if (CART.length === 0) {
     closeModal();
   } else {
-    openCartModal(); // re-render
+    openCartModal();
   }
 }
 
@@ -783,7 +876,6 @@ function openCartModal() {
 }
 
 function proceedToCheckout() {
-  // Prep form view details
   var subtotal = CART.reduce(function(sum, item){ return sum + item.total; }, 0);
   var grandTotal = subtotal + DELIVERY_CHARGE;
 
@@ -797,7 +889,6 @@ function proceedToCheckout() {
     '<div class="price-row"><span>Delivery (Flat Rate)</span><span>&#2547;' + fmtBDT(DELIVERY_CHARGE) + '</span></div>' +
     '<div class="price-row total-line"><span>Grand Total</span><span>&#2547;' + fmtBDT(grandTotal) + '</span></div>';
 
-  // reset error fields
   ['f-name','f-phone','f-address'].forEach(function(id){ document.getElementById(id).value = ''; });
   ['e-name','e-phone','e-address'].forEach(function(id){ document.getElementById(id).style.display = 'none'; });
   document.getElementById('submit-error').style.display = 'none';
@@ -817,7 +908,7 @@ function overlayClick(e) {
 }
 
 /* ═══════════════════════════════════════════════
-   FORM VALIDATION
+   CHECKOUT SUBMISSION
    ═══════════════════════════════════════════════ */
 function setErr(field, msg) {
   var el = document.getElementById('e-' + field);
@@ -838,9 +929,6 @@ function validate() {
   return ok ? { name: name, phone: phone, address: address } : null;
 }
 
-/* ═══════════════════════════════════════════════
-   ORDER SUBMISSION
-   ═══════════════════════════════════════════════ */
 async function submitOrder() {
   var fields = validate();
   if (!fields || CART.length === 0) return;
@@ -848,7 +936,6 @@ async function submitOrder() {
   setBusy(true);
   document.getElementById('submit-error').style.display = 'none';
 
-  /* ── Duplicate-order guard ── */
   var dupeCheck = await db.from('orders').select('id').eq('customer_phone', fields.phone).eq('order_status', 'pending');
   if (dupeCheck.data && dupeCheck.data.length > 0) {
     setBusy(false);
@@ -858,9 +945,6 @@ async function submitOrder() {
     return;
   }
 
-  /* ── Proceed with Bulk INSERT ── */
-  // Create a separate row in the DB for each item in the cart.
-  // The first item gets the Delivery Charge attached to its total so your Admin Panel accounting is perfect!
   var payloads = CART.map(function(item, index) {
     var perUnit = Math.round((item.total / item.qty + Number.EPSILON) * 100) / 100;
     var rowTotal = (index === 0) ? (item.total + DELIVERY_CHARGE) : item.total; 
@@ -888,7 +972,6 @@ async function submitOrder() {
     return;
   }
 
-  // Create Reference Number based on the first inserted row
   var row   = result.data && result.data[0];
   var refId = row && row.id
     ? 'BP-' + String(row.id).replace(/-/g,'').slice(0,8).toUpperCase()
@@ -896,7 +979,6 @@ async function submitOrder() {
 
   document.getElementById('order-ref').textContent = 'Reference ' + refId;
 
-  // Render the final success receipt
   var successHtml = '';
   var subtotal = 0;
   CART.forEach(function(item) {
@@ -916,7 +998,6 @@ async function submitOrder() {
   document.getElementById('modal-form').style.display    = 'none';
   document.getElementById('modal-success').style.display = '';
 
-  // Clear Cart once successful
   CART = [];
   updateCartHeader();
 }
@@ -925,22 +1006,16 @@ function sRow(label, value) {
   return '<div class="sum-row"><span>' + label + '</span><span>' + value + '</span></div>';
 }
 
-/* ═══════════════════════════════════════════════
-   UI HELPERS
-   ═══════════════════════════════════════════════ */
 function setBusy(busy) {
   document.getElementById('confirm-btn').disabled          = busy;
   document.getElementById('btn-spinner').style.display     = busy ? 'inline-block' : 'none';
-  document.getElementById('btn-icon').style.display        = busy ? 'none' : '';
   document.getElementById('btn-text').textContent          = busy ? 'Placing order…' : 'Confirm Cash on Delivery Order';
 }
 
 /* ═══════════════════════════════════════════════
-   BOOTSTRAP — load settings + products in parallel
+   INIT DATA
    ═══════════════════════════════════════════════ */
 async function init() {
-
-  /* run both fetches at the same time */
   var results = await Promise.all([
     db.from('store_settings').select('whatsapp_number, delivery_charge').eq('id', 1).single(),
     db.from('products').select('*')
@@ -949,29 +1024,17 @@ async function init() {
   var settingsResult = results[0];
   var productsResult = results[1];
 
-  /* ── Apply store settings ── */
   if (!settingsResult.error && settingsResult.data) {
     var s = settingsResult.data;
-
-    /* delivery charge */
-    if (s.delivery_charge !== null && s.delivery_charge !== undefined) {
-      DELIVERY_CHARGE = Number(s.delivery_charge);
-    }
-
-    /* WhatsApp FAB — build link and show button */
+    if (s.delivery_charge !== null && s.delivery_charge !== undefined) DELIVERY_CHARGE = Number(s.delivery_charge);
     if (s.whatsapp_number) {
-      /* strip non-digits, ensure country code prefix */
       var num = String(s.whatsapp_number).replace(/\D/g, '');
       var fab = document.getElementById('wa-fab');
-      fab.href         = 'https://wa.me/' + num;
+      fab.href = 'https://wa.me/' + num;
       fab.style.display = 'flex';
     }
-  } else {
-    /* settings fetch failed — keep defaults, don't show the FAB so href stays '#' */
-    console.warn('store_settings fetch failed:', settingsResult.error && settingsResult.error.message);
   }
 
-  /* ── Render products ── */
   document.getElementById('products-loading').style.display = 'none';
 
   if (productsResult.error) {
@@ -981,14 +1044,13 @@ async function init() {
   }
 
   PRODUCTS = productsResult.data || [];
-
   if (!PRODUCTS.length) {
     document.getElementById('products-empty').style.display = '';
     return;
   }
 
   var grid = document.getElementById('products-grid');
-  grid.innerHTML    = PRODUCTS.map(buildCard).join('');
+  grid.innerHTML = PRODUCTS.map(buildCard).join('');
   grid.style.display = 'grid';
 }
 
