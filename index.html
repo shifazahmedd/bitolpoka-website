@@ -4,6 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Bitolpoka — Premium Live Insect Feed</title>
+
+<!-- MAGIC SECURITY FIX: Automatically forces HTTPS padlock -->
+<script>
+  if (window.location.protocol === 'http:' && window.location.hostname !== 'localhost') {
+    window.location.href = window.location.href.replace('http:', 'https:');
+  }
+</script>
+
 <meta name="description" content="Live mealworms, superworms and breeder beetles, farmed weekly in Khulna, Bangladesh. Cash on delivery, nationwide.">
 
 <script src="https://cdn.tailwindcss.com"></script>
@@ -321,7 +329,7 @@
       </div>
     </div>
 
-    <!-- Right Column: Premium Visual Composition (Failsafe applied) -->
+    <!-- Right Column: Premium Visual Composition -->
     <div class="relative w-full max-w-[500px] mx-auto h-[260px] sm:h-[400px] lg:h-[460px] mt-4 lg:mt-0">
       
       <!-- Pure UI/UX Graphic Replacement (No external stock photos) -->
