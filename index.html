@@ -3,296 +3,412 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bitolpoka — Live Insect Feed</title>
+<title>Bitolpoka — Premium Live Insect Feed</title>
 <meta name="description" content="Live mealworms, superworms and breeder beetles, farmed weekly in Khulna, Bangladesh. Cash on delivery, nationwide.">
 
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+<!-- Pre-configuring Tailwind with your exact Brand Colors so it never fails on mobile -->
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          canvas: '#FCF9FA',
+          forest: '#016236',
+          forestHover: '#014A28',
+          charcoal: '#020706',
+          surface: '#FFFFFF',
+          borderline: 'rgba(2, 7, 6, 0.08)'
+        }
+      }
+    }
+  }
+</script>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
 
 <style>
   :root {
-    --soil:        #2B1E14;
-    --kraft:       #D9C2A0;
-    --kraft-light: #F2E8D5;
-    --amber:       #E8A33D;
-    --rust:        #C84B27;
-    --ink:         #1E140C;
+    /* CSS Variables for JavaScript usage */
+    --canvas:       #FCF9FA;
+    --forest:       #016236;
+    --charcoal:     #020706;
+    --surface:      #FFFFFF;
+    --border:       rgba(2, 7, 6, 0.08);
   }
+  
   *, *::before, *::after { box-sizing: border-box; }
-  body { font-family: 'Inter', system-ui, sans-serif; background: var(--kraft-light); color: var(--ink); margin: 0; }
+  body { 
+    font-family: 'Inter', system-ui, sans-serif; 
+    background: var(--canvas); 
+    color: var(--charcoal); 
+    margin: 0; 
+    -webkit-font-smoothing: antialiased;
+  }
   .font-display { font-family: 'Fraunces', serif; }
   .font-mono    { font-family: 'IBM Plex Mono', monospace; }
 
-  /* stamp circle */
-  .stamp { border: 1.5px dashed currentColor; border-radius: 9999px; }
-
-  /* primary CTA button */
-  .btn-rust {
-    background: var(--rust); color: var(--kraft-light);
-    border: none; cursor: pointer;
-    transition: background .15s, transform .15s;
-    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  /* Smooth floating animations */
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
   }
-  .btn-rust:hover:not(:disabled) { background: #AE3B1C; transform: translateY(-1px); }
-  .btn-rust:disabled { opacity: .65; cursor: not-allowed; }
+  .animate-float { animation: float 6s ease-in-out infinite; }
+  .animate-float-delayed { animation: float 6s ease-in-out 3s infinite; }
 
-  /* product card */
+  /* Premium Buttons */
+  .btn-primary {
+    background: var(--forest); 
+    color: var(--canvas);
+    border: none; 
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    box-shadow: 0 4px 14px rgba(1, 98, 54, 0.15);
+  }
+  .btn-primary:hover:not(:disabled) { 
+    background: #014A28; 
+    transform: translateY(-2px); 
+    box-shadow: 0 6px 20px rgba(1, 98, 54, 0.25);
+  }
+  .btn-primary:disabled { opacity: .65; cursor: not-allowed; transform: none; box-shadow: none; }
+
+  /* App-UI Product Card */
   .product-card {
-    background: var(--kraft-light);
-    border: 1px solid rgba(30,20,12,0.12);
-    border-radius: 1rem; padding: 1.25rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 1.25rem; 
+    padding: 1.25rem;
     display: flex; flex-direction: column; gap: 1rem;
-    transition: transform .2s, box-shadow .2s;
+    transition: transform .2s, box-shadow .2s, border-color .2s;
+    box-shadow: 0 4px 20px rgba(2, 7, 6, 0.03);
   }
-  .product-card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(30,20,12,0.12); }
+  .product-card:hover { 
+    transform: translateY(-4px); 
+    box-shadow: 0 12px 30px rgba(2, 7, 6, 0.06); 
+    border-color: rgba(1, 98, 54, 0.2);
+  }
 
-  /* package selector buttons */
+  /* Package Selector */
   .pkg-btn {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: .8rem; font-weight: 600;
-    padding: .35rem .7rem; border-radius: .45rem; cursor: pointer;
-    border: 1.5px solid rgba(30,20,12,0.22);
-    background: rgba(255,255,255,0.55); color: var(--ink);
-    transition: border-color .12s, background .12s, color .12s, transform .1s;
+    font-family: 'Inter', sans-serif;
+    font-size: .85rem; font-weight: 600;
+    padding: .4rem .8rem; border-radius: .5rem; cursor: pointer;
+    border: 1.5px solid var(--border);
+    background: var(--surface); color: var(--charcoal);
+    transition: all 0.15s ease;
     white-space: nowrap;
   }
-  .pkg-btn:hover   { border-color: var(--rust); background: rgba(200,75,39,0.07); }
+  .pkg-btn:hover   { border-color: var(--forest); color: var(--forest); background: rgba(1, 98, 54, 0.04); }
   .pkg-btn.active  {
-    border-color: var(--rust); background: var(--rust);
-    color: var(--kraft-light); transform: scale(1.04);
+    border-color: var(--forest); background: var(--forest);
+    color: var(--surface); 
   }
-  .pkg-error { font-size: .75rem; color: var(--rust); margin-top: .25rem; display: none; }
+  .pkg-error { font-size: .75rem; color: #DC2626; margin-top: .25rem; display: none; font-weight: 500; }
 
-  /* form inputs */
+  /* Form Inputs */
   .input-field {
-    width: 100%; border: 1px solid rgba(30,20,12,0.18);
-    background: rgba(255,255,255,0.65); border-radius: .65rem;
-    padding: .6rem .8rem; font-size: .9rem; color: var(--ink);
-    outline: none; transition: border-color .15s; font-family: inherit;
+    width: 100%; border: 1.5px solid var(--border);
+    background: var(--surface); border-radius: .75rem;
+    padding: .75rem 1rem; font-size: .95rem; color: var(--charcoal);
+    outline: none; transition: border-color .15s, box-shadow .15s; font-family: inherit;
   }
-  .input-field:focus   { border-color: var(--rust); }
-  .input-field::placeholder { color: rgba(30,20,12,0.38); }
+  .input-field:focus { 
+    border-color: var(--forest); 
+    box-shadow: 0 0 0 3px rgba(1, 98, 54, 0.1); 
+  }
+  .input-field::placeholder { color: rgba(2, 7, 6, 0.4); }
 
-  /* skeleton */
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.42} }
-  .skeleton { border-radius: .75rem; background: rgba(30,20,12,0.09); animation: pulse 1.6s ease-in-out infinite; }
+  /* Skeleton Loader */
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+  .skeleton { border-radius: .75rem; background: rgba(2, 7, 6, 0.06); animation: pulse 1.5s ease-in-out infinite; }
 
-  /* spinner */
+  /* Spinner */
   @keyframes spin { to { transform: rotate(360deg); } }
   .spinner {
-    display: inline-block; width: 16px; height: 16px; border-radius: 9999px;
-    border: 2px solid rgba(242,232,213,0.35); border-top-color: var(--kraft-light);
+    display: inline-block; width: 18px; height: 18px; border-radius: 9999px;
+    border: 2px solid rgba(255,255,255,0.3); border-top-color: var(--surface);
     animation: spin .7s linear infinite;
   }
 
-  /* product grid */
-  #products-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1.5rem;
-  }
+  /* Grid Layouts */
+  #products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
 
-  /* image slider */
+  /* Image Slider */
   .slider-main {
-    position: relative; border-radius: .75rem; overflow: hidden;
-    aspect-ratio: 4/3; background: rgba(30,20,12,0.07);
+    position: relative; border-radius: 1rem; overflow: hidden;
+    aspect-ratio: 4/3; background: rgba(2, 7, 6, 0.03);
   }
   .slider-main img { width:100%; height:100%; object-fit:cover; display:block; }
   .slider-arrow {
     position: absolute; top: 50%; transform: translateY(-50%);
-    width: 30px; height: 30px; border-radius: 9999px;
-    background: rgba(242,232,213,0.88); border: none; cursor: pointer;
-    display: flex; align-items: center; justify-content: center; color: var(--ink);
+    width: 32px; height: 32px; border-radius: 9999px;
+    background: rgba(255,255,255,0.9); border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; color: var(--charcoal);
+    box-shadow: 0 2px 8px rgba(2, 7, 6, 0.1); transition: transform 0.15s;
   }
-  .slider-arrow.left  { left: 8px; }
-  .slider-arrow.right { right: 8px; }
-  .slider-thumbs { display: flex; gap: .4rem; margin-top: .4rem; flex-wrap: wrap; }
+  .slider-arrow:active { transform: translateY(-50%) scale(0.9); }
+  .slider-arrow.left  { left: 10px; }
+  .slider-arrow.right { right: 10px; }
+  .slider-thumbs { display: flex; gap: .5rem; margin-top: .6rem; flex-wrap: wrap; }
   .slider-thumb {
-    width: 44px; height: 44px; border-radius: .4rem; overflow: hidden;
-    border: 2px solid transparent; opacity: .55; cursor: pointer;
-    transition: border-color .13s, opacity .13s; padding: 0; background: none;
+    width: 48px; height: 48px; border-radius: .5rem; overflow: hidden;
+    border: 2px solid transparent; opacity: .6; cursor: pointer;
+    transition: all 0.15s ease; padding: 0; background: none;
   }
-  .slider-thumb.active { border-color: var(--rust); opacity: 1; }
+  .slider-thumb.active { border-color: var(--forest); opacity: 1; }
   .slider-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
 
-  /* modal styles */
+  /* Modal Overlays */
   .modal-overlay {
     display: none; position: fixed; inset: 0; z-index: 50;
     align-items: center; justify-content: center; padding: 1rem;
-    background: rgba(20,14,8,.66); backdrop-filter: blur(2px);
+    background: rgba(2, 7, 6, 0.6); backdrop-filter: blur(4px);
   }
   .modal-overlay.open { display: flex; }
+  
   .modal-box {
-    background: var(--kraft-light); border-radius: 1.1rem;
+    background: var(--surface); border-radius: 1.5rem;
     width: 100%; max-width: 440px; max-height: 90vh; overflow-y: auto;
+    box-shadow: 0 24px 48px rgba(2, 7, 6, 0.15);
   }
   .guide-modal-box {
-    background: var(--kraft-light); border-radius: 1.1rem;
+    background: var(--surface); border-radius: 1.5rem;
     width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto;
+    box-shadow: 0 24px 48px rgba(2, 7, 6, 0.15);
   }
 
-  /* guide card styles */
+  /* Guide Cards */
   .guide-card {
-    background: rgba(255,255,255,0.4); border: 2px solid rgba(30,20,12,0.1);
-    border-radius: 1rem; padding: 1.5rem; cursor: pointer;
+    background: var(--surface); border: 1.5px solid var(--border);
+    border-radius: 1.25rem; padding: 1.5rem; cursor: pointer;
     transition: all 0.2s ease;
-    display: flex; align-items: center; gap: 1rem;
+    display: flex; align-items: center; gap: 1.25rem;
+    box-shadow: 0 4px 12px rgba(2, 7, 6, 0.02);
   }
-  .guide-card:hover { transform: translateY(-3px); border-color: var(--rust); background: white; box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+  .guide-card:hover { 
+    transform: translateY(-3px); 
+    border-color: var(--forest); 
+    box-shadow: 0 12px 24px rgba(1, 98, 54, 0.08); 
+  }
   
-  /* guide text formatting */
-  .guide-text h4 { color: var(--rust); font-size: 1.1rem; font-weight: 700; margin-top: 1.5rem; margin-bottom: 0.5rem; font-family: 'Fraunces', serif; }
-  .guide-text p { color: rgba(30,20,12,.75); font-size: 0.95rem; line-height: 1.6; margin-bottom: 1rem; }
+  /* Guide Text Formatting */
+  .guide-text h4 { color: var(--forest); font-size: 1.15rem; font-weight: 700; margin-top: 1.5rem; margin-bottom: 0.5rem; font-family: 'Fraunces', serif; }
+  .guide-text p { color: rgba(2, 7, 6, 0.8); font-size: 0.95rem; line-height: 1.65; margin-bottom: 1rem; }
   .guide-text ul { padding-left: 1.2rem; margin-bottom: 1rem; }
-  .guide-text li { color: rgba(30,20,12,.75); font-size: 0.95rem; line-height: 1.6; margin-bottom: 0.4rem; list-style-type: disc; }
-  .guide-text .highlight-box { background: rgba(200,75,39,.1); border-left: 4px solid var(--rust); padding: 1rem; border-radius: 0 0.5rem 0.5rem 0; margin: 1.5rem 0; }
+  .guide-text li { color: rgba(2, 7, 6, 0.8); font-size: 0.95rem; line-height: 1.65; margin-bottom: 0.4rem; list-style-type: disc; }
+  .guide-text .highlight-box { background: rgba(1, 98, 54, 0.04); border-left: 4px solid var(--forest); padding: 1.25rem; border-radius: 0 0.75rem 0.75rem 0; margin: 1.5rem 0; }
 
-  /* checkout rows */
-  .price-row, .sum-row { display: flex; justify-content: space-between; gap: .75rem; padding: .4rem 0; font-size: .875rem; border-bottom: 1px solid rgba(30,20,12,0.08); }
-  .price-row span:first-child, .sum-row span:first-child { color: rgba(30,20,12,.55); }
-  .price-row span:last-child, .sum-row span:last-child  { color: var(--ink); font-weight: 500; text-align: right; }
-  .price-row.total-line, .sum-row.total-line { border-bottom: none; border-top: 1.5px solid rgba(30,20,12,0.15); margin-top: .1rem; padding-top: .5rem; font-weight: 700; }
-  .price-row.total-line span:last-child, .sum-row.total-line span:last-child { color: var(--rust); font-size: 1.1rem; }
+  /* Checkout Rows */
+  .price-row, .sum-row { display: flex; justify-content: space-between; gap: .75rem; padding: .5rem 0; font-size: .9rem; border-bottom: 1px solid var(--border); }
+  .price-row span:first-child, .sum-row span:first-child { color: rgba(2, 7, 6, 0.6); font-weight: 500; }
+  .price-row span:last-child, .sum-row span:last-child  { color: var(--charcoal); font-weight: 600; text-align: right; }
+  .price-row.total-line, .sum-row.total-line { border-bottom: none; border-top: 2px solid rgba(2, 7, 6, 0.1); margin-top: .25rem; padding-top: .75rem; font-weight: 700; }
+  .price-row.total-line span:first-child, .sum-row.total-line span:first-child { color: var(--charcoal); }
+  .price-row.total-line span:last-child, .sum-row.total-line span:last-child { color: var(--forest); font-size: 1.15rem; }
 
+  /* WhatsApp FAB */
   #wa-fab {
-    position: fixed; bottom: 1.4rem; right: 1.4rem; z-index: 60;
-    width: 56px; height: 56px; border-radius: 9999px;
-    background: #25D366; box-shadow: 0 4px 18px rgba(0,0,0,0.22);
+    position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 60;
+    width: 58px; height: 58px; border-radius: 9999px;
+    background: #25D366; box-shadow: 0 8px 24px rgba(37, 211, 102, 0.3);
     display: flex; align-items: center; justify-content: center;
     text-decoration: none; transition: transform .2s, box-shadow .2s;
   }
-  #wa-fab:hover { transform: scale(1.1); box-shadow: 0 6px 24px rgba(0,0,0,0.3); }
+  #wa-fab:hover { transform: scale(1.08); box-shadow: 0 12px 32px rgba(37, 211, 102, 0.4); }
 </style>
 </head>
-<body>
+<body class="bg-canvas text-charcoal">
 
-<!-- ═══════════════════ HEADER ═══════════════════ -->
-<header id="site-header">
-  <div style="max-width:72rem;margin:0 auto;padding:.9rem 1.25rem;display:flex;align-items:center;justify-content:space-between;">
-    <div style="display:flex;align-items:center;gap:.55rem;">
-      <div style="width:34px;height:34px;border-radius:9999px;background:var(--soil);display:flex;align-items:center;justify-content:center;">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E8A33D" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+<!-- ═══════════════════ APP-UI HEADER ═══════════════════ -->
+<header id="site-header" class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-borderline transition-all">
+  <div class="max-w-[72rem] mx-auto px-5 py-3.5 flex items-center justify-between">
+    
+    <!-- Logo -->
+    <div class="flex items-center gap-2.5 cursor-pointer" onclick="window.scrollTo({top:0, behavior:'smooth'})">
+      <div class="w-9 h-9 rounded-xl bg-forest flex items-center justify-center shadow-sm">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M12 22V12"/><path d="M12 12C12 7 8 5 4 5c0 5 3 8 8 8"/><path d="M12 12c0-5 4-7 8-7 0 5-3 8-8 8"/>
         </svg>
       </div>
-      <span class="font-display" style="font-size:1.2rem;font-weight:700;color:var(--ink);">Bitolpoka</span>
+      <span class="font-display text-[1.3rem] font-bold text-charcoal tracking-tight">Bitolpoka</span>
     </div>
     
-    <div style="display:flex; align-items:center; gap:0.6rem;">
+    <!-- Actions -->
+    <div class="flex items-center gap-2.5">
       <!-- Dynamic Cart Button -->
-      <button id="cart-header-btn" class="btn-rust" style="background:rgba(200,75,39,.1); color:var(--rust); border:1.5px solid var(--rust); border-radius:9999px;padding:.4rem .8rem;font-size:.82rem;font-weight:600;display:none;align-items:center;gap:.3rem;" onclick="openCartModal()">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
-        <span>Cart (<span id="cart-count">0</span>)</span>
+      <button id="cart-header-btn" class="hidden items-center gap-1.5 px-3 py-2 rounded-xl bg-forest/5 text-forest font-semibold text-sm transition-colors hover:bg-forest/10" onclick="openCartModal()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+        <span><span id="cart-count">0</span></span>
       </button>
       
-      <button class="btn-rust" style="border-radius:9999px;padding:.45rem 1.1rem;font-size:.82rem;font-weight:600;"
-              onclick="scrollToProducts()">Order Now</button>
+      <button class="btn-primary rounded-xl px-5 py-2.5 text-sm font-bold tracking-wide" onclick="scrollToProducts()">
+        Order Now
+      </button>
     </div>
   </div>
 </header>
-<script>
-  document.getElementById('site-header').style.cssText =
-    'position:sticky;top:0;z-index:40;background:rgba(242,232,213,0.92);backdrop-filter:blur(8px);border-bottom:1px solid rgba(30,20,12,0.1);';
-</script>
 
-<!-- ═══════════════════ HERO ═══════════════════ -->
-<section style="background:var(--soil);padding:3.5rem 1.25rem 4.5rem;">
-  <div style="max-width:72rem;margin:0 auto;display:grid;grid-template-columns:1fr;gap:3rem;align-items:center;">
-    <div>
-      <p class="font-mono" style="font-size:.7rem;text-transform:uppercase;letter-spacing:.12em;color:var(--amber);">
-        Live Insect Feed &middot; Khulna, Bangladesh
-      </p>
-      <h1 class="font-display" style="font-size:clamp(2.4rem,6vw,3.8rem);line-height:1.13;font-weight:700;color:var(--kraft-light);margin:.75rem 0 1rem;">
-        Bred Fresh.<br>Delivered Live.
-      </h1>
-      <p style="color:rgba(242,232,213,.74);max-width:34rem;line-height:1.65;margin-bottom:2rem;">
-        Bitolpoka farms mealworms, superworms and breeder beetles in small weekly batches,
-        then gets them to your door before they ever sit in a warehouse.
-      </p>
-      <div style="display:flex;flex-wrap:wrap;align-items:center;gap:1rem;">
-        <button class="btn-rust" style="border-radius:9999px;padding:.7rem 1.5rem;font-size:.9rem;font-weight:600;"
-                onclick="scrollToProducts()">Browse Live Feed</button>
-        <span style="color:rgba(242,232,213,.55);font-size:.85rem;">Cash on delivery, anywhere in Bangladesh</span>
+<!-- ═══════════════════ ULTRA-CLEAN HERO SECTION ═══════════════════ -->
+<section class="relative overflow-hidden bg-canvas pt-8 pb-10 lg:pt-20 lg:pb-24">
+  <div class="relative max-w-[72rem] mx-auto px-5 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+    
+    <!-- Left Column: Copy & CTAs -->
+    <div class="max-w-2xl z-10">
+      
+      <!-- Premium Trust Badge -->
+      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-forest/10 border border-forest/10 text-forest text-[11px] font-bold tracking-wider mb-5 uppercase">
+        <span class="relative flex h-2 w-2">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-forest opacity-60"></span>
+          <span class="relative inline-flex rounded-full h-2 w-2 bg-forest"></span>
+        </span>
+        Farmed Weekly in Khulna
       </div>
-      <div style="display:flex;flex-wrap:wrap;gap:1rem;margin-top:2.2rem;">
-        <div class="stamp" style="width:96px;height:96px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--amber);text-align:center;padding:.4rem;">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22V12"/><path d="M12 12C12 7 8 5 4 5c0 5 3 8 8 8"/><path d="M12 12c0-5 4-7 8-7 0 5-3 8-8 8"/></svg>
-          <span class="font-mono" style="font-size:.65rem;text-transform:uppercase;letter-spacing:.04em;margin-top:.3rem;color:var(--kraft-light);line-height:1.3;">Farmed<br>Weekly</span>
+
+      <!-- Razor Sharp Headline -->
+      <h1 class="font-display text-[2.4rem] leading-[1.15] sm:text-5xl lg:text-6xl font-extrabold text-charcoal tracking-tight mb-4">
+        Bred Fresh.<br>
+        <span class="text-forest">Delivered Live.</span>
+      </h1>
+
+      <!-- Crystal Clear Subtitle -->
+      <p class="text-charcoal/80 text-[1.05rem] sm:text-lg mb-7 max-w-lg leading-relaxed font-medium">
+        Bitolpoka farms premium mealworms and superworms. Stop wasting money on chemical feeds—give your poultry and pets the organic protein they crave.
+      </p>
+
+      <!-- Action Area -->
+      <div class="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 mb-8">
+        <button class="btn-primary px-8 py-4 rounded-xl font-bold text-[0.95rem] w-full sm:w-auto" onclick="scrollToProducts()">
+          Browse Live Feed
+        </button>
+        <button class="px-8 py-4 rounded-xl font-bold text-[0.95rem] w-full sm:w-auto border-2 border-borderline text-charcoal hover:border-forest hover:text-forest bg-white/50 transition-all duration-200" onclick="document.getElementById('guides-section').scrollIntoView({ behavior: 'smooth' })">
+          Read Free Guides
+        </button>
+      </div>
+
+      <!-- Clean Social Proof -->
+      <div class="flex items-center gap-2.5 mb-8">
+        <div class="flex text-forest gap-0.5">
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
         </div>
-        <div class="stamp" style="width:96px;height:96px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--amber);text-align:center;padding:.4rem;">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="6" width="14" height="11"/><path d="M15 10h4l3 3v4h-7z"/><circle cx="6" cy="18.5" r="2"/><circle cx="18" cy="18.5" r="2"/></svg>
-          <span class="font-mono" style="font-size:.65rem;text-transform:uppercase;letter-spacing:.04em;margin-top:.3rem;color:var(--kraft-light);line-height:1.3;">Cash On<br>Delivery</span>
+        <span class="text-charcoal/80 text-sm font-semibold">Trusted by 500+ local farmers</span>
+      </div>
+
+      <!-- Key Benefits Row -->
+      <div class="grid grid-cols-3 gap-3 sm:gap-4 border-t border-borderline pt-6">
+        <div class="flex flex-col gap-1.5">
+          <svg class="w-5 h-5 sm:w-6 sm:h-6 text-forest" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22V12"/><path d="M12 12C12 7 8 5 4 5c0 5 3 8 8 8"/><path d="M12 12c0-5 4-7 8-7 0 5-3 8-8 8"/></svg>
+          <span class="text-charcoal font-bold text-xs sm:text-sm">Farmed Fresh</span>
+          <span class="text-charcoal/60 text-[10px] sm:text-xs hidden sm:block">Never warehoused</span>
         </div>
-        <div class="stamp" style="width:96px;height:96px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--amber);text-align:center;padding:.4rem;">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg>
-          <span class="font-mono" style="font-size:.65rem;text-transform:uppercase;letter-spacing:.04em;margin-top:.3rem;color:var(--kraft-light);line-height:1.3;">Nationwide<br>Shipping</span>
+        <div class="flex flex-col gap-1.5">
+          <svg class="w-5 h-5 sm:w-6 sm:h-6 text-forest" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="6" width="14" height="11"/><path d="M15 10h4l3 3v4h-7z"/><circle cx="6" cy="18.5" r="2"/><circle cx="18" cy="18.5" r="2"/></svg>
+          <span class="text-charcoal font-bold text-xs sm:text-sm">Cash on Delivery</span>
+          <span class="text-charcoal/60 text-[10px] sm:text-xs hidden sm:block">Pay at your door</span>
+        </div>
+        <div class="flex flex-col gap-1.5">
+          <svg class="w-5 h-5 sm:w-6 sm:h-6 text-forest" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg>
+          <span class="text-charcoal font-bold text-xs sm:text-sm">Nationwide</span>
+          <span class="text-charcoal/60 text-[10px] sm:text-xs hidden sm:block">Fast 48h shipping</span>
         </div>
       </div>
     </div>
-    <!-- hero illustration -->
-    <div style="position:relative;width:300px;height:300px;max-width:100%;margin:0 auto;">
-      <svg width="300" height="300" viewBox="0 0 320 320" style="position:absolute;inset:0;">
-        <circle cx="160" cy="160" r="150" fill="none" stroke="#E8A33D" stroke-width="2" stroke-dasharray="6 7" opacity=".55"/>
-        <circle cx="160" cy="160" r="118" fill="#3D2B1C"/>
-      </svg>
-      <svg width="160" height="180" viewBox="0 0 170 190" style="position:absolute;left:50%;top:54%;transform:translate(-50%,-50%);">
-        <path d="M30 60 Q20 150 50 180 Q85 195 120 180 Q150 150 140 60 Q145 30 110 20 L60 20 Q25 30 30 60 Z" fill="#D9C2A0" stroke="#8B5A2B" stroke-width="2"/>
-        <path d="M60 20 Q85 5 110 20" fill="none" stroke="#8B5A2B" stroke-width="3" stroke-linecap="round"/>
-        <circle cx="85" cy="14" r="6" fill="#8B5A2B"/>
-        <line x1="42" y1="70" x2="128" y2="70" stroke="#8B5A2B" stroke-width="1.4" opacity=".38"/>
-        <line x1="38" y1="95" x2="132" y2="95" stroke="#8B5A2B" stroke-width="1.4" opacity=".38"/>
-        <line x1="38" y1="120" x2="130" y2="120" stroke="#8B5A2B" stroke-width="1.4" opacity=".38"/>
-        <line x1="44" y1="145" x2="120" y2="145" stroke="#8B5A2B" stroke-width="1.4" opacity=".38"/>
-      </svg>
-      <svg width="62" height="30" viewBox="0 0 100 50" fill="none" style="position:absolute;left:34%;top:5%;transform:rotate(-18deg);">
-        <ellipse cx="14" cy="25" rx="11" ry="9" fill="#C9862A"/><ellipse cx="30" cy="23" rx="12" ry="10" fill="#E8A33D"/>
-        <ellipse cx="48" cy="26" rx="12" ry="10" fill="#E8A33D"/><ellipse cx="66" cy="22" rx="12" ry="10" fill="#E8A33D"/>
-        <ellipse cx="83" cy="27" rx="11" ry="9" fill="#E8A33D"/>
-        <circle cx="9" cy="22" r="1.6" fill="#2B1E14"/><circle cx="14" cy="20" r="1.6" fill="#2B1E14"/>
-        <line x1="6" y1="18" x2="2" y2="13" stroke="#2B1E14" stroke-width="1.5" stroke-linecap="round"/>
-        <line x1="10" y1="17" x2="8" y2="11" stroke="#2B1E14" stroke-width="1.5" stroke-linecap="round"/>
-      </svg>
-      <svg width="56" height="30" viewBox="0 0 110 60" fill="none" style="position:absolute;left:53%;top:-1%;transform:rotate(14deg);">
-        <ellipse cx="16" cy="32" rx="14" ry="11" fill="#3D2B1C"/><ellipse cx="36" cy="28" rx="14" ry="12" fill="#8B5A2B"/>
-        <ellipse cx="57" cy="33" rx="15" ry="12" fill="#8B5A2B"/><ellipse cx="79" cy="27" rx="14" ry="12" fill="#8B5A2B"/>
-        <ellipse cx="98" cy="33" rx="11" ry="9" fill="#8B5A2B"/>
-        <circle cx="9" cy="28" r="1.8" fill="#F2E8D5"/><circle cx="16" cy="26" r="1.8" fill="#F2E8D5"/>
-        <line x1="6" y1="22" x2="1" y2="15" stroke="#2B1E14" stroke-width="1.8" stroke-linecap="round"/>
-        <line x1="12" y1="20" x2="10" y2="12" stroke="#2B1E14" stroke-width="1.8" stroke-linecap="round"/>
-      </svg>
-      <div style="position:absolute;left:18%;top:82%;width:8px;height:8px;border-radius:9999px;background:var(--amber);"></div>
-      <div style="position:absolute;right:18%;top:88%;width:6px;height:6px;border-radius:9999px;background:var(--rust);"></div>
+
+    <!-- Right Column: Premium Visual Composition (Failsafe applied) -->
+    <div class="relative w-full max-w-[500px] mx-auto h-[260px] sm:h-[400px] lg:h-[460px] mt-4 lg:mt-0">
+      
+      <!-- Pure UI/UX Graphic Replacement (No external stock photos) -->
+      <div class="absolute inset-0 rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl border border-borderline bg-forest flex items-center justify-center relative">
+        
+        <!-- Modern Grid & Glow Effects -->
+        <div class="absolute inset-0 opacity-20 bg-[linear-gradient(rgba(255,255,255,0.5)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.5)_1px,transparent_1px)] bg-[size:24px_24px]"></div>
+        <div class="absolute -top-20 -right-20 w-64 h-64 bg-white/10 blur-[50px] rounded-full"></div>
+        <div class="absolute -bottom-10 -left-10 w-48 h-48 bg-[#E8A33D]/20 blur-[40px] rounded-full"></div>
+
+        <!-- Central UI Element -->
+        <div class="relative z-10 flex flex-col items-center justify-center text-center px-6">
+          <div class="w-20 h-20 sm:w-28 sm:h-28 bg-white/10 backdrop-blur-md rounded-2xl sm:rounded-[2rem] border border-white/20 flex items-center justify-center mb-5 shadow-2xl">
+            <!-- Custom Beetle/Insect Icon -->
+            <svg class="w-10 h-10 sm:w-14 sm:h-14 text-[#E8A33D]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2v20"></path>
+              <path d="M8.5 5a4.5 4.5 0 0 1 7 0"></path>
+              <path d="M5 10a7 7 0 0 1 14 0c0 4-3.5 9-7 9s-7-5-7-9z"></path>
+              <path d="M4 14l3-3"></path>
+              <path d="M20 14l-3-3"></path>
+              <path d="M6 8l2 2"></path>
+              <path d="M18 8l-2 2"></path>
+            </svg>
+          </div>
+          <h3 class="text-white font-display font-bold text-xl sm:text-3xl tracking-tight mb-2 sm:mb-3">Premium Live Feed</h3>
+          <p class="text-white/80 text-xs sm:text-base font-medium max-w-[250px] sm:max-w-xs">100% Organic Feed</p>
+        </div>
+      </div>
+
+      <!-- Floating UI Card 1 -->
+      <div class="animate-float absolute -bottom-4 -left-2 sm:-left-6 bg-white p-2.5 sm:p-4 rounded-xl sm:rounded-2xl shadow-[0_12px_32px_rgba(2,7,6,0.1)] border border-borderline flex items-center gap-2.5 sm:gap-4 z-10">
+        <div class="w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-forest/10 flex items-center justify-center text-forest shrink-0">
+          <svg class="w-4 h-4 sm:w-6 sm:h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        </div>
+        <div>
+          <p class="text-[9px] sm:text-xs text-charcoal/60 font-bold uppercase tracking-wider mb-0.5">High Yield</p>
+          <p class="text-sm sm:text-lg font-display font-bold text-charcoal leading-none">50%+ Pure Protein</p>
+        </div>
+      </div>
+
+      <!-- Floating UI Card 2 -->
+      <div class="animate-float-delayed absolute top-4 -right-2 sm:-right-6 bg-white p-2.5 sm:p-3.5 rounded-xl border border-borderline shadow-[0_12px_32px_rgba(2,7,6,0.1)] flex items-center gap-2.5 z-10">
+        <div class="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-green-100 flex items-center justify-center shrink-0 text-green-600">
+          <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        </div>
+        <p class="text-[11px] sm:text-sm font-bold text-charcoal pr-1">100% Live Delivery</p>
+      </div>
     </div>
   </div>
 </section>
 
 <!-- ═══════════════════ PRODUCTS ═══════════════════ -->
-<section id="products-section" style="padding:4.5rem 1.25rem;">
+<section id="products-section" style="padding:5rem 1.25rem; background: var(--canvas);">
   <div style="max-width:72rem;margin:0 auto;">
-    <div style="max-width:36rem;margin-bottom:2.5rem;">
-      <p class="font-mono" style="font-size:.7rem;text-transform:uppercase;letter-spacing:.12em;color:var(--rust);">Our Feed Stock</p>
-      <h2 class="font-display" style="font-size:clamp(1.8rem,4vw,2.6rem);font-weight:700;margin:.5rem 0 .6rem;color:var(--ink);">Choose Your Live Feed</h2>
-      <p style="color:rgba(30,20,12,.62);line-height:1.6;">Mix and match different items into your cart. Delivery is a single flat rate.</p>
+    <div style="max-width:36rem;margin-bottom:3rem;">
+      <p class="font-mono text-forest" style="font-size:.75rem;text-transform:uppercase;font-weight:600;letter-spacing:.1em;">100% Organic Feed</p>
+      <h2 class="font-display text-charcoal" style="font-size:clamp(2rem,4vw,2.8rem);font-weight:800;margin:.5rem 0 .6rem;letter-spacing:-0.02em;">Choose Your Live Feed</h2>
+      <p style="color:rgba(2,7,6,.7);line-height:1.6; font-size:1.05rem;">Mix and match different items into your cart. Delivery is a single flat rate.</p>
     </div>
 
     <!-- skeleton cards shown during load -->
     <div id="products-loading" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.5rem;">
-      <div style="border-radius:1rem;padding:1.25rem;background:var(--kraft-light);border:1px solid rgba(30,20,12,0.1);">
+      <div class="product-card">
         <div class="skeleton" style="aspect-ratio:4/3;margin-bottom:.9rem;"></div>
         <div class="skeleton" style="height:1.2rem;width:55%;margin-bottom:.5rem;"></div>
         <div class="skeleton" style="height:.9rem;width:85%;margin-bottom:.5rem;"></div>
-        <div class="skeleton" style="height:2rem;width:70%;margin-bottom:1.2rem;border-radius:.5rem;"></div>
-        <div class="skeleton" style="height:2.5rem;border-radius:9999px;"></div>
+        <div class="skeleton" style="height:2.2rem;width:70%;margin-bottom:1.2rem;border-radius:.5rem;"></div>
+        <div class="skeleton" style="height:2.8rem;border-radius:.75rem;"></div>
+      </div>
+      <div class="product-card">
+        <div class="skeleton" style="aspect-ratio:4/3;margin-bottom:.9rem;"></div>
+        <div class="skeleton" style="height:1.2rem;width:60%;margin-bottom:.5rem;"></div>
+        <div class="skeleton" style="height:.9rem;width:90%;margin-bottom:.5rem;"></div>
+        <div class="skeleton" style="height:2.2rem;width:80%;margin-bottom:1.2rem;border-radius:.5rem;"></div>
+        <div class="skeleton" style="height:2.8rem;border-radius:.75rem;"></div>
       </div>
     </div>
 
     <!-- error banner -->
-    <div id="products-error" style="display:none;margin-top:1.5rem;padding:1.1rem 1.25rem;border-radius:.9rem;background:rgba(200,75,39,.08);border:1px solid rgba(200,75,39,.28);">
-      <p style="font-weight:600;color:var(--rust);margin:0 0 .25rem;">Couldn't load products</p>
-      <p id="products-error-msg" style="font-size:.875rem;color:rgba(30,20,12,.65);margin:0;"></p>
+    <div id="products-error" style="display:none;margin-top:1.5rem;padding:1.25rem;border-radius:1rem;background:rgba(220,38,38,.08);border:1px solid rgba(220,38,38,.2);">
+      <p style="font-weight:700;color:#DC2626;margin:0 0 .25rem;">Couldn't load products</p>
+      <p id="products-error-msg" style="font-size:.9rem;color:rgba(2,7,6,.7);margin:0;"></p>
+    </div>
+
+    <!-- CRITICAL FIX: The empty state -->
+    <div id="products-empty" style="display:none;margin-top:1.5rem;padding:2rem;text-align:center;background:rgba(2,7,6,.03);border-radius:1rem;border:1px dashed rgba(2,7,6,.15);">
+      <p style="color:rgba(2,7,6,.6);font-size:1rem;margin:0;">No products found in the database. Please add products via your Admin Panel.</p>
     </div>
 
     <!-- live product grid (injected by JS) -->
@@ -300,68 +416,72 @@
   </div>
 </section>
 
-<!-- ═══════════════════ HOW IT WORKS ═══════════════════ -->
-<section style="background:var(--kraft);padding:3.5rem 1.25rem;">
+<!-- ═══════════════════ APP-STYLE "HOW IT WORKS" ═══════════════════ -->
+<section style="background:var(--surface);padding:5rem 1.25rem; border-top: 1px solid var(--border);">
   <div style="max-width:72rem;margin:0 auto;">
-    <h3 class="font-display" style="font-size:clamp(1.4rem,3.5vw,2rem);font-weight:700;text-align:center;color:var(--ink);margin-bottom:2.5rem;">
+    <h3 class="font-display text-charcoal" style="font-size:clamp(1.8rem,3.5vw,2.4rem);font-weight:800;text-align:center;margin-bottom:3rem;letter-spacing:-0.02em;">
       How Cash-On-Delivery Works
     </h3>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:2rem;">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:2.5rem;">
+      
       <div style="text-align:center;padding:0 .5rem;">
-        <div class="stamp" style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;margin:0 auto;color:var(--rust);">
-          <span class="font-mono" style="font-weight:600;font-size:.9rem;">1</span>
+        <div class="w-14 h-14 rounded-2xl bg-forest/10 text-forest flex items-center justify-center mx-auto mb-4 shadow-sm border border-forest/5">
+          <span class="font-display font-bold text-xl">1</span>
         </div>
-        <p style="font-weight:600;margin:.75rem 0 .3rem;color:var(--ink);">Place Your Order</p>
-        <p style="font-size:.875rem;color:rgba(30,20,12,.6);line-height:1.55;">Mix items in your cart, checkout once, and share your delivery details.</p>
+        <p style="font-weight:700;font-size:1.1rem;margin:.75rem 0 .4rem;color:var(--charcoal);">Place Your Order</p>
+        <p style="font-size:.95rem;color:rgba(2,7,6,.65);line-height:1.6;">Mix items in your cart, checkout once, and share your delivery details.</p>
       </div>
+
       <div style="text-align:center;padding:0 .5rem;">
-        <div class="stamp" style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;margin:0 auto;color:var(--rust);">
-          <span class="font-mono" style="font-weight:600;font-size:.9rem;">2</span>
+        <div class="w-14 h-14 rounded-2xl bg-forest/10 text-forest flex items-center justify-center mx-auto mb-4 shadow-sm border border-forest/5">
+          <span class="font-display font-bold text-xl">2</span>
         </div>
-        <p style="font-weight:600;margin:.75rem 0 .3rem;color:var(--ink);">We Pack It Fresh</p>
-        <p style="font-size:.875rem;color:rgba(30,20,12,.6);line-height:1.55;">Your batch is pulled and packed the same day — never old stock.</p>
+        <p style="font-weight:700;font-size:1.1rem;margin:.75rem 0 .4rem;color:var(--charcoal);">We Pack It Fresh</p>
+        <p style="font-size:.95rem;color:rgba(2,7,6,.65);line-height:1.6;">Your batch is pulled and packed the same day — never old stock.</p>
       </div>
+
       <div style="text-align:center;padding:0 .5rem;">
-        <div class="stamp" style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;margin:0 auto;color:var(--rust);">
-          <span class="font-mono" style="font-weight:600;font-size:.9rem;">3</span>
+        <div class="w-14 h-14 rounded-2xl bg-forest/10 text-forest flex items-center justify-center mx-auto mb-4 shadow-sm border border-forest/5">
+          <span class="font-display font-bold text-xl">3</span>
         </div>
-        <p style="font-weight:600;margin:.75rem 0 .3rem;color:var(--ink);">Pay When It Arrives</p>
-        <p style="font-size:.875rem;color:rgba(30,20,12,.6);line-height:1.55;">Inspect your order at the door, then pay the rider in cash.</p>
+        <p style="font-weight:700;font-size:1.1rem;margin:.75rem 0 .4rem;color:var(--charcoal);">Pay When It Arrives</p>
+        <p style="font-size:.95rem;color:rgba(2,7,6,.65);line-height:1.6;">Inspect your order at the door, then pay the rider in cash.</p>
       </div>
+
     </div>
   </div>
 </section>
 
 <!-- ═══════════════════ EDUCATIONAL GUIDES SECTION ═══════════════════ -->
-<section style="padding:4.5rem 1.25rem; background: var(--kraft-light);">
+<section id="guides-section" style="padding:5rem 1.25rem; background: var(--canvas); border-top: 1px solid var(--border);">
   <div style="max-width:72rem;margin:0 auto;">
-    <div style="text-align:center; margin-bottom: 2.5rem;">
-      <p class="font-mono" style="font-size:.7rem;text-transform:uppercase;letter-spacing:.12em;color:var(--rust);">Learn to Breed at Home</p>
-      <h2 class="font-display" style="font-size:clamp(1.6rem,4vw,2.4rem);font-weight:700;margin:.5rem 0 .6rem;color:var(--ink);">Free Farming Guides (A-Z)</h2>
-      <p style="color:rgba(30,20,12,.62);line-height:1.6; max-width: 400px; margin: 0 auto;">Read our step-by-step instructions to successfully breed your own live feed right at home.</p>
+    <div style="text-align:center; margin-bottom: 3rem;">
+      <p class="font-mono text-forest" style="font-size:.75rem;text-transform:uppercase;font-weight:600;letter-spacing:.1em;">Learn to Breed at Home</p>
+      <h2 class="font-display text-charcoal" style="font-size:clamp(2rem,4vw,2.8rem);font-weight:800;margin:.5rem 0 .6rem;letter-spacing:-0.02em;">Free Farming Guides (A-Z)</h2>
+      <p style="color:rgba(2,7,6,.7);line-height:1.6; max-width: 460px; margin: 0 auto; font-size:1.05rem;">Read our step-by-step instructions to successfully breed your own live feed right at home.</p>
     </div>
 
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; max-width: 800px; margin: 0 auto;">
       
       <!-- Superworm Guide Card -->
       <div class="guide-card" onclick="openGuideModal('superworm')">
-        <div style="width: 60px; height: 60px; border-radius: 50%; background: rgba(200,75,39,.1); display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--rust);">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12a10 10 0 0 1 10-10c5.52 0 10 4.48 10 10s-4.48 10-10 10S2 17.52 2 12z"/><path d="M12 8v8"/><path d="M8 12h8"/></svg>
+        <div style="width: 64px; height: 64px; border-radius: 1.25rem; background: rgba(1,98,54,.08); border: 1px solid rgba(1,98,54,.15); display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--forest);">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12a10 10 0 0 1 10-10c5.52 0 10 4.48 10 10s-4.48 10-10 10S2 17.52 2 12z"/><path d="M12 8v8"/><path d="M8 12h8"/></svg>
         </div>
         <div>
-          <h3 class="font-display" style="font-size: 1.25rem; font-weight: 700; color: var(--ink); margin: 0 0 0.25rem;">Superworm Guide</h3>
-          <p style="font-size: 0.85rem; color: rgba(30,20,12,.6); margin: 0;">Learn the step-by-step cup separation method for breeding.</p>
+          <h3 class="font-display text-charcoal" style="font-size: 1.35rem; font-weight: 700; margin: 0 0 0.3rem;">Superworm Guide</h3>
+          <p style="font-size: 0.9rem; color: rgba(2,7,6,.65); margin: 0; line-height: 1.5;">Learn the step-by-step cup separation method for breeding.</p>
         </div>
       </div>
 
       <!-- Mealworm Guide Card -->
       <div class="guide-card" onclick="openGuideModal('mealworm')">
-        <div style="width: 60px; height: 60px; border-radius: 50%; background: rgba(232,163,61,.15); display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--amber);">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+        <div style="width: 64px; height: 64px; border-radius: 1.25rem; background: rgba(2,7,6,.05); border: 1px solid rgba(2,7,6,.1); display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--charcoal);">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
         </div>
         <div>
-          <h3 class="font-display" style="font-size: 1.25rem; font-weight: 700; color: var(--ink); margin: 0 0 0.25rem;">Mealworm Guide</h3>
-          <p style="font-size: 0.85rem; color: rgba(30,20,12,.6); margin: 0;">The easier, box-bred method for quick and continuous harvesting.</p>
+          <h3 class="font-display text-charcoal" style="font-size: 1.35rem; font-weight: 700; margin: 0 0 0.3rem;">Mealworm Guide</h3>
+          <p style="font-size: 0.9rem; color: rgba(2,7,6,.65); margin: 0; line-height: 1.5;">The easier, box-bred method for quick and continuous harvesting.</p>
         </div>
       </div>
 
@@ -369,21 +489,21 @@
   </div>
 </section>
 
-<!-- ═══════════════════ FOOTER ═══════════════════ -->
-<footer style="background:var(--soil);padding:2.5rem 1.25rem;">
-  <div style="max-width:72rem;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:1rem;">
-    <div style="display:flex;align-items:center;gap:.6rem;">
-      <div style="width:30px;height:30px;border-radius:9999px;background:var(--amber);display:flex;align-items:center;justify-content:center;">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2B1E14" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+<!-- ═══════════════════ PREMIUM FOOTER ═══════════════════ -->
+<footer style="background:var(--charcoal);padding:3rem 1.25rem;">
+  <div style="max-width:72rem;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:1.5rem;">
+    <div style="display:flex;align-items:center;gap:.75rem;">
+      <div style="width:36px;height:36px;border-radius:12px;background:var(--forest);display:flex;align-items:center;justify-content:center;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M12 22V12"/><path d="M12 12C12 7 8 5 4 5c0 5 3 8 8 8"/><path d="M12 12c0-5 4-7 8-7 0 5-3 8-8 8"/>
         </svg>
       </div>
       <div>
-        <p class="font-display" style="font-weight:600;color:var(--kraft-light);margin:0;font-size:.95rem;">Bitolpoka</p>
-        <p style="font-size:.72rem;color:rgba(242,232,213,.5);margin:0;">Paikgacha, Khulna, Bangladesh</p>
+        <p class="font-display" style="font-weight:700;color:var(--surface);margin:0;font-size:1.1rem;letter-spacing:-0.02em;">Bitolpoka</p>
+        <p style="font-size:.8rem;color:rgba(255,255,255,.5);margin:0;">Khulna, Bangladesh</p>
       </div>
     </div>
-    <p style="font-size:.72rem;color:rgba(242,232,213,.42);margin:0;">&copy; 2026 Bitolpoka Farms. All rights reserved.</p>
+    <p style="font-size:.8rem;color:rgba(255,255,255,.4);margin:0;">&copy; 2026 Bitolpoka Farms. All rights reserved.</p>
   </div>
 </footer>
 
@@ -391,66 +511,71 @@
 <div id="modal-overlay" class="modal-overlay" onclick="overlayClick(event)">
   <div id="modal-box" class="modal-box">
     <!-- CART VIEW -->
-    <div id="modal-cart" style="display:none;padding:1.6rem;">
-      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.2rem;">
+    <div id="modal-cart" style="display:none;padding:1.8rem;">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.5rem;">
         <div>
-          <p class="font-mono" style="font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:var(--rust);margin:0 0 .3rem;">Your Selection</p>
-          <h3 class="font-display" style="font-size:1.6rem;font-weight:700;color:var(--ink);margin:0;">Shopping Cart</h3>
+          <p class="font-mono text-forest" style="font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.1em;margin:0 0 .3rem;">Your Selection</p>
+          <h3 class="font-display text-charcoal" style="font-size:1.8rem;font-weight:800;margin:0;letter-spacing:-0.02em;">Shopping Cart</h3>
         </div>
-        <button onclick="closeModal()" aria-label="Close" style="background:none;border:none;cursor:pointer;color:var(--ink);padding:.25rem;line-height:0;">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <button onclick="closeModal()" aria-label="Close" style="background:var(--canvas);border:1px solid var(--border);border-radius:50%;cursor:pointer;color:var(--charcoal);padding:.4rem;transition:background 0.2s;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
           </svg>
         </button>
       </div>
-      <div id="cart-items-container" style="margin-bottom:1rem; max-height: 38vh; overflow-y: auto;"></div>
-      <div id="cart-price-breakdown" style="margin-bottom:1.25rem;padding:.25rem .1rem 0;"></div>
-      <button class="btn-rust" onclick="proceedToCheckout()" style="width:100%;border-radius:9999px;padding:.8rem 1rem;font-size:.9rem;font-weight:600;">Proceed to Checkout</button>
-      <button onclick="closeModal()" style="width:100%;background:none;border:none;color:rgba(30,20,12,.6);font-size:.85rem;font-weight:600;margin-top:.75rem;cursor:pointer;padding:.5rem;">Continue Shopping</button>
+      <div id="cart-items-container" style="margin-bottom:1.5rem; max-height: 40vh; overflow-y: auto;"></div>
+      <div id="cart-price-breakdown" style="margin-bottom:1.5rem;"></div>
+      <button class="btn-primary" onclick="proceedToCheckout()" style="width:100%;border-radius:.75rem;padding:1rem;font-size:1rem;font-weight:700;">Proceed to Checkout</button>
+      <button onclick="closeModal()" style="width:100%;background:none;border:none;color:rgba(2,7,6,.6);font-size:.9rem;font-weight:600;margin-top:1rem;cursor:pointer;padding:.5rem;transition:color 0.2s;">Continue Shopping</button>
     </div>
 
     <!-- FORM VIEW -->
-    <div id="modal-form" style="display:none;padding:1.6rem;">
-      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.2rem;">
+    <div id="modal-form" style="display:none;padding:1.8rem;">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.5rem;">
         <div>
-          <button onclick="openCartModal()" style="background:none;border:none;color:var(--rust);font-size:.75rem;font-weight:600;cursor:pointer;padding:0 0 .4rem 0;display:flex;align-items:center;gap:.2rem;">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg> Back to Cart
+          <button onclick="openCartModal()" style="background:none;border:none;color:var(--forest);font-size:.8rem;font-weight:700;cursor:pointer;padding:0 0 .5rem 0;display:flex;align-items:center;gap:.3rem;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg> Back to Cart
           </button>
-          <h3 class="font-display" style="font-size:1.6rem;font-weight:700;color:var(--ink);margin:0;">Delivery Details</h3>
+          <h3 class="font-display text-charcoal" style="font-size:1.8rem;font-weight:800;margin:0;letter-spacing:-0.02em;">Delivery Details</h3>
         </div>
       </div>
-      <div id="modal-recap" style="margin-bottom:.75rem;"></div>
-      <div id="modal-price-breakdown" style="margin-bottom:1.25rem;padding:.25rem .1rem 0;"></div>
-      <div style="display:flex;flex-direction:column;gap:1rem;">
+      <div id="modal-recap" style="margin-bottom:1rem;"></div>
+      <div id="modal-price-breakdown" style="margin-bottom:1.5rem;"></div>
+      <div style="display:flex;flex-direction:column;gap:1.25rem;">
         <div>
-          <label style="font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:rgba(30,20,12,.55);">Full Name</label>
-          <input id="f-name" type="text" placeholder="e.g. Rafiqul Islam" class="input-field" style="margin-top:.4rem;">
-          <span id="e-name" style="display:none;font-size:.75rem;color:var(--rust);margin-top:.25rem;display:none;"></span>
+          <label style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:rgba(2,7,6,.6);">Full Name</label>
+          <input id="f-name" type="text" placeholder="e.g. Rafiqul Islam" class="input-field" style="margin-top:.5rem;">
+          <span id="e-name" style="display:none;font-size:.75rem;color:#DC2626;margin-top:.3rem;font-weight:500;"></span>
         </div>
         <div>
-          <label style="font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:rgba(30,20,12,.55);">Phone Number</label>
-          <input id="f-phone" type="tel" inputmode="numeric" maxlength="11" placeholder="01XXXXXXXXX" class="input-field" style="margin-top:.4rem;">
-          <span id="e-phone" style="display:none;font-size:.75rem;color:var(--rust);margin-top:.25rem;"></span>
+          <label style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:rgba(2,7,6,.6);">Phone Number</label>
+          <input id="f-phone" type="tel" inputmode="numeric" maxlength="11" placeholder="01XXXXXXXXX" class="input-field" style="margin-top:.5rem;">
+          <span id="e-phone" style="display:none;font-size:.75rem;color:#DC2626;margin-top:.3rem;font-weight:500;"></span>
         </div>
         <div>
-          <label style="font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:rgba(30,20,12,.55);">Full Delivery Address</label>
-          <textarea id="f-address" rows="3" placeholder="House no., road, area, upazila, district" class="input-field" style="margin-top:.4rem;resize:none;"></textarea>
-          <span id="e-address" style="display:none;font-size:.75rem;color:var(--rust);margin-top:.25rem;"></span>
+          <label style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:rgba(2,7,6,.6);">Full Delivery Address</label>
+          <textarea id="f-address" rows="3" placeholder="House no., road, area, upazila, district" class="input-field" style="margin-top:.5rem;resize:none;"></textarea>
+          <span id="e-address" style="display:none;font-size:.75rem;color:#DC2626;margin-top:.3rem;font-weight:500;"></span>
         </div>
       </div>
-      <p id="submit-error" style="display:none;font-size:.78rem;color:var(--rust);margin-top:.75rem;"></p>
-      <button id="confirm-btn" class="btn-rust" onclick="submitOrder()" style="width:100%;border-radius:9999px;padding:.8rem 1rem;font-size:.9rem;font-weight:600;margin-top:1.4rem;">
+      <p id="submit-error" style="display:none;font-size:.8rem;color:#DC2626;margin-top:1rem;font-weight:600;"></p>
+      <button id="confirm-btn" class="btn-primary" onclick="submitOrder()" style="width:100%;border-radius:.75rem;padding:1rem;font-size:1rem;font-weight:700;margin-top:1.75rem;">
         <span id="btn-spinner" class="spinner" style="display:none;"></span>
         <span id="btn-text">Confirm Cash on Delivery Order</span>
       </button>
     </div>
 
     <!-- SUCCESS VIEW -->
-    <div id="modal-success" style="display:none;padding:1.6rem;text-align:center;">
-      <h3 class="font-display" style="font-size:1.6rem;font-weight:700;color:var(--ink);margin:1rem 0 .2rem;">Order Confirmed!</h3>
-      <p id="order-ref" class="font-mono" style="font-size:.72rem;color:rgba(30,20,12,.5);margin:0 0 1.25rem;"></p>
-      <div id="success-rows" style="text-align:left;border-radius:.75rem;padding:1rem;background:rgba(30,20,12,.05);"></div>
-      <button class="btn-rust" onclick="closeModal()" style="width:100%;border-radius:9999px;padding:.8rem;font-size:.9rem;font-weight:600;margin-top:1.25rem;">Done</button>
+    <div id="modal-success" style="display:none;padding:2rem 1.6rem;text-align:center;">
+      <div class="w-20 h-20 rounded-full bg-green-100 text-green-600 flex items-center justify-center mx-auto mb-5">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+      </div>
+      <h3 class="font-display text-charcoal" style="font-size:2rem;font-weight:800;margin:0 0 .3rem;letter-spacing:-0.02em;">Order Confirmed!</h3>
+      <p id="order-ref" class="font-mono" style="font-size:.85rem;font-weight:600;color:rgba(2,7,6,.5);margin:0 0 1.5rem;"></p>
+      <div id="success-rows" style="text-align:left;border-radius:1rem;padding:1.25rem;background:rgba(2,7,6,.03);border:1px solid var(--border);"></div>
+      <button class="btn-primary" onclick="closeModal()" style="width:100%;border-radius:.75rem;padding:1rem;font-size:1rem;font-weight:700;margin-top:1.5rem;">Done</button>
     </div>
   </div>
 </div>
@@ -460,15 +585,15 @@
   <div class="guide-modal-box">
     
     <!-- Superworm Content -->
-    <div id="guide-superworm" class="guide-text" style="display:none; padding: 2rem;">
-      <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom: 1rem;">
+    <div id="guide-superworm" class="guide-text" style="display:none; padding: 2.5rem 2rem;">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom: 1.5rem;">
         <div>
-          <p class="font-mono" style="font-size:.7rem;text-transform:uppercase;color:var(--rust);margin:0;">Bitolpoka.com · Farm Guide</p>
-          <h2 class="font-display" style="font-size: 1.8rem; font-weight: 700; color: var(--ink); margin: 0.5rem 0;">সুপারওয়ার্ম চাষের সম্পূর্ণ গাইডলাইন</h2>
-          <p style="margin:0; font-size: 0.9rem;">ডিম থেকে বিটাল পর্যন্ত — সম্পূর্ণ (A-Z) ধাপে ধাপে নির্দেশিকা।</p>
+          <p class="font-mono text-forest" style="font-size:.75rem;font-weight:600;text-transform:uppercase;margin:0;">Bitolpoka.com · Farm Guide</p>
+          <h2 class="font-display text-charcoal" style="font-size: 2rem; font-weight: 800; margin: 0.5rem 0; letter-spacing:-0.02em;">সুপারওয়ার্ম চাষের সম্পূর্ণ গাইডলাইন</h2>
+          <p style="margin:0; font-size: 0.95rem; font-weight:500; color:rgba(2,7,6,0.6);">ডিম থেকে বিটাল পর্যন্ত — সম্পূর্ণ (A-Z) ধাপে ধাপে নির্দেশিকা।</p>
         </div>
-        <button onclick="closeGuide()" style="background:none;border:none;cursor:pointer;color:var(--ink);">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        <button onclick="closeGuide()" style="background:var(--canvas);border:1px solid var(--border);border-radius:50%;cursor:pointer;color:var(--charcoal);padding:.4rem;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
       </div>
 
@@ -508,15 +633,15 @@
     </div>
 
     <!-- Mealworm Content -->
-    <div id="guide-mealworm" class="guide-text" style="display:none; padding: 2rem;">
-      <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom: 1rem;">
+    <div id="guide-mealworm" class="guide-text" style="display:none; padding: 2.5rem 2rem;">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom: 1.5rem;">
         <div>
-          <p class="font-mono" style="font-size:.7rem;text-transform:uppercase;color:var(--amber);margin:0;">Bitolpoka.com · Farm Guide</p>
-          <h2 class="font-display" style="font-size: 1.8rem; font-weight: 700; color: var(--ink); margin: 0.5rem 0;">মিলওয়ার্ম চাষের সম্পূর্ণ গাইডলাইন</h2>
-          <p style="margin:0; font-size: 0.9rem;">ডিম থেকে বিটাল পর্যন্ত — সম্পূর্ণ (A-Z) ধাপে ধাপে নির্দেশিকা।</p>
+          <p class="font-mono text-charcoal" style="font-size:.75rem;font-weight:600;text-transform:uppercase;margin:0;opacity:0.7;">Bitolpoka.com · Farm Guide</p>
+          <h2 class="font-display text-charcoal" style="font-size: 2rem; font-weight: 800; margin: 0.5rem 0; letter-spacing:-0.02em;">মিলওয়ার্ম চাষের সম্পূর্ণ গাইডলাইন</h2>
+          <p style="margin:0; font-size: 0.95rem; font-weight:500; color:rgba(2,7,6,0.6);">ডিম থেকে বিটাল পর্যন্ত — সম্পূর্ণ (A-Z) ধাপে ধাপে নির্দেশিকা।</p>
         </div>
-        <button onclick="closeGuide()" style="background:none;border:none;cursor:pointer;color:var(--ink);">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        <button onclick="closeGuide()" style="background:var(--canvas);border:1px solid var(--border);border-radius:50%;cursor:pointer;color:var(--charcoal);padding:.4rem;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
       </div>
 
@@ -537,8 +662,8 @@
         <li><strong>বক্স ও বেডিং:</strong> মসৃণ প্লাস্টিকের বক্সে ১-২ ইঞ্চি গমের ভুষি ও সবজি দিন।</li>
       </ul>
 
-      <div class="highlight-box" style="background: rgba(232,163,61,.1); border-left-color: var(--amber);">
-        <h4 style="margin-top:0; color:var(--amber);">🛌 ধাপ ৩: পিউপা তৈরি (সবচেয়ে সহজ ধাপ)</h4>
+      <div class="highlight-box" style="background: rgba(2,7,6,.04); border-left-color: var(--charcoal);">
+        <h4 style="margin-top:0; color:var(--charcoal);">🛌 ধাপ ৩: পিউপা তৈরি (সবচেয়ে সহজ ধাপ)</h4>
         <p style="margin-bottom:0.5rem;">আলাদা কাপে রাখার প্রয়োজন নেই — বক্সেই একসাথে পিউপা হয়ে যায়।</p>
         <ul>
           <li>চোখে পড়লে পিউপাগুলো আলাদা বক্সে তুলে রাখা ভালো, তবে এটি বাধ্যতামূলক নয়।</li>
@@ -652,15 +777,15 @@ function scrollToProducts() {
 function buildSlider(imgs, i) {
   if (!imgs.length) {
     return '<div class="slider-main" style="display:flex;align-items:center;justify-content:center;">'
-      + '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(30,20,12,0.28)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'
+      + '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(2,7,6,0.2)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'
       + '<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/>'
       + '</svg></div>';
   }
   var arrows = imgs.length > 1
     ? '<button class="slider-arrow left"  onclick="imgStep(' + i + ',-1)" aria-label="Previous photo">'
-        + '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg></button>'
+        + '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg></button>'
       + '<button class="slider-arrow right" onclick="imgStep(' + i + ',1)"  aria-label="Next photo">'
-        + '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg></button>'
+        + '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg></button>'
     : '';
   var thumbs = '';
   if (imgs.length > 1) {
@@ -676,11 +801,8 @@ function buildSlider(imgs, i) {
   }
   return '<div class="slider-main">'
     + '<img id="slide-' + i + '" src="' + esc(imgs[0]) + '" alt="' + esc(PRODUCTS[i].name) + '">'
-    + '<div class="stamp" style="position:absolute;top:10px;right:10px;width:50px;height:50px;'
-    +   'color:var(--rust);background:rgba(242,232,213,0.92);transform:rotate(-8deg);'
-    +   'display:flex;flex-direction:column;align-items:center;justify-content:center;">'
-    +   '<span class="font-mono" style="font-size:.58rem;font-weight:600;line-height:1.1;">FARM</span>'
-    +   '<span class="font-mono" style="font-size:.58rem;font-weight:600;line-height:1.1;">FRESH</span>'
+    + '<div style="position:absolute;top:12px;right:12px;background:var(--forest);color:var(--surface);font-size:0.65rem;font-weight:700;letter-spacing:0.05em;padding:4px 8px;border-radius:6px;box-shadow:0 4px 12px rgba(1,98,54,0.3);">'
+    +   'FARM FRESH'
     + '</div>'
     + arrows
     + '</div>' + thumbs;
@@ -728,8 +850,8 @@ function selectPkg(cardIdx, pkgIdx) {
   var priceEl  = document.getElementById('price-display-' + cardIdx);
   if (priceEl) {
     priceEl.innerHTML =
-      '<span class="font-display" style="font-size:1.7rem;font-weight:700;color:var(--ink);">&#2547;' + fmtBDT(perUnit) + '</span>'
-      + '<span style="font-size:.75rem;color:rgba(30,20,12,.5);">per ' + esc(unit) + '</span>';
+      '<span class="font-display text-charcoal" style="font-size:1.8rem;font-weight:800;letter-spacing:-0.02em;">&#2547;' + fmtBDT(perUnit) + '</span>'
+      + '<span style="font-size:.8rem;font-weight:500;color:rgba(2,7,6,.5);">/ ' + esc(unit) + '</span>';
   }
 
   var subEl = document.getElementById('sub-' + cardIdx);
@@ -744,7 +866,7 @@ function buildCard(product, i) {
 
   var pkgSection;
   if (!pkgs.length) {
-    pkgSection = '<p style="font-size:.78rem;color:rgba(30,20,12,.45);font-style:italic;">No package options set for this product.</p>';
+    pkgSection = '<p style="font-size:.85rem;color:rgba(2,7,6,.5);font-style:italic;">No package options set for this product.</p>';
   } else {
     var btnHtml = '';
     for (var k = 0; k < pkgs.length; k++) {
@@ -756,31 +878,31 @@ function buildCard(product, i) {
         + '</button>';
     }
     pkgSection =
-      '<div>'
-      +   '<p style="font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:rgba(30,20,12,.5);margin:0 0 .45rem;">Select Package</p>'
-      +   '<div style="display:flex;flex-wrap:wrap;gap:.45rem;">' + btnHtml + '</div>'
+      '<div style="margin-top:0.5rem;">'
+      +   '<p style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:rgba(2,7,6,.5);margin:0 0 .5rem;">Select Package</p>'
+      +   '<div style="display:flex;flex-wrap:wrap;gap:.5rem;">' + btnHtml + '</div>'
       +   '<p id="pkg-err-' + i + '" class="pkg-error">Please select a package size.</p>'
       + '</div>';
   }
 
   return '<div class="product-card" id="card-' + i + '">'
     + buildSlider(imgs, i)
-    + '<div>'
-    +   '<h3 class="font-display" style="font-size:1.45rem;font-weight:700;color:var(--ink);margin:0 0 .3rem;">' + esc(product.name) + '</h3>'
-    +   (product.description ? '<p style="font-size:.875rem;color:rgba(30,20,12,.62);margin:0;line-height:1.55;">' + esc(product.description) + '</p>' : '')
+    + '<div style="margin-top:0.5rem;">'
+    +   '<h3 class="font-display text-charcoal" style="font-size:1.5rem;font-weight:800;margin:0 0 .3rem;letter-spacing:-0.02em;">' + esc(product.name) + '</h3>'
+    +   (product.description ? '<p style="font-size:.95rem;color:rgba(2,7,6,.65);margin:0;line-height:1.6;">' + esc(product.description) + '</p>' : '')
     + '</div>'
-    + '<div id="price-display-' + i + '" style="display:flex;align-items:baseline;gap:.4rem;">'
-    +   '<span class="font-display" style="font-size:1.7rem;font-weight:700;color:var(--ink);">&#2547;' + fmtBDT(product.price) + '</span>'
-    +   '<span style="font-size:.75rem;color:rgba(30,20,12,.5);">per ' + esc(product.unit_type || 'pcs') + '</span>'
+    + '<div id="price-display-' + i + '" style="display:flex;align-items:baseline;gap:.5rem;">'
+    +   '<span class="font-display text-charcoal" style="font-size:1.8rem;font-weight:800;letter-spacing:-0.02em;">&#2547;' + fmtBDT(product.price) + '</span>'
+    +   '<span style="font-size:.8rem;font-weight:500;color:rgba(2,7,6,.5);">/ ' + esc(product.unit_type || 'pcs') + '</span>'
     + '</div>'
     + pkgSection
-    + '<div style="border-top:1px solid rgba(30,20,12,0.09);padding-top:.9rem;display:flex;align-items:center;justify-content:space-between;">'
+    + '<div style="border-top:1px solid var(--border);padding-top:1.25rem;margin-top:0.5rem;display:flex;align-items:center;justify-content:space-between;">'
     +   '<div>'
-    +     '<div style="font-size:.72rem;color:rgba(30,20,12,.5);">Subtotal</div>'
-    +     '<div id="sub-' + i + '" class="font-mono" style="font-size:.95rem;font-weight:600;color:var(--ink);">—</div>'
+    +     '<div style="font-size:.75rem;font-weight:600;color:rgba(2,7,6,.5);text-transform:uppercase;letter-spacing:0.05em;">Subtotal</div>'
+    +     '<div id="sub-' + i + '" class="font-mono text-charcoal" style="font-size:1.05rem;font-weight:700;">—</div>'
     +   '</div>'
-    +   '<button class="btn-rust" style="border-radius:9999px;padding:.55rem 1.1rem;font-size:.82rem;font-weight:600;" onclick="addToCart(' + i + ')">'
-    +     '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>'
+    +   '<button class="btn-primary" style="border-radius:.75rem;padding:.6rem 1.2rem;font-size:.9rem;font-weight:700;" onclick="addToCart(' + i + ')">'
+    +     '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>'
     +     ' Add to Cart'
     +   '</button>'
     + '</div>'
@@ -844,17 +966,17 @@ function openCartModal() {
     subtotal += item.total;
     var perUnit = item.total / item.qty;
     itemsHtml += 
-      '<div style="display:flex;align-items:center;gap:.75rem;padding:.75rem;border-bottom:1px solid rgba(30,20,12,.08);">' +
-        '<div style="width:48px;height:48px;flex-shrink:0;background:rgba(30,20,12,.08);border-radius:.4rem;display:flex;align-items:center;justify-content:center;overflow:hidden;">' +
-          (item.img ? '<img src="' + esc(item.img) + '" style="width:100%;height:100%;object-fit:cover;">' : '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(30,20,12,0.35)" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>') +
+      '<div style="display:flex;align-items:center;gap:1rem;padding:1rem 0;border-bottom:1px solid var(--border);">' +
+        '<div style="width:56px;height:56px;flex-shrink:0;background:rgba(2,7,6,.04);border-radius:.75rem;display:flex;align-items:center;justify-content:center;overflow:hidden;border:1px solid var(--border);">' +
+          (item.img ? '<img src="' + esc(item.img) + '" style="width:100%;height:100%;object-fit:cover;">' : '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(2,7,6,0.3)" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>') +
         '</div>' +
         '<div style="flex:1;min-width:0;">' +
-          '<p style="font-weight:600;font-size:.9rem;margin:0 0 .12rem;color:var(--ink);">' + esc(item.name) + '</p>' +
-          '<p style="font-size:.75rem;color:rgba(30,20,12,.55);margin:0;">' + item.qty + ' ' + esc(item.unit) + ' &times; &#2547;' + fmtBDT(perUnit) + ' each</p>' +
+          '<p style="font-weight:700;font-size:1rem;margin:0 0 .2rem;color:var(--charcoal);">' + esc(item.name) + '</p>' +
+          '<p style="font-size:.85rem;font-weight:500;color:rgba(2,7,6,.6);margin:0;">' + item.qty + ' ' + esc(item.unit) + ' &times; &#2547;' + fmtBDT(perUnit) + '</p>' +
         '</div>' +
         '<div style="text-align:right;">' +
-          '<p style="font-weight:600;font-size:.95rem;margin:0 0 .3rem;color:var(--ink);">&#2547;' + fmtBDT(item.total) + '</p>' +
-          '<button onclick="removeFromCart(' + idx + ')" style="background:none;border:none;color:var(--rust);font-size:.75rem;font-weight:600;cursor:pointer;padding:0;text-decoration:underline;">Remove</button>' +
+          '<p style="font-weight:700;font-size:1.05rem;margin:0 0 .3rem;color:var(--charcoal);">&#2547;' + fmtBDT(item.total) + '</p>' +
+          '<button onclick="removeFromCart(' + idx + ')" style="background:none;border:none;color:#DC2626;font-size:.8rem;font-weight:600;cursor:pointer;padding:0;text-decoration:underline;opacity:0.8;transition:opacity 0.2s;">Remove</button>' +
         '</div>' +
       '</div>';
   });
@@ -880,8 +1002,9 @@ function proceedToCheckout() {
   var grandTotal = subtotal + DELIVERY_CHARGE;
 
   document.getElementById('modal-recap').innerHTML =
-    '<div style="padding:.75rem;border-radius:.75rem;background:rgba(232,163,61,.17);border:1px solid rgba(200,75,39,.22);">' +
-      '<p style="font-weight:600;font-size:.9rem;color:var(--ink);margin:0;">🛒 ' + CART.length + ' item(s) selected for Cash on Delivery</p>' +
+    '<div style="padding:1rem;border-radius:1rem;background:rgba(1,98,54,.05);border:1px solid rgba(1,98,54,.15);display:flex;align-items:center;gap:.75rem;">' +
+      '<div class="w-8 h-8 rounded-full bg-forest/10 text-forest flex items-center justify-center shrink-0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg></div>' +
+      '<p style="font-weight:700;font-size:.95rem;color:var(--charcoal);margin:0;">' + CART.length + ' item(s) selected for Cash on Delivery</p>' +
     '</div>';
 
   document.getElementById('modal-price-breakdown').innerHTML =
@@ -904,7 +1027,10 @@ function closeModal() {
 }
 
 function overlayClick(e) {
-  if (e.target.id === 'modal-overlay') closeModal();
+  if (e.target.id === 'modal-overlay' || e.target.id === 'guide-modal-overlay') {
+    closeModal();
+    closeGuide();
+  }
 }
 
 /* ═══════════════════════════════════════════════
@@ -1045,7 +1171,7 @@ async function init() {
 
   PRODUCTS = productsResult.data || [];
   if (!PRODUCTS.length) {
-    document.getElementById('products-empty').style.display = '';
+    document.getElementById('products-empty').style.display = 'block';
     return;
   }
 
