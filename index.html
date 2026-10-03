@@ -339,7 +339,7 @@
 <section id="products-section" class="py-20 lg:py-32 relative z-20">
   <div class="max-w-[80rem] mx-auto px-6 lg:px-8">
     <div class="max-w-2xl mb-16 text-center mx-auto">
-      <p class="font-mono text-forest text-sm font-bold tracking-widest uppercase mb-3 bg-forest/5 inline-block px-4 py-1.5 rounded-full">100% Organic Feed</p>
+      <p class="font-mono text-forest text-sm font-bold tracking-widest uppercase mb-3 bg-forest/5 inline-block px-4 py-1.5 rounded-full">Farm Direct</p>
       <h2 class="font-display text-4xl lg:text-5xl font-extrabold text-charcoal mb-4 tracking-tight">Choose Your Live Feed</h2>
       <p class="text-lg text-[#475569] font-medium">Mix and match different items into your cart. Nationwide delivery at a single flat rate.</p>
     </div>
@@ -374,7 +374,7 @@
 <section class="bg-white py-24 border-t border-slate-100">
   <div class="max-w-[80rem] mx-auto px-6 lg:px-8">
     <h3 class="font-display text-3xl lg:text-4xl font-extrabold text-center text-charcoal mb-16 tracking-tight">
-      How Cash-On-Delivery Works
+      How Secured Payment Works
     </h3>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-12 relative">
       
@@ -386,23 +386,23 @@
           <span class="font-display font-extrabold text-3xl">1</span>
         </div>
         <p class="font-bold text-xl mb-3 text-charcoal">Place Your Order</p>
-        <p class="text-[#64748B] leading-relaxed font-medium">Mix items in your cart, checkout once, and share your delivery details securely.</p>
+        <p class="text-[#64748B] leading-relaxed font-medium">Mix items in your cart, checkout once, and provide your exact delivery details.</p>
       </div>
 
       <div class="text-center relative z-10">
         <div class="w-20 h-20 rounded-[2rem] bg-white text-forest flex items-center justify-center mx-auto mb-6 shadow-premium border border-slate-100 transition-transform hover:scale-110">
           <span class="font-display font-extrabold text-3xl">2</span>
         </div>
-        <p class="font-bold text-xl mb-3 text-charcoal">We Pack It Fresh</p>
-        <p class="text-[#64748B] leading-relaxed font-medium">Your batch is pulled and packed the exact same day — never old or dead stock.</p>
+        <p class="font-bold text-xl mb-3 text-charcoal">Advance Payment</p>
+        <p class="text-[#64748B] leading-relaxed font-medium">Pay the required amount via bKash/Nagod and submit your TrxID to confirm.</p>
       </div>
 
       <div class="text-center relative z-10">
         <div class="w-20 h-20 rounded-[2rem] bg-white text-forest flex items-center justify-center mx-auto mb-6 shadow-premium border border-slate-100 transition-transform hover:scale-110">
           <span class="font-display font-extrabold text-3xl">3</span>
         </div>
-        <p class="font-bold text-xl mb-3 text-charcoal">Pay At The Door</p>
-        <p class="text-[#64748B] leading-relaxed font-medium">Receive your live feed directly at your doorstep, inspect it, and pay in cash.</p>
+        <p class="font-bold text-xl mb-3 text-charcoal">Fast Delivery</p>
+        <p class="text-[#64748B] leading-relaxed font-medium">We instantly verify your transaction and dispatch your fresh live feed package.</p>
       </div>
 
     </div>
@@ -526,59 +526,51 @@
           <span id="e-address" class="hidden text-xs text-red-500 font-bold mt-1.5"></span>
         </div>
 
-        <!-- NEW: Payment Method Selection -->
-        <div class="mt-4 border-t border-slate-100 pt-4">
-            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Payment Method</label>
-            <div class="grid grid-cols-2 gap-3">
-                <label class="border-2 border-forest bg-forest/5 rounded-xl p-3 flex items-center gap-2 cursor-pointer transition-all payment-option" id="lbl-cod">
-                    <input type="radio" name="payment_method" value="COD" checked class="hidden" onchange="togglePaymentUI()">
-                    <div class="w-4 h-4 rounded-full border-2 border-forest flex items-center justify-center p-rad">
-                        <div class="w-2 h-2 bg-forest rounded-full"></div>
-                    </div>
-                    <span class="font-bold text-sm text-slate-800">Cash on Delivery</span>
-                </label>
-                <label class="border-2 border-slate-200 bg-slate-50 rounded-xl p-3 flex items-center gap-2 cursor-pointer transition-all payment-option" id="lbl-bkash">
-                    <input type="radio" name="payment_method" value="bKash" class="hidden" onchange="togglePaymentUI()">
-                    <div class="w-4 h-4 rounded-full border-2 border-slate-300 flex items-center justify-center p-rad">
-                        <div class="w-2 h-2 bg-transparent rounded-full"></div>
-                    </div>
-                    <span class="font-bold text-sm text-slate-800">bKash / Nagod</span>
-                </label>
+        <!-- NEW: Mandatory bKash Verification Block -->
+        <div class="mt-6 border-t border-slate-100 pt-6">
+            <div class="p-5 bg-gradient-to-r from-pink-50 to-orange-50 border border-pink-100 rounded-2xl">
+                <div class="flex items-center gap-2 mb-2">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E2136E" stroke-width="2.5" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                    <p class="text-sm font-extrabold text-slate-900">Advance Payment Required</p>
+                </div>
+                <p class="text-[0.8rem] text-slate-600 mb-4 font-medium leading-relaxed">
+                    To confirm your order, please send your payment to our bKash/Nagod Personal number via <b>Send Money</b>. Enter your TrxID below.
+                </p>
+                
+                <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Send Money to:</p>
+                <div class="flex items-center justify-between bg-white px-4 py-2.5 rounded-xl border border-slate-200 mb-4 shadow-sm">
+                    <span class="text-[#E2136E] text-lg font-mono font-bold tracking-wider">017XXXXXXXX</span>
+                </div>
+                
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Transaction ID (TrxID)</label>
+                    <input id="f-trxid" type="text" placeholder="e.g. 8N3A6H2..." class="input-field uppercase font-mono tracking-wide" style="border-color: #fbcfe8;">
+                    <span id="e-trxid" class="hidden text-xs text-red-500 font-bold mt-1.5"></span>
+                </div>
             </div>
         </div>
-
-        <!-- NEW: bKash Details (Hidden by default) -->
-        <div id="bkash-details" class="hidden mt-4 p-4 bg-[#E2136E]/5 border border-[#E2136E]/20 rounded-xl transition-all">
-            <p class="text-sm font-bold text-slate-800 mb-1">Send Money to: <span class="text-[#E2136E] text-lg font-mono tracking-wider ml-1">017XXXXXXXX</span></p> <!-- UPDATE YOUR NUMBER HERE -->
-            <p class="text-xs text-slate-500 mb-4">Please send the exact total amount via bKash or Nagod (Send Money) and enter the Transaction ID below.</p>
-            
-            <div>
-                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Transaction ID (TrxID)</label>
-                <input id="f-trxid" type="text" placeholder="e.g. 8N3A6H2..." class="input-field uppercase font-mono tracking-wide">
-                <span id="e-trxid" class="hidden text-xs text-red-500 font-bold mt-1.5"></span>
-            </div>
-        </div>
-
       </div>
       
       <p id="submit-error" class="hidden text-sm text-red-600 font-bold mt-4 p-3 bg-red-50 rounded-lg border border-red-100"></p>
       
       <button id="confirm-btn" class="btn-primary w-full py-4 rounded-2xl text-lg font-bold mt-6" onclick="submitOrder()">
         <span id="btn-spinner" class="spinner" style="display:none;"></span>
-        <span id="btn-text">Confirm Cash on Delivery Order</span>
+        <span id="btn-text">Confirm Order & Submit TrxID</span>
       </button>
     </div>
 
     <!-- SUCCESS VIEW -->
     <div id="modal-success" style="display:none; padding: 3rem 2rem; text-align: center;">
-      <div class="w-24 h-24 rounded-[2rem] bg-green-50 border border-green-100 text-green-600 flex items-center justify-center mx-auto mb-6 shadow-sm">
-        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="20 6 9 17 4 12"/>
+      <div class="w-24 h-24 rounded-[2rem] bg-amber-50 border border-amber-100 text-amber-500 flex items-center justify-center mx-auto mb-6 shadow-sm">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
         </svg>
       </div>
-      <h3 id="modal-success-title" class="font-display text-charcoal text-3xl font-extrabold tracking-tight mb-2">Order Confirmed!</h3>
-      <p id="order-ref" class="font-mono text-[#64748B] font-bold mb-3"></p>
-      <p id="modal-success-msg" class="text-sm text-slate-500 font-medium mb-8"></p>
+      <h3 class="font-display text-charcoal text-3xl font-extrabold tracking-tight mb-2">Verifying Payment</h3>
+      <p class="font-mono text-forest text-sm font-bold tracking-widest uppercase mb-4">TrxID Received!</p>
+      <p class="text-sm text-slate-600 font-medium mb-8 leading-relaxed">
+        Thank you! We have received your order and Transaction ID. We will verify the payment shortly and dispatch your package.
+      </p>
       
       <div id="success-rows" class="text-left bg-slate-50 border border-slate-100 rounded-2xl p-5 mb-8"></div>
       
@@ -626,7 +618,7 @@
         <h4 style="margin-top:0;">🛌 ধাপ ৩: পিউপা তৈরি (সবচেয়ে গুরুত্বপূর্ণ ধাপ)</h4>
         <p style="margin-bottom:0.5rem;">সুপারওয়ার্ম একসাথে থাকলে পিউপা হয় না — ৩-৪ মাস বয়সী বড় লার্ভাগুলোকে আলাদা ছোট সসের কাপে একটি একটি করে রাখতে হবে।</p>
         <ul style="margin-bottom:0;">
-          <li>কাপে কোনো খাবার বা পানি দেওয়া যাবেবিধা।</li>
+          <li>কাপে কোনো খাবার বা পানি দেওয়া যাবে না।</li>
           <li>অন্ধকার জায়গায় রাখলে ১-২ সপ্তাহের মধ্যে পিউপা হবে।</li>
           <li>পিউপা হবার ৭-১০ দিনের ভিতর মাদার হবে।</li>
         </ul>
@@ -636,7 +628,7 @@
       <p>পিউপা থেকে নতুন মাদার বিটাল বের হলে তাদের আবার মূল ভুষির বক্সে দিন। এখান থেকেই ধাপ ১ আবার শুরু হয় — বিটল ডিম পাড়ে, ডিম লার্ভা হয়, আর খামার চলতেই থাকে।</p>
 
       <h4>⚠️ সতর্কতা (Safety & Maintenance)</h4>
-      <p>বক্সে কখনোই পানি স্প্রে করবেন না — মাইটস বা ফাঙ্গাস আক্রমণ করবে। সবজিগুলো যেন পচে না যায় সেদিকে খেয়াল রাখবেন।</p>
+      <p>বক্সে কখনোই পানি স্প্রে করবেন ঘন ঘন — মাইটস বা ফাঙ্গাস আক্রমণ করবে। সবজিগুলো যেন পচে না যায় সেদিকে খেয়াল রাখবেন।</p>
     </div>
 
     <!-- Mealworm Content -->
@@ -1019,55 +1011,13 @@ function proceedToCheckout() {
     '<div class="price-row"><span>Delivery (Flat Rate)</span><span>&#2547;' + fmtBDT(DELIVERY_CHARGE) + '</span></div>' +
     '<div class="price-row total-line border-t border-slate-200 mt-2 pt-2"><span>Grand Total</span><span>&#2547;' + fmtBDT(grandTotal) + '</span></div>';
 
-  // RESET FORM
   ['f-name','f-phone','f-address', 'f-trxid'].forEach(function(id){ document.getElementById(id).value = ''; });
   ['e-name','e-phone','e-address', 'e-trxid'].forEach(function(id){ document.getElementById(id).style.display = 'none'; });
   document.getElementById('submit-error').style.display = 'none';
-  
-  // Default to COD
-  document.querySelector('input[value="COD"]').checked = true;
-  togglePaymentUI();
-
   setBusy(false);
 
   document.getElementById('modal-cart').style.display = 'none';
   document.getElementById('modal-form').style.display = '';
-}
-
-function togglePaymentUI() {
-    const method = document.querySelector('input[name="payment_method"]:checked').value;
-    const codLbl = document.getElementById('lbl-cod');
-    const bkashLbl = document.getElementById('lbl-bkash');
-    const bkashDetails = document.getElementById('bkash-details');
-    const btnText = document.getElementById('btn-text');
-
-    if (method === 'COD') {
-        codLbl.classList.replace('border-slate-200', 'border-forest');
-        codLbl.classList.replace('bg-slate-50', 'bg-forest/5');
-        codLbl.querySelector('.p-rad div').classList.replace('bg-transparent', 'bg-forest');
-        codLbl.querySelector('.p-rad').classList.replace('border-slate-300', 'border-forest');
-
-        bkashLbl.classList.replace('border-forest', 'border-slate-200');
-        bkashLbl.classList.replace('bg-forest/5', 'bg-slate-50');
-        bkashLbl.querySelector('.p-rad div').classList.replace('bg-forest', 'bg-transparent');
-        bkashLbl.querySelector('.p-rad').classList.replace('border-forest', 'border-slate-300');
-        
-        bkashDetails.classList.add('hidden');
-        btnText.textContent = 'Confirm Cash on Delivery Order';
-    } else {
-        bkashLbl.classList.replace('border-slate-200', 'border-forest');
-        bkashLbl.classList.replace('bg-slate-50', 'bg-forest/5');
-        bkashLbl.querySelector('.p-rad div').classList.replace('bg-transparent', 'bg-forest');
-        bkashLbl.querySelector('.p-rad').classList.replace('border-slate-300', 'border-forest');
-
-        codLbl.classList.replace('border-forest', 'border-slate-200');
-        codLbl.classList.replace('bg-forest/5', 'bg-slate-50');
-        codLbl.querySelector('.p-rad div').classList.replace('bg-forest', 'bg-transparent');
-        codLbl.querySelector('.p-rad').classList.replace('border-forest', 'border-slate-300');
-
-        bkashDetails.classList.remove('hidden');
-        btnText.textContent = 'Verify Payment & Confirm Order';
-    }
 }
 
 function closeModal() {
@@ -1097,20 +1047,15 @@ function validate() {
   var name    = document.getElementById('f-name').value.trim();
   var phone   = document.getElementById('f-phone').value.trim();
   var address = document.getElementById('f-address').value.trim();
-  var method  = document.querySelector('input[name="payment_method"]:checked').value;
   var trxid   = document.getElementById('f-trxid').value.trim();
-
   var ok = true;
+  
   if (!name)                           { setErr('name',    'Please enter your full name.');                    ok = false; }
   if (!/^01[3-9]\d{8}$/.test(phone))  { setErr('phone',   'Enter a valid BD number, e.g. 01712345678.');     ok = false; }
   if (!address || address.length < 10) { setErr('address', 'Please enter your full delivery address.');        ok = false; }
+  if (!trxid)                          { setErr('trxid',   'Transaction ID is required to confirm the order.');ok = false; }
   
-  if (method === 'bKash' && !trxid) { 
-      setErr('trxid', 'Transaction ID is required for bKash/Nagod payment.'); 
-      ok = false; 
-  }
-
-  return ok ? { name: name, phone: phone, address: address, method: method, trxid: trxid } : null;
+  return ok ? { name: name, phone: phone, address: address, trxid: trxid } : null;
 }
 
 async function submitOrder() {
@@ -1134,8 +1079,8 @@ async function submitOrder() {
       customer_name:    fields.name,
       customer_phone:   fields.phone,
       delivery_address: fields.address,
-      payment_method:   fields.method,
-      transaction_id:   fields.trxid
+      transaction_id:   fields.trxid,
+      payment_method:   'bKash/Nagod'
     };
   });
 
@@ -1166,17 +1111,12 @@ async function submitOrder() {
   var grandTotal = subtotal + DELIVERY_CHARGE;
   successHtml += sRow('Delivery', '&#2547;' + fmtBDT(DELIVERY_CHARGE));
   successHtml += '<div class="sum-row total-line border-t border-slate-200 mt-2 pt-2"><span>Total Amount</span><span>&#2547;' + fmtBDT(grandTotal) + '</span></div>';
-
-  if (fields.method === 'bKash') {
-      document.getElementById('modal-success-title').textContent = "Payment Received!";
-      document.getElementById('modal-success-msg').innerHTML = "We have received your TrxID: <b class='text-forest'>" + esc(fields.trxid) + "</b>. We will verify your payment shortly and dispatch your package.";
-      
-      // The Alert You Requested
-      alert("⚠️ NEW ORDER ALERT!\n\nYou have successfully submitted Transaction ID: " + fields.trxid + "\nYour order is now pending verification.");
-  } else {
-      document.getElementById('modal-success-title').textContent = "Order Confirmed!";
-      document.getElementById('modal-success-msg').textContent = "Please prepare exact cash to pay the rider upon delivery.";
-  }
+  
+  successHtml += '<div class="mt-6 pt-4 border-t border-dashed border-slate-300">';
+  successHtml += sRow('TrxID',   '<span class="text-[#E2136E] font-bold font-mono">' + esc(fields.trxid) + '</span>');
+  successHtml += sRow('Name',    esc(fields.name));
+  successHtml += sRow('Phone',   esc(fields.phone));
+  successHtml += '</div>';
 
   document.getElementById('success-rows').innerHTML = successHtml;
 
@@ -1194,17 +1134,7 @@ function sRow(label, value) {
 function setBusy(busy) {
   document.getElementById('confirm-btn').disabled          = busy;
   document.getElementById('btn-spinner').style.display     = busy ? 'inline-block' : 'none';
-  
-  if(busy) {
-      document.getElementById('btn-text').textContent = 'Processing...';
-  } else {
-      const method = document.querySelector('input[name="payment_method"]:checked');
-      if (method && method.value === 'bKash') {
-          document.getElementById('btn-text').textContent = 'Verify Payment & Confirm Order';
-      } else {
-          document.getElementById('btn-text').textContent = 'Confirm Cash on Delivery Order';
-      }
-  }
+  document.getElementById('btn-text').textContent          = busy ? 'Verifying TrxID...' : 'Confirm Order & Submit TrxID';
 }
 
 /* ═══════════════════════════════════════════════
