@@ -49,7 +49,7 @@
     --forest:       #016236;
     --charcoal:     #020706;
     --surface:      #FFFFFF;
-    --border:       #E2E8F0; /* FIX: Added the missing border color back! */
+    --border:       #E2E8F0;
   }
   
   *, *::before, *::after { box-sizing: border-box; }
@@ -95,7 +95,7 @@
   .btn-primary:active:not(:disabled) { transform: translateY(0) scale(0.98); }
   .btn-primary:disabled { opacity: .65; cursor: not-allowed; transform: none; box-shadow: none; }
 
-  /* FIX: Upgraded Package Selector Buttons (Pills) */
+  /* Package Selector Buttons (Pills) */
   .pkg-btn {
     font-family: 'Inter', sans-serif;
     font-size: 0.9rem; font-weight: 700;
@@ -339,7 +339,7 @@
 <section id="products-section" class="py-20 lg:py-32 relative z-20">
   <div class="max-w-[80rem] mx-auto px-6 lg:px-8">
     <div class="max-w-2xl mb-16 text-center mx-auto">
-      <p class="font-mono text-forest text-sm font-bold tracking-widest uppercase mb-3 bg-forest/5 inline-block px-4 py-1.5 rounded-full">Farm Direct</p>
+      <p class="font-mono text-forest text-sm font-bold tracking-widest uppercase mb-3 bg-forest/5 inline-block px-4 py-1.5 rounded-full">100% Organic Feed</p>
       <h2 class="font-display text-4xl lg:text-5xl font-extrabold text-charcoal mb-4 tracking-tight">Choose Your Live Feed</h2>
       <p class="text-lg text-[#475569] font-medium">Mix and match different items into your cart. Nationwide delivery at a single flat rate.</p>
     </div>
@@ -525,6 +525,40 @@
           <textarea id="f-address" rows="3" placeholder="House no., road, area, upazila, district" class="input-field resize-none"></textarea>
           <span id="e-address" class="hidden text-xs text-red-500 font-bold mt-1.5"></span>
         </div>
+
+        <!-- NEW: Payment Method Selection -->
+        <div class="mt-4 border-t border-slate-100 pt-4">
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Payment Method</label>
+            <div class="grid grid-cols-2 gap-3">
+                <label class="border-2 border-forest bg-forest/5 rounded-xl p-3 flex items-center gap-2 cursor-pointer transition-all payment-option" id="lbl-cod">
+                    <input type="radio" name="payment_method" value="COD" checked class="hidden" onchange="togglePaymentUI()">
+                    <div class="w-4 h-4 rounded-full border-2 border-forest flex items-center justify-center p-rad">
+                        <div class="w-2 h-2 bg-forest rounded-full"></div>
+                    </div>
+                    <span class="font-bold text-sm text-slate-800">Cash on Delivery</span>
+                </label>
+                <label class="border-2 border-slate-200 bg-slate-50 rounded-xl p-3 flex items-center gap-2 cursor-pointer transition-all payment-option" id="lbl-bkash">
+                    <input type="radio" name="payment_method" value="bKash" class="hidden" onchange="togglePaymentUI()">
+                    <div class="w-4 h-4 rounded-full border-2 border-slate-300 flex items-center justify-center p-rad">
+                        <div class="w-2 h-2 bg-transparent rounded-full"></div>
+                    </div>
+                    <span class="font-bold text-sm text-slate-800">bKash / Nagod</span>
+                </label>
+            </div>
+        </div>
+
+        <!-- NEW: bKash Details (Hidden by default) -->
+        <div id="bkash-details" class="hidden mt-4 p-4 bg-[#E2136E]/5 border border-[#E2136E]/20 rounded-xl transition-all">
+            <p class="text-sm font-bold text-slate-800 mb-1">Send Money to: <span class="text-[#E2136E] text-lg font-mono tracking-wider ml-1">017XXXXXXXX</span></p> <!-- UPDATE YOUR NUMBER HERE -->
+            <p class="text-xs text-slate-500 mb-4">Please send the exact total amount via bKash or Nagod (Send Money) and enter the Transaction ID below.</p>
+            
+            <div>
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Transaction ID (TrxID)</label>
+                <input id="f-trxid" type="text" placeholder="e.g. 8N3A6H2..." class="input-field uppercase font-mono tracking-wide">
+                <span id="e-trxid" class="hidden text-xs text-red-500 font-bold mt-1.5"></span>
+            </div>
+        </div>
+
       </div>
       
       <p id="submit-error" class="hidden text-sm text-red-600 font-bold mt-4 p-3 bg-red-50 rounded-lg border border-red-100"></p>
@@ -542,8 +576,9 @@
           <polyline points="20 6 9 17 4 12"/>
         </svg>
       </div>
-      <h3 class="font-display text-charcoal text-3xl font-extrabold tracking-tight mb-2">Order Confirmed!</h3>
-      <p id="order-ref" class="font-mono text-[#64748B] font-bold mb-8"></p>
+      <h3 id="modal-success-title" class="font-display text-charcoal text-3xl font-extrabold tracking-tight mb-2">Order Confirmed!</h3>
+      <p id="order-ref" class="font-mono text-[#64748B] font-bold mb-3"></p>
+      <p id="modal-success-msg" class="text-sm text-slate-500 font-medium mb-8"></p>
       
       <div id="success-rows" class="text-left bg-slate-50 border border-slate-100 rounded-2xl p-5 mb-8"></div>
       
@@ -976,7 +1011,7 @@ function proceedToCheckout() {
   document.getElementById('modal-recap').innerHTML =
     '<div style="padding:1rem;border-radius:1rem;background:#F0FDF4;border:1px solid #BBF7D0;display:flex;align-items:center;gap:.75rem;">' +
       '<div class="w-8 h-8 rounded-full bg-forest text-white flex items-center justify-center shrink-0 shadow-sm"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div>' +
-      '<p style="font-weight:700;font-size:.95rem;color:var(--forest);margin:0;">' + CART.length + ' item(s) ready for Cash on Delivery</p>' +
+      '<p style="font-weight:700;font-size:.95rem;color:var(--forest);margin:0;">' + CART.length + ' item(s) in cart</p>' +
     '</div>';
 
   document.getElementById('modal-price-breakdown').innerHTML =
@@ -984,13 +1019,55 @@ function proceedToCheckout() {
     '<div class="price-row"><span>Delivery (Flat Rate)</span><span>&#2547;' + fmtBDT(DELIVERY_CHARGE) + '</span></div>' +
     '<div class="price-row total-line border-t border-slate-200 mt-2 pt-2"><span>Grand Total</span><span>&#2547;' + fmtBDT(grandTotal) + '</span></div>';
 
-  ['f-name','f-phone','f-address'].forEach(function(id){ document.getElementById(id).value = ''; });
-  ['e-name','e-phone','e-address'].forEach(function(id){ document.getElementById(id).style.display = 'none'; });
+  // RESET FORM
+  ['f-name','f-phone','f-address', 'f-trxid'].forEach(function(id){ document.getElementById(id).value = ''; });
+  ['e-name','e-phone','e-address', 'e-trxid'].forEach(function(id){ document.getElementById(id).style.display = 'none'; });
   document.getElementById('submit-error').style.display = 'none';
+  
+  // Default to COD
+  document.querySelector('input[value="COD"]').checked = true;
+  togglePaymentUI();
+
   setBusy(false);
 
   document.getElementById('modal-cart').style.display = 'none';
   document.getElementById('modal-form').style.display = '';
+}
+
+function togglePaymentUI() {
+    const method = document.querySelector('input[name="payment_method"]:checked').value;
+    const codLbl = document.getElementById('lbl-cod');
+    const bkashLbl = document.getElementById('lbl-bkash');
+    const bkashDetails = document.getElementById('bkash-details');
+    const btnText = document.getElementById('btn-text');
+
+    if (method === 'COD') {
+        codLbl.classList.replace('border-slate-200', 'border-forest');
+        codLbl.classList.replace('bg-slate-50', 'bg-forest/5');
+        codLbl.querySelector('.p-rad div').classList.replace('bg-transparent', 'bg-forest');
+        codLbl.querySelector('.p-rad').classList.replace('border-slate-300', 'border-forest');
+
+        bkashLbl.classList.replace('border-forest', 'border-slate-200');
+        bkashLbl.classList.replace('bg-forest/5', 'bg-slate-50');
+        bkashLbl.querySelector('.p-rad div').classList.replace('bg-forest', 'bg-transparent');
+        bkashLbl.querySelector('.p-rad').classList.replace('border-forest', 'border-slate-300');
+        
+        bkashDetails.classList.add('hidden');
+        btnText.textContent = 'Confirm Cash on Delivery Order';
+    } else {
+        bkashLbl.classList.replace('border-slate-200', 'border-forest');
+        bkashLbl.classList.replace('bg-slate-50', 'bg-forest/5');
+        bkashLbl.querySelector('.p-rad div').classList.replace('bg-transparent', 'bg-forest');
+        bkashLbl.querySelector('.p-rad').classList.replace('border-slate-300', 'border-forest');
+
+        codLbl.classList.replace('border-forest', 'border-slate-200');
+        codLbl.classList.replace('bg-forest/5', 'bg-slate-50');
+        codLbl.querySelector('.p-rad div').classList.replace('bg-forest', 'bg-transparent');
+        codLbl.querySelector('.p-rad').classList.replace('border-forest', 'border-slate-300');
+
+        bkashDetails.classList.remove('hidden');
+        btnText.textContent = 'Verify Payment & Confirm Order';
+    }
 }
 
 function closeModal() {
@@ -1016,15 +1093,24 @@ function setErr(field, msg) {
 function clearErr(field) { document.getElementById('e-' + field).style.display = 'none'; }
 
 function validate() {
-  clearErr('name'); clearErr('phone'); clearErr('address');
+  clearErr('name'); clearErr('phone'); clearErr('address'); clearErr('trxid');
   var name    = document.getElementById('f-name').value.trim();
   var phone   = document.getElementById('f-phone').value.trim();
   var address = document.getElementById('f-address').value.trim();
+  var method  = document.querySelector('input[name="payment_method"]:checked').value;
+  var trxid   = document.getElementById('f-trxid').value.trim();
+
   var ok = true;
   if (!name)                           { setErr('name',    'Please enter your full name.');                    ok = false; }
   if (!/^01[3-9]\d{8}$/.test(phone))  { setErr('phone',   'Enter a valid BD number, e.g. 01712345678.');     ok = false; }
   if (!address || address.length < 10) { setErr('address', 'Please enter your full delivery address.');        ok = false; }
-  return ok ? { name: name, phone: phone, address: address } : null;
+  
+  if (method === 'bKash' && !trxid) { 
+      setErr('trxid', 'Transaction ID is required for bKash/Nagod payment.'); 
+      ok = false; 
+  }
+
+  return ok ? { name: name, phone: phone, address: address, method: method, trxid: trxid } : null;
 }
 
 async function submitOrder() {
@@ -1033,15 +1119,6 @@ async function submitOrder() {
 
   setBusy(true);
   document.getElementById('submit-error').style.display = 'none';
-
-  var dupeCheck = await db.from('orders').select('id').eq('customer_phone', fields.phone).eq('order_status', 'pending');
-  if (dupeCheck.data && dupeCheck.data.length > 0) {
-    setBusy(false);
-    var errEl = document.getElementById('submit-error');
-    errEl.textContent   = 'You already have an active order being processed. Please wait for delivery before placing a new one.';
-    errEl.style.display = 'block';
-    return;
-  }
 
   var payloads = CART.map(function(item, index) {
     var perUnit = Math.round((item.total / item.qty + Number.EPSILON) * 100) / 100;
@@ -1056,7 +1133,9 @@ async function submitOrder() {
       total_amount:     rowTotal,
       customer_name:    fields.name,
       customer_phone:   fields.phone,
-      delivery_address: fields.address
+      delivery_address: fields.address,
+      payment_method:   fields.method,
+      transaction_id:   fields.trxid
     };
   });
 
@@ -1086,13 +1165,18 @@ async function submitOrder() {
   
   var grandTotal = subtotal + DELIVERY_CHARGE;
   successHtml += sRow('Delivery', '&#2547;' + fmtBDT(DELIVERY_CHARGE));
-  successHtml += '<div class="sum-row total-line border-t border-slate-200 mt-2 pt-2"><span>Total (COD)</span><span>&#2547;' + fmtBDT(grandTotal) + '</span></div>';
-  
-  successHtml += '<div class="mt-6 pt-4 border-t border-dashed border-slate-300">';
-  successHtml += sRow('Name',    esc(fields.name));
-  successHtml += sRow('Phone',   esc(fields.phone));
-  successHtml += sRow('Address', esc(fields.address));
-  successHtml += '</div>';
+  successHtml += '<div class="sum-row total-line border-t border-slate-200 mt-2 pt-2"><span>Total Amount</span><span>&#2547;' + fmtBDT(grandTotal) + '</span></div>';
+
+  if (fields.method === 'bKash') {
+      document.getElementById('modal-success-title').textContent = "Payment Received!";
+      document.getElementById('modal-success-msg').innerHTML = "We have received your TrxID: <b class='text-forest'>" + esc(fields.trxid) + "</b>. We will verify your payment shortly and dispatch your package.";
+      
+      // The Alert You Requested
+      alert("⚠️ NEW ORDER ALERT!\n\nYou have successfully submitted Transaction ID: " + fields.trxid + "\nYour order is now pending verification.");
+  } else {
+      document.getElementById('modal-success-title').textContent = "Order Confirmed!";
+      document.getElementById('modal-success-msg').textContent = "Please prepare exact cash to pay the rider upon delivery.";
+  }
 
   document.getElementById('success-rows').innerHTML = successHtml;
 
@@ -1110,7 +1194,17 @@ function sRow(label, value) {
 function setBusy(busy) {
   document.getElementById('confirm-btn').disabled          = busy;
   document.getElementById('btn-spinner').style.display     = busy ? 'inline-block' : 'none';
-  document.getElementById('btn-text').textContent          = busy ? 'Placing order…' : 'Confirm Cash on Delivery Order';
+  
+  if(busy) {
+      document.getElementById('btn-text').textContent = 'Processing...';
+  } else {
+      const method = document.querySelector('input[name="payment_method"]:checked');
+      if (method && method.value === 'bKash') {
+          document.getElementById('btn-text').textContent = 'Verify Payment & Confirm Order';
+      } else {
+          document.getElementById('btn-text').textContent = 'Confirm Cash on Delivery Order';
+      }
+  }
 }
 
 /* ═══════════════════════════════════════════════
@@ -1160,5 +1254,3 @@ document.addEventListener('DOMContentLoaded', init);
 
 </body>
 </html>
-
-
