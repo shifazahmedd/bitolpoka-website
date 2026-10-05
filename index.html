@@ -533,13 +533,16 @@
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E2136E" stroke-width="2.5" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
                     <p class="text-sm font-extrabold text-slate-900">Advance Payment Required</p>
                 </div>
-                <p class="text-[0.8rem] text-slate-600 mb-4 font-medium leading-relaxed">
+                
+                <!-- Dynamic Instructions pulled from Admin Panel -->
+                <p id="display-payment-instructions" class="text-[0.8rem] text-slate-600 mb-4 font-medium leading-relaxed">
                     To confirm your order, please send your payment to our bKash/Nagod Personal number via <b>Send Money</b>. Enter your TrxID below.
                 </p>
                 
                 <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Send Money to:</p>
                 <div class="flex items-center justify-between bg-white px-4 py-2.5 rounded-xl border border-slate-200 mb-4 shadow-sm">
-                    <span class="text-[#E2136E] text-lg font-mono font-bold tracking-wider">017XXXXXXXX</span>
+                    <!-- Dynamic Number pulled from Admin Panel -->
+                    <span id="display-bkash-number" class="text-[#E2136E] text-lg font-mono font-bold tracking-wider">017XXXXXXXX</span>
                 </div>
                 
                 <div>
@@ -703,6 +706,8 @@ var PRODUCTS         = [];
 var CARD_STATE       = [];
 var CART             = [];
 var DELIVERY_CHARGE  = 150;
+var BKASH_NUMBER     = '017XXXXXXXX';
+var PAYMENT_INSTRUCTIONS = '';
 
 /* ═══════════════════════════════════════════════
    GUIDES MODAL LOGIC
@@ -1142,7 +1147,7 @@ function setBusy(busy) {
    ═══════════════════════════════════════════════ */
 async function init() {
   var results = await Promise.all([
-    db.from('store_settings').select('whatsapp_number, delivery_charge').eq('id', 1).single(),
+    db.from('store_settings').select('*').eq('id', 1).single(),
     db.from('products').select('*')
   ]);
 
@@ -1157,6 +1162,14 @@ async function init() {
       var fab = document.getElementById('wa-fab');
       fab.href = 'https://wa.me/' + num;
       fab.style.display = 'flex';
+    }
+    
+    // Inject Dynamic bKash Settings
+    if (s.bkash_number) {
+        document.getElementById('display-bkash-number').textContent = s.bkash_number;
+    }
+    if (s.payment_instructions) {
+        document.getElementById('display-payment-instructions').innerHTML = s.payment_instructions;
     }
   }
 
