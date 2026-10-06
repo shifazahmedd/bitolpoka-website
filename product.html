@@ -4,52 +4,158 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Product Details — Bitolpoka</title>
+
 <script>
   if (window.location.protocol === 'http:' && window.location.hostname !== 'localhost') {
     window.location.href = window.location.href.replace('http:', 'https:');
   }
 </script>
+
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
 <script>
   tailwind.config = {
     theme: {
       extend: {
-        colors: { canvas: '#FCF9FA', forest: '#016236', charcoal: '#020706', borderline: '#E2E8F0' },
-        fontFamily: { display: ['Fraunces', 'serif'], sans: ['Inter', 'sans-serif'] }
+        colors: {
+          canvas: '#FCF9FA',
+          forest: '#016236',
+          forestHover: '#014A28',
+          charcoal: '#020706',
+          surface: '#FFFFFF',
+          borderline: '#E2E8F0', 
+        },
+        boxShadow: {
+          'premium': '0 20px 40px -15px rgba(1, 98, 54, 0.1)',
+          'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.07)',
+        }
       }
     }
   }
 </script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+
 <style>
-  body { background: #FCF9FA; color: #020706; font-family: 'Inter', sans-serif;}
-  .btn-primary { background: #016236; color: white; transition: all 0.2s; box-shadow: 0 4px 14px rgba(1,98,54,0.15); display: inline-flex; align-items: center; justify-content: center; border: none; cursor: pointer;}
-  .btn-primary:hover { background: #014A28; transform: translateY(-2px); }
-  .pkg-btn { border: 2px solid #E2E8F0; background: white; color: #475569; transition: all 0.2s; padding: 0.6rem 1rem; border-radius: 0.75rem; font-weight: 700; cursor: pointer; white-space: nowrap;}
-  .pkg-btn.active { border-color: #016236; background: #016236; color: white; }
-  .slider-thumb { border: 2px solid transparent; opacity: 0.6; cursor: pointer; border-radius: 0.5rem; overflow: hidden; padding: 0; background: none; transition: all 0.15s;}
-  .slider-thumb.active { border-color: #016236; opacity: 1; }
+  :root {
+    --canvas:       #FCF9FA;
+    --forest:       #016236;
+    --charcoal:     #020706;
+    --surface:      #FFFFFF;
+    --border:       #E2E8F0;
+  }
   
-  /* Modals (Mirrored from index.html) */
-  .modal-overlay { display: none; position: fixed; inset: 0; z-index: 50; align-items: center; justify-content: center; padding: 1rem; background: rgba(2, 7, 6, 0.5); backdrop-filter: blur(8px); opacity: 0; transition: opacity 0.3s ease; }
+  *, *::before, *::after { box-sizing: border-box; }
+  body { 
+    font-family: 'Inter', system-ui, sans-serif; 
+    background: var(--canvas); 
+    color: var(--charcoal); 
+    margin: 0; 
+    -webkit-font-smoothing: antialiased;
+  }
+  .font-display { font-family: 'Fraunces', serif; }
+  .font-mono    { font-family: 'IBM Plex Mono', monospace; }
+
+  /* Premium Buttons */
+  .btn-primary {
+    background: var(--forest); 
+    color: var(--surface);
+    border: none; 
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    box-shadow: 0 10px 25px -5px rgba(1, 98, 54, 0.3);
+  }
+  .btn-primary:hover:not(:disabled) { 
+    background: #014A28; 
+    transform: translateY(-3px) scale(1.02); 
+    box-shadow: 0 20px 35px -5px rgba(1, 98, 54, 0.4);
+  }
+  .btn-primary:active:not(:disabled) { transform: translateY(0) scale(0.98); }
+  .btn-primary:disabled { opacity: .65; cursor: not-allowed; transform: none; box-shadow: none; }
+
+  /* Package Selector Buttons (Pills) */
+  .pkg-btn {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9rem; font-weight: 700;
+    padding: 0.6rem 1rem; border-radius: 0.75rem; cursor: pointer;
+    border: 2px solid var(--border);
+    background: #F8FAFC; color: #475569;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    display: inline-block;
+  }
+  .pkg-btn:hover { 
+    border-color: var(--forest); 
+    background: #F0FDF4; 
+    color: var(--forest); 
+  }
+  .pkg-btn.active {
+    border-color: var(--forest); 
+    background: var(--forest);
+    color: var(--surface); 
+    box-shadow: 0 4px 12px rgba(1, 98, 54, 0.25);
+  }
+  .pkg-error { font-size: .75rem; color: #DC2626; margin-top: .5rem; display: none; font-weight: 600; }
+
+  /* Form Inputs */
+  .input-field {
+    width: 100%; border: 1.5px solid var(--border);
+    background: #F8FAFC; border-radius: 1rem;
+    padding: 1rem 1.25rem; font-size: 1rem; font-weight: 500; color: var(--charcoal);
+    outline: none; transition: all 0.2s ease; font-family: inherit;
+  }
+  .input-field:focus { 
+    border-color: var(--forest); 
+    background: var(--surface);
+    box-shadow: 0 0 0 4px rgba(1, 98, 54, 0.1); 
+  }
+
+  /* Slider */
+  .slider-thumb { border: 2px solid transparent; opacity: 0.6; cursor: pointer; border-radius: 0.5rem; overflow: hidden; transition: all 0.15s;}
+  .slider-thumb.active { border-color: var(--forest); opacity: 1; }
+
+  /* Modal Overlays */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; z-index: 50;
+    align-items: center; justify-content: center; padding: 1rem;
+    background: rgba(2, 7, 6, 0.5); backdrop-filter: blur(8px);
+    opacity: 0; transition: opacity 0.3s ease;
+  }
   .modal-overlay.open { display: flex; opacity: 1; }
-  .modal-box { background: #FFFFFF; border-radius: 2rem; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); transform: translateY(20px) scale(0.95); transition: all 0.3s ease; padding: 2rem;}
+  
+  .modal-box {
+    background: var(--surface); border-radius: 2rem;
+    width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    transform: translateY(20px) scale(0.95); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
   .modal-overlay.open .modal-box { transform: translateY(0) scale(1); }
-  .input-field { width: 100%; border: 1.5px solid #E2E8F0; background: #F8FAFC; border-radius: 1rem; padding: 1rem 1.25rem; font-size: 1rem; font-weight: 500; color: #020706; outline: none; transition: all 0.2s ease; }
-  .input-field:focus { border-color: #016236; background: #FFFFFF; box-shadow: 0 0 0 4px rgba(1, 98, 54, 0.1); }
-  .price-row, .sum-row { display: flex; justify-content: space-between; padding: 0.75rem 0; border-bottom: 1px dashed #E2E8F0; }
-  .sum-row.total-line { border-bottom: none; font-weight: bold; font-size: 1.1rem;}
+
+  /* Checkout Rows */
+  .price-row, .sum-row { display: flex; justify-content: space-between; gap: 1rem; padding: 0.75rem 0; font-size: 0.95rem; border-bottom: 1px dashed #E2E8F0; }
+  .price-row span:first-child, .sum-row span:first-child { color: #64748B; font-weight: 500; }
+  .price-row span:last-child, .sum-row span:last-child  { color: var(--charcoal); font-weight: 700; text-align: right; }
+  .price-row.total-line, .sum-row.total-line { border-bottom: none; margin-top: 0.5rem; padding-top: 1rem; }
+  .price-row.total-line span:first-child, .sum-row.total-line span:first-child { color: var(--charcoal); font-weight: 800; font-size: 1.1rem;}
+  .price-row.total-line span:last-child, .sum-row.total-line span:last-child { color: var(--forest); font-size: 1.3rem; font-weight: 800; font-family: 'Fraunces', serif; }
 </style>
 </head>
-<body class="antialiased flex flex-col min-h-screen">
+<body class="bg-canvas text-charcoal flex flex-col min-h-screen">
 
-<header class="fixed w-full top-0 z-40 bg-white/80 backdrop-blur-xl border-b border-gray-200 shadow-sm">
-  <div class="max-w-[80rem] mx-auto px-6 py-4 flex justify-between items-center">
-    <a href="index.html" class="flex items-center gap-3 group">
-      <div class="w-10 h-10 rounded-2xl bg-forest flex items-center justify-center transition-transform group-hover:scale-105"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22V12M12 12C12 7 8 5 4 5c0 5 3 8 8 8M12 12c0-5 4-7 8-7 0 5-3 8-8 8"/></svg></div>
-      <span class="font-display font-bold text-[1.4rem] tracking-tight">Bitolpoka</span>
+<header class="fixed w-full top-0 z-40 bg-white/70 backdrop-blur-xl border-b border-white/20 transition-all duration-300 shadow-sm">
+  <div class="max-w-[80rem] mx-auto px-6 py-4 flex items-center justify-between">
+    <a href="index.html" class="flex items-center gap-3 cursor-pointer group">
+      <div class="w-10 h-10 rounded-2xl bg-forest flex items-center justify-center shadow-lg shadow-forest/20 transition-transform group-hover:scale-105">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22V12"/><path d="M12 12C12 7 8 5 4 5c0 5 3 8 8 8"/><path d="M12 12c0-5 4-7 8-7 0 5-3 8-8 8"/>
+        </svg>
+      </div>
+      <span class="font-display text-[1.4rem] font-bold text-charcoal tracking-tight">Bitolpoka</span>
     </a>
+    
     <button id="cart-header-btn" class="hidden items-center gap-2 px-4 py-2.5 rounded-2xl bg-forest/5 text-forest font-bold text-sm transition-all hover:bg-forest/10 hover:scale-105" onclick="openCartModal()">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
       <span class="bg-forest text-white px-2 py-0.5 rounded-full text-xs" id="cart-count">0</span>
@@ -58,245 +164,460 @@
 </header>
 
 <main class="flex-grow pt-32 pb-20 max-w-[60rem] mx-auto px-6 w-full">
-  <a href="index.html" class="text-forest font-bold text-sm mb-6 inline-flex items-center gap-2 hover:underline"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg> Back to Home</a>
+  <a href="index.html" class="text-forest font-bold text-sm mb-6 inline-flex items-center gap-2 hover:underline">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg> Back to Shop
+  </a>
   
-  <div id="loading" class="text-center py-20 text-gray-500 font-bold animate-pulse">Loading product details...</div>
-  <div id="error" class="hidden text-center py-20 text-red-500 font-bold">Product not found.</div>
+  <div id="loading-state" class="text-center py-20 text-slate-400 font-bold animate-pulse">Loading Product Data...</div>
+  <div id="error-state" class="hidden text-center py-20 text-red-500 font-bold">Product not found.</div>
 
   <div id="product-container" class="hidden grid grid-cols-1 md:grid-cols-2 gap-12 bg-white rounded-[2rem] p-8 border border-borderline shadow-sm">
-    <!-- Image Gallery -->
-    <div>
-      <div class="aspect-square bg-slate-50 rounded-2xl border border-gray-200 overflow-hidden mb-4 relative">
-        <img id="main-image" src="" class="w-full h-full object-cover transition-opacity duration-300">
-      </div>
-      <div id="thumbnail-container" class="flex gap-3 overflow-x-auto pb-2"></div>
-    </div>
-
-    <!-- Info -->
-    <div class="flex flex-col">
-      <div class="mb-6 border-b border-gray-100 pb-6">
-        <span id="p-category" class="text-[10px] font-bold px-3 py-1 bg-forest/10 text-forest rounded-full uppercase tracking-wider mb-3 inline-block"></span>
-        <h1 id="p-name" class="font-display text-3xl md:text-4xl font-extrabold text-charcoal mb-4 tracking-tight"></h1>
-        <div class="flex items-baseline gap-2 mb-3">
-          <span id="p-price" class="font-display text-4xl font-extrabold text-forest"></span>
-          <span id="p-unit" class="text-gray-500 font-medium"></span>
-        </div>
-        <div id="p-payment" class="hidden p-2.5 bg-pink-50 border border-pink-100 rounded-xl inline-flex items-center gap-2 text-pink-600">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-            <span class="text-[10px] font-bold uppercase tracking-wider">Advance Payment Required</span>
-        </div>
-      </div>
-
-      <div class="mb-8 flex-grow">
-        <p id="p-desc" class="text-slate-600 leading-relaxed font-medium whitespace-pre-wrap"></p>
-      </div>
-
-      <div>
-        <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Select Package</p>
-        <div id="package-container" class="flex flex-wrap gap-2 mb-4"></div>
-        <p id="pkg-err" class="hidden text-red-500 text-sm font-bold mb-4">Please select a package size.</p>
-        
-        <div class="flex items-center justify-between border-t border-gray-100 pt-6 mt-4">
-          <div>
-            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Subtotal</p>
-            <p id="subtotal" class="font-mono text-xl font-bold text-charcoal">৳0</p>
-          </div>
-          <button onclick="addToCart()" id="add-btn" class="btn-primary px-8 py-3.5 rounded-xl font-bold text-lg">Add to Cart</button>
-        </div>
-      </div>
-    </div>
+    <!-- Visuals injected here -->
   </div>
 </main>
 
-<!-- CART / CHECKOUT MODALS -->
+<footer class="bg-charcoal pt-10 pb-8 text-center text-white/40 text-sm font-medium">
+  <p>&copy; 2026 Bitolpoka Farms. All rights reserved.</p>
+</footer>
+
 <div id="modal-overlay" class="modal-overlay" onclick="overlayClick(event)">
   <div id="modal-box" class="modal-box">
     
-    <div id="modal-cart" style="display:none;">
+    <!-- CART VIEW -->
+    <div id="modal-cart" style="display:none; padding: 2rem;">
       <div class="flex justify-between items-start mb-6">
-        <div><h3 class="font-display text-3xl font-extrabold tracking-tight">Shopping Cart</h3></div>
-        <button onclick="closeModal()" class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-500"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+        <div>
+          <p class="font-mono text-forest text-xs font-bold uppercase tracking-widest mb-1">Your Selection</p>
+          <h3 class="font-display text-charcoal text-3xl font-extrabold tracking-tight">Shopping Cart</h3>
+        </div>
+        <button onclick="closeModal()" aria-label="Close" class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200 transition-colors">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
       </div>
+      
       <div id="cart-items-container" class="mb-6 max-h-[40vh] overflow-y-auto pr-2"></div>
       <div class="bg-slate-50 p-5 rounded-2xl border border-slate-100 mb-6"><div id="cart-price-breakdown"></div></div>
+      
       <button class="btn-primary w-full py-4 rounded-2xl text-lg font-bold" onclick="proceedToCheckout()">Proceed to Checkout</button>
+      <button onclick="closeModal()" class="w-full mt-4 py-2 text-slate-500 font-bold hover:text-charcoal transition-colors">Continue Shopping</button>
     </div>
 
-    <div id="modal-form" style="display:none;">
-      <button onclick="openCartModal()" class="text-forest font-bold text-sm mb-4 hover:underline">&larr; Back to Cart</button>
-      <h3 class="font-display text-3xl font-extrabold mb-4">Delivery Details</h3>
+    <!-- FORM VIEW -->
+    <div id="modal-form" style="display:none; padding: 2rem;">
+      <div class="mb-6">
+        <button onclick="openCartModal()" class="flex items-center gap-2 text-forest font-bold text-sm mb-4 hover:underline">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg> Back to Cart
+        </button>
+        <h3 class="font-display text-charcoal text-3xl font-extrabold tracking-tight">Delivery Details</h3>
+      </div>
+      
       <div id="modal-recap" class="mb-4"></div>
+      <div id="modal-price-breakdown" class="mb-6 bg-slate-50 p-4 rounded-xl border border-slate-100"></div>
       
       <div class="space-y-4">
-        <input id="f-name" type="text" placeholder="Full Name" class="input-field"><span id="e-name" class="hidden text-xs text-red-500 font-bold"></span>
-        <input id="f-phone" type="tel" placeholder="Phone (01...)" class="input-field"><span id="e-phone" class="hidden text-xs text-red-500 font-bold"></span>
-        <textarea id="f-address" rows="2" placeholder="Full Address" class="input-field resize-none"></textarea><span id="e-address" class="hidden text-xs text-red-500 font-bold"></span>
-        
-        <div id="advance-payment-section" class="hidden mt-4 p-4 bg-pink-50 border border-pink-100 rounded-xl">
-            <p class="text-sm font-bold text-slate-900 mb-2">Advance Payment Required</p>
-            <p id="payment-instructions" class="text-xs text-slate-600 mb-2"></p>
-            <p class="font-mono font-bold text-[#E2136E] mb-3" id="bkash-number-display"></p>
-            <input id="f-trxid" type="text" placeholder="TrxID" class="input-field"><span id="e-trxid" class="hidden text-xs text-red-500 font-bold"></span>
+        <div>
+          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Full Name</label>
+          <input id="f-name" type="text" placeholder="e.g. Rafiqul Islam" class="input-field">
+          <span id="e-name" class="hidden text-xs text-red-500 font-bold mt-1.5"></span>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Phone Number</label>
+          <input id="f-phone" type="tel" inputmode="numeric" maxlength="11" placeholder="01XXXXXXXXX" class="input-field">
+          <span id="e-phone" class="hidden text-xs text-red-500 font-bold mt-1.5"></span>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Full Delivery Address</label>
+          <textarea id="f-address" rows="3" placeholder="House no., road, area, upazila, district" class="input-field resize-none"></textarea>
+          <span id="e-address" class="hidden text-xs text-red-500 font-bold mt-1.5"></span>
+        </div>
+
+        <!-- DYNAMIC ADVANCE PAYMENT BLOCK -->
+        <div id="advance-payment-block" class="mt-6 border-t border-slate-100 pt-6" style="display:none;">
+            <div class="p-5 bg-gradient-to-r from-pink-50 to-orange-50 border border-pink-100 rounded-2xl">
+                <div class="flex items-center gap-2 mb-2">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E2136E" stroke-width="2.5" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                    <p class="text-sm font-extrabold text-slate-900">Advance Payment Required</p>
+                </div>
+                <p id="display-payment-instructions" class="text-[0.8rem] text-slate-600 mb-4 font-medium leading-relaxed"></p>
+                <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Send Money to:</p>
+                <div class="flex items-center justify-between bg-white px-4 py-2.5 rounded-xl border border-slate-200 mb-4 shadow-sm">
+                    <span id="display-bkash-number" class="text-[#E2136E] text-lg font-mono font-bold tracking-wider"></span>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Transaction ID (TrxID)</label>
+                    <input id="f-trxid" type="text" placeholder="e.g. 8N3A6H2..." class="input-field uppercase font-mono tracking-wide" style="border-color: #fbcfe8;">
+                    <span id="e-trxid" class="hidden text-xs text-red-500 font-bold mt-1.5"></span>
+                </div>
+            </div>
         </div>
       </div>
-      <p id="submit-error" class="hidden text-sm text-red-600 font-bold mt-4"></p>
-      <button id="confirm-btn" class="btn-primary w-full py-4 rounded-2xl text-lg font-bold mt-6" onclick="submitOrder()"><span id="btn-text">Confirm Order</span></button>
+      
+      <p id="submit-error" class="hidden text-sm text-red-600 font-bold mt-4 p-3 bg-red-50 rounded-lg border border-red-100"></p>
+      
+      <button id="confirm-btn" class="btn-primary w-full py-4 rounded-2xl text-lg font-bold mt-6" onclick="submitOrder()">
+        <span id="btn-text">Confirm Order</span>
+      </button>
     </div>
 
-    <div id="modal-success" style="display:none; text-align: center;">
-      <h3 class="font-display text-3xl font-extrabold text-green-600 mb-2">Order Confirmed!</h3>
-      <p id="success-message" class="text-slate-600 font-medium mb-6">Thank you.</p>
-      <button class="btn-primary w-full py-4 rounded-2xl text-lg font-bold" onclick="closeModal()">Done</button>
+    <!-- SUCCESS VIEW -->
+    <div id="modal-success" style="display:none; padding: 3rem 2rem; text-align: center;">
+      <div class="w-24 h-24 rounded-[2rem] bg-green-50 border border-green-100 text-green-600 flex items-center justify-center mx-auto mb-6 shadow-sm">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+      </div>
+      <h3 id="success-title" class="font-display text-charcoal text-3xl font-extrabold tracking-tight mb-2">Order Confirmed!</h3>
+      <p id="success-subtitle" class="font-mono text-forest text-sm font-bold tracking-widest uppercase mb-4" style="display:none;"></p>
+      <p id="success-message-text" class="text-sm text-slate-600 font-medium mb-8 leading-relaxed"></p>
+      <div id="success-rows" class="text-left bg-slate-50 border border-slate-100 rounded-2xl p-5 mb-8"></div>
+      <button class="btn-primary w-full py-4 rounded-2xl text-lg font-bold" onclick="window.location.href='index.html'">Done</button>
     </div>
-
   </div>
 </div>
 
 <script>
-  const db = supabase.createClient('https://frifscjexvqhtptiwear.supabase.co', 'sb_publishable_BQFducZtr7aIkYW4G8t7VA_p77ORs24');
-  let product = null; let selectedPkg = null; let allPackages = []; let images = [];
-  let CART = []; let DELIVERY_CHARGE = 150; let STORE_SETTINGS = {};
+'use strict';
 
-  async function loadProduct() {
-    updateCartHeader();
-    const id = new URLSearchParams(window.location.search).get('id');
-    if (!id) return document.getElementById('error').classList.remove('hidden');
+/* ── Supabase client ── */
+var SUPABASE_URL      = 'https://frifscjexvqhtptiwear.supabase.co';
+var SUPABASE_ANON_KEY = 'sb_publishable_BQFducZtr7aIkYW4G8t7VA_p77ORs24';
+var db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    const [prodRes, setRes] = await Promise.all([
-        db.from('products').select('*').eq('id', id).single(),
-        db.from('store_settings').select('*').eq('id', 1).single()
-    ]);
+/* ── State ── */
+var PRODUCT          = null;
+var IMAGES           = [];
+var PACKAGES         = [];
+var SEL_PKG          = null;
+var CART             = JSON.parse(localStorage.getItem('bitolpoka_cart') || '[]');
+var DELIVERY_CHARGE  = 150;
+var STORE_SETTINGS   = {};
 
-    if(setRes.data) {
-        STORE_SETTINGS = setRes.data;
-        if(STORE_SETTINGS.delivery_charge) DELIVERY_CHARGE = Number(STORE_SETTINGS.delivery_charge);
-        if (STORE_SETTINGS.bkash_number) document.getElementById('bkash-number-display').textContent = "Send to: " + STORE_SETTINGS.bkash_number;
-        if (STORE_SETTINGS.payment_instructions) document.getElementById('payment-instructions').textContent = STORE_SETTINGS.payment_instructions;
-    }
+/* ═══════════════════════════════════════════════
+   UTILITIES & INIT
+   ═══════════════════════════════════════════════ */
+function esc(s) { return s == null ? '' : String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+function fmtBDT(n) { var v = Math.round((Number(n) + Number.EPSILON) * 100) / 100; return Number.isInteger(v) ? v.toString() : v.toFixed(2); }
 
-    if (prodRes.error || !prodRes.data) {
-        document.getElementById('loading').classList.add('hidden');
-        return document.getElementById('error').classList.remove('hidden');
-    }
-
-    product = prodRes.data;
-    document.getElementById('loading').classList.add('hidden');
-    document.getElementById('product-container').classList.remove('hidden');
-    renderProduct();
+async function loadProduct() {
+  updateCartHeader();
+  var params = new URLSearchParams(window.location.search);
+  var id = params.get('id');
+  if(!id) {
+      document.getElementById('loading-state').classList.add('hidden');
+      document.getElementById('error-state').classList.remove('hidden');
+      return;
   }
 
-  function renderProduct() {
-    document.getElementById('p-name').textContent = product.name;
-    document.getElementById('p-desc').textContent = product.description;
-    document.getElementById('p-category').textContent = product.category || 'Live Feed';
-    if(product.payment_option === 'Advance Payment') document.getElementById('p-payment').classList.remove('hidden');
+  var results = await Promise.all([
+    db.from('products').select('*').eq('id', id).single(),
+    db.from('store_settings').select('*').eq('id', 1).single()
+  ]);
 
-    // Parse Images safely
-    images = product.image_urls;
-    if(typeof images === 'string') { try { images = JSON.parse(images); } catch(e) { images = [images]; } }
-    if(!Array.isArray(images)) images = [];
-    images = images.filter(Boolean);
-
-    if(images.length > 0) {
-        document.getElementById('main-image').src = images[0];
-        if(images.length > 1) {
-            document.getElementById('thumbnail-container').innerHTML = images.map((img, i) => 
-            `<button onclick="setMainImage(${i})" class="slider-thumb w-16 h-16 shrink-0 ${i===0?'active':''}" id="thumb-${i}"><img src="${img}" class="w-full h-full object-cover"></button>`
-            ).join('');
-        }
-    } else {
-        document.getElementById('main-image').parentElement.innerHTML = `<div class="w-full h-full bg-slate-100 flex items-center justify-center text-slate-400">No Image</div>`;
-    }
-
-    // Parse Packages
-    if(product.packages) {
-      allPackages = product.packages.split(',').map(p => {
-        const [qty, price] = p.trim().split(':');
-        return { qty: parseInt(qty), price: parseFloat(price) };
-      }).filter(p => !isNaN(p.qty));
-    }
-    if(allPackages.length === 0) allPackages = [{ qty: 1, price: product.price }];
-
-    const unit = product.unit_type || 'pcs';
-    document.getElementById('package-container').innerHTML = allPackages.map((pkg, i) => 
-      `<button onclick="selectPkg(${i})" id="pkg-btn-${i}" class="pkg-btn">${pkg.qty} ${unit}</button>`
-    ).join('');
-
-    if(allPackages.length > 0) selectPkg(0);
+  if (results[1].data) {
+      STORE_SETTINGS = results[1].data;
+      if (STORE_SETTINGS.delivery_charge != null) DELIVERY_CHARGE = Number(STORE_SETTINGS.delivery_charge);
+      if (STORE_SETTINGS.bkash_number) {
+          var el = document.getElementById('display-bkash-number');
+          if(el) el.textContent = STORE_SETTINGS.bkash_number;
+      }
+      if (STORE_SETTINGS.payment_instructions) {
+          var el2 = document.getElementById('display-payment-instructions');
+          if(el2) el2.innerHTML = esc(STORE_SETTINGS.payment_instructions);
+      }
   }
 
-  window.setMainImage = function(idx) {
-    document.getElementById('main-image').src = images[idx];
-    document.querySelectorAll('.slider-thumb').forEach(el => el.classList.remove('active'));
-    if(document.getElementById(`thumb-${idx}`)) document.getElementById(`thumb-${idx}`).classList.add('active');
+  if (results[0].error || !results[0].data) {
+      document.getElementById('loading-state').classList.add('hidden');
+      document.getElementById('error-state').classList.remove('hidden');
+      return;
   }
 
-  window.selectPkg = function(idx) {
-    selectedPkg = allPackages[idx];
-    document.querySelectorAll('.pkg-btn').forEach(btn => btn.classList.remove('active'));
-    document.getElementById(`pkg-btn-${idx}`).classList.add('active');
-    
-    document.getElementById('pkg-err').classList.add('hidden');
-    document.getElementById('subtotal').textContent = `৳${selectedPkg.price}`;
-    const perUnit = selectedPkg.price / selectedPkg.qty;
-    document.getElementById('p-price').textContent = `৳${Math.round(perUnit*100)/100}`;
-    document.getElementById('p-unit').textContent = `/ ${product.unit_type || 'pcs'}`;
-  }
+  PRODUCT = results[0].data;
+  document.getElementById('loading-state').classList.add('hidden');
+  document.getElementById('product-container').classList.remove('hidden');
+  renderProduct();
+}
 
-  window.addToCart = function() {
-    if (!selectedPkg) return document.getElementById('pkg-err').classList.remove('hidden');
-    CART.push({ id: product.id, name: product.name, qty: selectedPkg.qty, total: selectedPkg.price, unit: product.unit_type || 'pcs', payment_option: product.payment_option, img: images[0]||'' });
-    localStorage.setItem('bitol_cart', JSON.stringify(CART));
-    updateCartHeader();
-    openCartModal();
-  }
-
-  // Cart Functions (Duplicated from index logic for consistency)
-  function updateCartHeader() {
-    CART = JSON.parse(localStorage.getItem('bitol_cart')) || [];
-    var btn = document.getElementById('cart-header-btn');
-    if (CART.length > 0) { document.getElementById('cart-count').textContent = CART.length; btn.style.display = 'flex'; } 
-    else { btn.style.display = 'none'; }
-  }
+function renderProduct() {
+  var arr = PRODUCT.image_urls;
+  if (typeof arr === 'string') { try { arr = JSON.parse(arr); } catch(e) { arr = []; } }
+  if (!Array.isArray(arr)) arr = [];
+  IMAGES = arr.filter(function(x){ return x && typeof x === 'string'; });
   
-  function openCartModal() {
-    CART = JSON.parse(localStorage.getItem('bitol_cart')) || [];
-    if(CART.length === 0) return;
-    let html = ''; let sub = 0;
-    CART.forEach((item, i) => { sub += item.total; html += `<div class="sum-row"><span>${item.name} (${item.qty} ${item.unit})</span><span>৳${item.total} <button onclick="rm(${i})" class="text-red-500 ml-2">X</button></span></div>`; });
-    document.getElementById('cart-items-container').innerHTML = html;
-    document.getElementById('cart-price-breakdown').innerHTML = `<div class="sum-row"><span>Subtotal</span><span>৳${sub}</span></div><div class="sum-row total-line"><span>Total</span><span>৳${sub+DELIVERY_CHARGE}</span></div>`;
-    document.getElementById('modal-cart').style.display = 'block'; document.getElementById('modal-form').style.display = 'none'; document.getElementById('modal-success').style.display = 'none';
-    document.getElementById('modal-overlay').classList.add('open');
+  if (PRODUCT.packages) {
+      PACKAGES = PRODUCT.packages.split(',').reduce(function(acc, token) {
+        var parts = token.trim().split(':');
+        var qty   = parseInt(parts[0], 10);
+        var price = parseFloat(parts[1]);
+        if (!isNaN(qty) && qty > 0 && !isNaN(price) && price >= 0) acc.push({ qty: qty, totalPrice: price });
+        return acc;
+      }, []);
   }
-  
-  window.rm = function(i) { CART.splice(i, 1); localStorage.setItem('bitol_cart', JSON.stringify(CART)); updateCartHeader(); if(CART.length===0) closeModal(); else openCartModal(); }
-  function proceedToCheckout() {
-      const needsAdv = CART.some(i => i.payment_option === 'Advance Payment');
-      document.getElementById('advance-payment-section').style.display = needsAdv ? 'block' : 'none';
-      document.getElementById('btn-text').textContent = needsAdv ? 'Submit TrxID' : 'Confirm COD Order';
-      document.getElementById('modal-cart').style.display = 'none'; document.getElementById('modal-form').style.display = 'block';
+  if(PACKAGES.length === 0) PACKAGES = [{ qty: 1, totalPrice: PRODUCT.price }];
+  SEL_PKG = PACKAGES[0];
+
+  var html = '';
+  // Left: Images
+  html += '<div>';
+  var mainImg = IMAGES[0] || 'https://placehold.co/600x600/f8fafc/94a3b8?text=No+Image';
+  html += '<div class="aspect-square bg-slate-50 rounded-2xl border border-gray-200 overflow-hidden mb-4 relative">';
+  html += '<img id="main-image" src="'+esc(mainImg)+'" class="w-full h-full object-cover transition-opacity duration-300">';
+  html += '</div>';
+  if (IMAGES.length > 1) {
+      html += '<div class="flex gap-3 overflow-x-auto pb-2">';
+      IMAGES.forEach(function(img, i) {
+          html += '<button onclick="setImg('+i+')" id="thumb-'+i+'" class="slider-thumb w-16 h-16 shrink-0 '+(i===0?'active':'')+'"><img src="'+esc(img)+'" class="w-full h-full object-cover"></button>';
+      });
+      html += '</div>';
   }
-  function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); }
-  function overlayClick(e) { if(e.target.id === 'modal-overlay') closeModal(); }
+  html += '</div>';
+
+  // Right: Info
+  html += '<div class="flex flex-col">';
+  html += '<div class="mb-6 border-b border-gray-100 pb-6">';
+  html += '<span class="text-[10px] font-bold px-3 py-1 bg-forest/10 text-forest rounded-full uppercase tracking-wider mb-3 inline-block">'+esc(PRODUCT.category || 'Live Feed')+'</span>';
+  html += '<h1 class="font-display text-3xl md:text-4xl font-extrabold text-charcoal mb-4 tracking-tight">'+esc(PRODUCT.name)+'</h1>';
   
-  async function submitOrder() {
-      const needsAdv = CART.some(i => i.payment_option === 'Advance Payment');
-      const name = document.getElementById('f-name').value; const phone = document.getElementById('f-phone').value; const addr = document.getElementById('f-address').value; const trx = document.getElementById('f-trxid').value;
-      if(!name || !phone || !addr || (needsAdv && !trx)) return alert('Please fill all required fields');
-      
-      document.getElementById('btn-text').textContent = 'Processing...';
-      const payloads = CART.map((item, i) => ({
-          product_id: item.id, product_name: item.name, quantity: item.qty, unit_type: item.unit, unit_price: item.total/item.qty, total_amount: i===0 ? item.total+DELIVERY_CHARGE : item.total,
-          customer_name: name, customer_phone: phone, delivery_address: addr, transaction_id: needsAdv ? trx : null, payment_method: needsAdv ? 'bKash/Nagod' : 'Cash on Delivery'
-      }));
-      await db.from('orders').insert(payloads);
-      
-      document.getElementById('modal-form').style.display = 'none'; document.getElementById('modal-success').style.display = 'block';
-      CART = []; localStorage.setItem('bitol_cart', JSON.stringify(CART)); updateCartHeader();
+  var perUnit = SEL_PKG.totalPrice / SEL_PKG.qty;
+  html += '<div class="flex items-baseline gap-2 mb-3">';
+  html += '<span id="p-price" class="font-display text-4xl font-extrabold text-forest">&#2547;'+fmtBDT(perUnit)+'</span>';
+  html += '<span id="p-unit" class="text-gray-500 font-medium">/ '+esc(PRODUCT.unit_type || 'pcs')+'</span>';
+  html += '</div>';
+  
+  if (PRODUCT.payment_option === 'Advance Payment') {
+      html += '<div class="p-2.5 bg-pink-50 border border-pink-100 rounded-xl inline-flex items-center gap-2 text-pink-600 mt-2">';
+      html += '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>';
+      html += '<span class="text-[10px] font-bold uppercase tracking-wider">Advance Payment Required</span>';
+      html += '</div>';
+  }
+  html += '</div>';
+
+  html += '<div class="mb-8 flex-grow">';
+  html += '<p class="text-slate-600 leading-relaxed font-medium whitespace-pre-wrap">'+esc(PRODUCT.description)+'</p>';
+  html += '</div>';
+
+  html += '<div>';
+  html += '<p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Select Package</p>';
+  html += '<div class="flex flex-wrap gap-2 mb-4">';
+  PACKAGES.forEach(function(p, i) {
+      html += '<button onclick="setPkg('+i+')" id="pkg-btn-'+i+'" class="pkg-btn '+(i===0?'active':'')+'">'+p.qty+' '+esc(PRODUCT.unit_type || 'pcs')+'</button>';
+  });
+  html += '</div>';
+  
+  html += '<div class="flex items-center justify-between border-t border-gray-100 pt-6 mt-4">';
+  html += '<div>';
+  html += '<p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Subtotal</p>';
+  html += '<p id="p-subtotal" class="font-mono text-xl font-bold text-charcoal">&#2547;'+fmtBDT(SEL_PKG.totalPrice)+'</p>';
+  html += '</div>';
+  html += '<button onclick="addToCart()" class="btn-primary px-8 py-3.5 rounded-xl font-bold text-lg">Add to Cart</button>';
+  html += '</div>';
+  html += '</div>';
+  html += '</div>';
+
+  document.getElementById('product-container').innerHTML = html;
+}
+
+window.setImg = function(i) {
+  document.getElementById('main-image').src = IMAGES[i];
+  var thumbs = document.querySelectorAll('.slider-thumb');
+  for(var j=0; j<thumbs.length; j++) thumbs[j].classList.remove('active');
+  document.getElementById('thumb-'+i).classList.add('active');
+}
+
+window.setPkg = function(i) {
+  SEL_PKG = PACKAGES[i];
+  var btns = document.querySelectorAll('.pkg-btn');
+  for(var j=0; j<btns.length; j++) btns[j].classList.remove('active');
+  document.getElementById('pkg-btn-'+i).classList.add('active');
+  
+  var perUnit = SEL_PKG.totalPrice / SEL_PKG.qty;
+  document.getElementById('p-price').innerHTML = '&#2547;' + fmtBDT(perUnit);
+  document.getElementById('p-subtotal').innerHTML = '&#2547;' + fmtBDT(SEL_PKG.totalPrice);
+}
+
+/* ═══════════════════════════════════════════════
+   CART & CHECKOUT
+   ═══════════════════════════════════════════════ */
+function updateCartHeader() {
+  var btn = document.getElementById('cart-header-btn');
+  var countEl = document.getElementById('cart-count');
+  if (CART.length > 0) {
+    countEl.textContent = CART.length;
+    btn.style.display = 'flex';
+  } else {
+    btn.style.display = 'none';
+  }
+}
+
+window.addToCart = function() {
+  CART.push({
+    productId: PRODUCT.id,
+    name: PRODUCT.name,
+    qty: SEL_PKG.qty,
+    unit: PRODUCT.unit_type || 'pcs',
+    total: SEL_PKG.totalPrice,
+    img: IMAGES[0] || '',
+    payment_option: PRODUCT.payment_option || 'Cash on Delivery'
+  });
+  localStorage.setItem('bitolpoka_cart', JSON.stringify(CART));
+  updateCartHeader();
+  openCartModal();
+}
+
+window.removeFromCart = function(index) {
+  CART.splice(index, 1);
+  localStorage.setItem('bitolpoka_cart', JSON.stringify(CART));
+  updateCartHeader();
+  if (CART.length === 0) closeModal(); else openCartModal();
+}
+
+window.openCartModal = function() {
+  if (CART.length === 0) return;
+  var itemsHtml = ''; var subtotal = 0;
+  CART.forEach(function(item, idx) {
+    subtotal += item.total;
+    var perUnit = item.total / item.qty;
+    itemsHtml += 
+      '<div style="display:flex;align-items:center;gap:1rem;padding:1rem 0;border-bottom:1px solid #E2E8F0;">' +
+        '<div style="width:60px;height:60px;flex-shrink:0;background:#F8FAFC;border-radius:1rem;display:flex;align-items:center;justify-content:center;overflow:hidden;border:1px solid #E2E8F0;">' +
+          (item.img ? '<img src="' + esc(item.img) + '" style="width:100%;height:100%;object-fit:cover;">' : '') +
+        '</div>' +
+        '<div style="flex:1;min-width:0;">' +
+          '<p style="font-weight:700;font-size:1.05rem;margin:0 0 .2rem;color:var(--charcoal);">' + esc(item.name) + '</p>' +
+          '<p style="font-size:.85rem;font-weight:600;color:#64748B;margin:0;">' + item.qty + ' ' + esc(item.unit) + ' &times; &#2547;' + fmtBDT(perUnit) + '</p>' +
+        '</div>' +
+        '<div style="text-align:right;">' +
+          '<p style="font-weight:800;font-size:1.1rem;margin:0 0 .3rem;color:var(--charcoal);">&#2547;' + fmtBDT(item.total) + '</p>' +
+          '<button onclick="removeFromCart(' + idx + ')" style="background:none;border:none;color:#DC2626;font-size:.8rem;font-weight:700;cursor:pointer;padding:0;">Remove</button>' +
+        '</div>' +
+      '</div>';
+  });
+  document.getElementById('cart-items-container').innerHTML = itemsHtml;
+  var grandTotal = subtotal + DELIVERY_CHARGE;
+  document.getElementById('cart-price-breakdown').innerHTML =
+    '<div class="price-row"><span>Cart Subtotal</span><span>&#2547;' + fmtBDT(subtotal) + '</span></div>' +
+    '<div class="price-row"><span>Delivery (Flat Rate)</span><span>&#2547;' + fmtBDT(DELIVERY_CHARGE) + '</span></div>' +
+    '<div class="price-row total-line"><span>Grand Total</span><span>&#2547;' + fmtBDT(grandTotal) + '</span></div>';
+
+  document.getElementById('modal-cart').style.display = '';
+  document.getElementById('modal-form').style.display = 'none';
+  document.getElementById('modal-success').style.display = 'none';
+  document.getElementById('modal-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+window.proceedToCheckout = function() {
+  var subtotal = CART.reduce(function(sum, item){ return sum + item.total; }, 0);
+  var grandTotal = subtotal + DELIVERY_CHARGE;
+  var requiresAdvance = CART.some(function(item) { return item.payment_option === 'Advance Payment'; });
+
+  document.getElementById('modal-recap').innerHTML =
+    '<div style="padding:1rem;border-radius:1rem;background:#F0FDF4;border:1px solid #BBF7D0;display:flex;align-items:center;gap:.75rem;">' +
+      '<div class="w-8 h-8 rounded-full bg-forest text-white flex items-center justify-center shrink-0 shadow-sm"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div>' +
+      '<p style="font-weight:700;font-size:.95rem;color:var(--forest);margin:0;">' + CART.length + (requiresAdvance ? ' item(s) selected (Advance Payment Required)' : ' item(s) ready for Cash on Delivery') + '</p>' +
+    '</div>';
+
+  document.getElementById('modal-price-breakdown').innerHTML =
+    '<div class="price-row"><span>Cart Subtotal</span><span>&#2547;' + fmtBDT(subtotal) + '</span></div>' +
+    '<div class="price-row"><span>Delivery</span><span>&#2547;' + fmtBDT(DELIVERY_CHARGE) + '</span></div>' +
+    '<div class="price-row total-line border-t border-slate-200 mt-2 pt-2"><span>Grand Total</span><span>&#2547;' + fmtBDT(grandTotal) + '</span></div>';
+
+  var advanceBlock = document.getElementById('advance-payment-block');
+  if (requiresAdvance) {
+      advanceBlock.style.display = 'block';
+      document.getElementById('btn-text').textContent = 'Confirm Order & Submit TrxID';
+  } else {
+      advanceBlock.style.display = 'none';
+      document.getElementById('btn-text').textContent = 'Confirm Cash on Delivery Order';
   }
 
-  loadProduct();
+  document.getElementById('modal-cart').style.display = 'none';
+  document.getElementById('modal-form').style.display = '';
+}
+
+window.closeModal = function() {
+  document.getElementById('modal-overlay').classList.remove('open');
+  setTimeout(() => { document.body.style.overflow = ''; }, 300);
+}
+window.overlayClick = function(e) { if (e.target.id === 'modal-overlay') closeModal(); }
+
+function setErr(field, msg) {
+  var el = document.getElementById('e-' + field);
+  el.textContent = msg; el.style.display = 'block';
+}
+function clearErr(field) { document.getElementById('e-' + field).style.display = 'none'; }
+
+window.submitOrder = async function() {
+  clearErr('name'); clearErr('phone'); clearErr('address'); clearErr('trxid');
+  var name = document.getElementById('f-name').value.trim();
+  var phone = document.getElementById('f-phone').value.trim();
+  var address = document.getElementById('f-address').value.trim();
+  var advanceBlock = document.getElementById('advance-payment-block');
+  var isAdvance = advanceBlock && advanceBlock.style.display !== 'none';
+  var trxid = document.getElementById('f-trxid') ? document.getElementById('f-trxid').value.trim() : '';
+
+  var ok = true;
+  if (!name) { setErr('name', 'Required.'); ok = false; }
+  if (!/^01[3-9]\d{8}$/.test(phone)) { setErr('phone', 'Valid BD number required.'); ok = false; }
+  if (!address || address.length < 10) { setErr('address', 'Full address required.'); ok = false; }
+  if (isAdvance && !trxid) { setErr('trxid', 'TrxID required.'); ok = false; }
+  
+  if (!ok || CART.length === 0) return;
+
+  var btn = document.getElementById('confirm-btn');
+  btn.disabled = true; document.getElementById('btn-text').textContent = 'Processing...';
+  
+  var paymentMethod = isAdvance ? 'bKash/Nagod' : 'Cash on Delivery';
+  var payloads = CART.map(function(item, index) {
+    return {
+      product_id: item.productId,
+      product_name: item.name,
+      quantity: item.qty,
+      unit_type: item.unit,
+      unit_price: item.total / item.qty,
+      total_amount: index === 0 ? item.total + DELIVERY_CHARGE : item.total,
+      customer_name: name,
+      customer_phone: phone,
+      delivery_address: address,
+      transaction_id: trxid || null,
+      payment_method: paymentMethod
+    };
+  });
+
+  var result = await db.from('orders').insert(payloads).select();
+  if (result.error) {
+    alert("Error: " + result.error.message);
+    btn.disabled = false;
+    return;
+  }
+
+  var row = result.data && result.data[0];
+  document.getElementById('order-ref').textContent = 'Ref: BP-' + (row ? String(row.id).replace(/-/g,'').slice(0,8).toUpperCase() : 'OK');
+
+  var titleEl = document.getElementById('success-title');
+  var subtitleEl = document.getElementById('success-subtitle');
+  var msgEl = document.getElementById('success-message-text');
+
+  if (isAdvance) {
+      titleEl.textContent = 'Verifying Payment';
+      subtitleEl.style.display = 'block'; subtitleEl.textContent = 'TrxID Received!';
+      msgEl.innerHTML = 'Our team will review your payment and confirm your order shortly.';
+  } else {
+      titleEl.textContent = 'Order Confirmed!';
+      subtitleEl.style.display = 'none';
+      msgEl.innerHTML = 'Your COD order is placed successfully.';
+  }
+
+  document.getElementById('modal-form').style.display = 'none';
+  document.getElementById('modal-success').style.display = 'block';
+
+  CART = [];
+  localStorage.removeItem('bitolpoka_cart');
+  updateCartHeader();
+}
+
+document.addEventListener('DOMContentLoaded', loadProduct);
 </script>
+
 </body>
 </html>
