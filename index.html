@@ -1153,20 +1153,23 @@ async function submitOrder() {
   
   var grandTotal = subtotal + DELIVERY_CHARGE;
   successHtml += sRow('Delivery', '&#2547;' + fmtBDT(DELIVERY_CHARGE));
-  successHtml += '<div class="sum-row total-line border-t border-slate-200 mt-2 pt-2"><span>Total Amount</span><span>&#2547;' + fmtBDT(grandTotal) + '</span></div>';
+  successHtml += '<div class="sum-row total-line border-t border-slate-200 mt-2 pt-2"><span>Total (COD)</span><span>&#2547;' + fmtBDT(grandTotal) + '</span></div>';
   
   successHtml += '<div class="mt-6 pt-4 border-t border-dashed border-slate-300">';
-  if (fields.isAdvance) {
-      successHtml += sRow('TrxID',   '<span class="text-[#E2136E] font-bold font-mono">' + esc(fields.trxid) + '</span>');
-  }
   successHtml += sRow('Name',    esc(fields.name));
   successHtml += sRow('Phone',   esc(fields.phone));
+  successHtml += sRow('Address', esc(fields.address));
   successHtml += '</div>';
 
   document.getElementById('success-rows').innerHTML = successHtml;
 
   document.getElementById('modal-form').style.display    = 'none';
   document.getElementById('modal-success').style.display = 'block';
+
+  // Fire Meta Pixel Purchase Event
+  if (typeof fbq === 'function') {
+    fbq('track', 'Purchase', { value: grandTotal, currency: 'BDT' });
+  }
 
   CART = [];
   updateCartHeader();
@@ -1190,7 +1193,7 @@ function setBusy(busy) {
    ═══════════════════════════════════════════════ */
 async function init() {
   var results = await Promise.all([
-    db.from('store_settings').select('whatsapp_number, delivery_charge, bkash_number, payment_instructions').eq('id', 1).single(),
+    db.from('store_settings').select('whatsapp_number, delivery_charge, meta_pixel_id').eq('id', 1).single(),
     db.from('products').select('*')
   ]);
 
@@ -1207,14 +1210,17 @@ async function init() {
       fab.style.display = 'flex';
     }
     
-    // Inject Dynamic bKash Settings from Admin Panel
-    if (s.bkash_number) {
-        var bn = document.getElementById('display-bkash-number');
-        if(bn) bn.textContent = s.bkash_number;
-    }
-    if (s.payment_instructions) {
-        var pi = document.getElementById('display-payment-instructions');
-        if(pi) pi.innerHTML = s.payment_instructions;
+    // Inject Meta Pixel if ID exists
+    if (s.meta_pixel_id) {
+      !function(f,b,e,v,n,t,p){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+      n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+      if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+      n.queue=[];t=b.createElement(e);t.async=!0;
+      t.src=v;p=b.getElementsByTagName(e)[0];
+      p.parentNode.insertBefore(t,p)}(window, document,'script',
+      'https://connect.facebook.net/en_US/fbevents.js');
+      fbq('init', s.meta_pixel_id);
+      fbq('track', 'PageView');
     }
   }
 
