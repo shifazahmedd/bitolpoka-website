@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Catalog — Bitolpoka</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  body { font-family: 'Inter', sans-serif; background: #FCF9FA; color: #020706; }
+  .font-display { font-family: 'Fraunces', serif; }
+  .btn-primary { background: #016236; color: white; padding: 0.75rem 1.5rem; border-radius: 1rem; font-weight: bold; transition: all 0.2s; }
+  .card { background: white; border: 1px solid #E2E8F0; border-radius: 1.5rem; padding: 1.5rem; }
+  .pkg-btn { padding: 0.5rem 1rem; border: 2px solid #E2E8F0; border-radius: 0.5rem; font-weight: bold; cursor: pointer; }
+  .pkg-btn.active { border-color: #016236; background: #016236; color: white; }
+</style>
+</head>
+<body>
+
+<header class="fixed w-full top-0 z-40 bg-white/80 backdrop-blur-md border-b border-gray-200">
+  <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
+    <a href="index.html" class="font-display font-bold text-xl text-gray-900">Bitolpoka</a>
+    <a href="checkout.html" class="btn-primary text-sm relative">Cart <span id="cart-count" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hidden">0</span></a>
+  </div>
+</header>
+
+<main class="pt-28 pb-20 max-w-6xl mx-auto px-6">
+  <h1 class="font-display text-4xl font-bold mb-8">Full Catalog</h1>
+  <div id="catalog-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+</main>
+
+<script>
+  const db = supabase.createClient('https://frifscjexvqhtptiwear.supabase.co', 'sb_publishable_BQFducZtr7aIkYW4G8t7VA_p77ORs24');
+  let products = [];
+  let cart = JSON.parse(localStorage.getItem('bp_cart') || '[]');
+  let selections = {};
+
+  async function loadCatalog() {
+    const { data } = await db.from('products').select('*');
+    products = data || [];
+    renderCatalog();
+    updateCartBadge();
+  }
+
+  function parsePackages(raw) {
+    if (!raw) return [];
+    return raw.split(',').map(p => {
+      const [qty, price] = p.trim().split(':');
+      return { qty: parseInt(qty), price: parseFloat(price) };
+    }).filter(p => !isNaN(p.qty) && !isNaN(p.price));
+  }
+
+  function renderCatalog() {
+    document.getElementById('catalog-grid').innerHTML = products.map((p, i) => {
+      const pkgs = parsePackages(p.packages);
+      selections[p.id] = pkgs.length > 0 ? pkgs[0] : null;
+      
+      const pkgHtml = pkgs.map((pkg, idx) => 
+        `<button onclick="selectPkg(${p.id}, ${idx})" class="pkg-btn ${idx === 0 ? 'active' : ''}" id="btn-${p.id}-${idx}">${pkg.qty} ${p.unit_type || 'pcs'}</button>`
+      ).join('');
+
+      const img = (p.image_urls && p.image_urls.length > 0) ? p.image_urls[0] : 'https://placehold.co/400x300';
+      const initialPrice = pkgs.length > 0 ? pkgs[0].price : p.price;
+
+      return `
+        <div class="card flex flex-col">
+          <img src="${img}" class="w-full h-48 object-cover rounded-xl mb-4">
+          <h3 class="font-bold text-lg">${p.name}</h3>
+          <p class="text-gray-500 text-sm mb-4 flex-1">${p.description || ''}</p>
+          <div class="mb-4 flex flex-wrap gap-2">${pkgHtml}</div>
+          <div class="flex justify-between items-center mt-auto border-t pt-4">
+            <span class="font-bold text-xl" id="price-${p.id}">৳${initialPrice}</span>
+            <button onclick="addToCart(${p.id})" class="btn-primary text-sm px-4 py-2">Add</button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  window.selectPkg = function(prodId, pkgIdx) {
+    const p = products.find(x => x.id === prodId);
+    const pkgs = parsePackages(p.packages);
+    selections[prodId] = pkgs[pkgIdx];
+    
+    document.querySelectorAll(`[id^="btn-${prodId}-"]`).forEach(b => b.classList.remove('active'));
+    document.getElementById(`btn-${prodId}-${pkgIdx}`).classList.add('active');
+    document.getElementById(`price-${prodId}`).textContent = `৳${pkgs[pkgIdx].price}`;
+  }
+
+  window.addToCart = function(prodId) {
+    const p = products.find(x => x.id === prodId);
+    const sel = selections[prodId];
+    if (!sel) return alert('Select a package first');
+    
+    cart.push({ id: p.id, name: p.name, qty: sel.qty, total: sel.price, unit: p.unit_type, payment_option: p.payment_option });
+    localStorage.setItem('bp_cart', JSON.stringify(cart));
+    updateCartBadge();
+  }
+
+  function updateCartBadge() {
+    const badge = document.getElementById('cart-count');
+    if (cart.length > 0) { badge.textContent = cart.length; badge.classList.remove('hidden'); }
+  }
+
+  loadCatalog();
+</script>
+</body>
+</html>
