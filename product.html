@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Product Details — Bitolpoka</title>
+<script>
+  if (window.location.protocol === 'http:' && window.location.hostname !== 'localhost') {
+    window.location.href = window.location.href.replace('http:', 'https:');
+  }
+</script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: { canvas: '#FCF9FA', forest: '#016236', charcoal: '#020706', borderline: '#E2E8F0' },
+        fontFamily: { display: ['Fraunces', 'serif'], sans: ['Inter', 'sans-serif'] }
+      }
+    }
+  }
+</script>
+<style>
+  body { background: #FCF9FA; color: #020706; }
+  .btn-primary { background: #016236; color: white; transition: all 0.2s; box-shadow: 0 4px 14px rgba(1,98,54,0.15); }
+  .btn-primary:hover { background: #014A28; transform: translateY(-2px); }
+  .pkg-btn { border: 2px solid #E2E8F0; background: white; color: #475569; transition: all 0.2s; }
+  .pkg-btn.active { border-color: #016236; background: #016236; color: white; }
+  .slider-thumb.active { border: 2px solid #016236; opacity: 1; }
+</style>
+</head>
+<body class="antialiased font-sans flex flex-col min-h-screen">
+
+<header class="fixed w-full top-0 z-40 bg-white/80 backdrop-blur-md border-b border-gray-200">
+  <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
+    <a href="index.html" class="flex items-center gap-2">
+      <div class="w-8 h-8 rounded-lg bg-forest flex items-center justify-center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2"><path d="M12 22V12M12 12C12 7 8 5 4 5c0 5 3 8 8 8M12 12c0-5 4-7 8-7 0 5-3 8-8 8"/></svg></div>
+      <span class="font-display font-bold text-xl">Bitolpoka</span>
+    </a>
+    <nav class="flex gap-4 items-center">
+      <a href="catalog.html" class="font-semibold text-gray-600 hover:text-forest">Catalog</a>
+      <a href="checkout.html" class="btn-primary px-4 py-2 rounded-xl text-sm font-bold relative">
+        Cart <span id="cart-count" class="absolute -top-2 -right-2 bg-red-500 text-white w-5 h-5 rounded-full text-xs flex items-center justify-center hidden">0</span>
+      </a>
+    </nav>
+  </div>
+</header>
+
+<main class="flex-grow pt-28 pb-20 max-w-5xl mx-auto px-6 w-full">
+  <a href="catalog.html" class="text-forest font-bold text-sm mb-6 inline-block hover:underline">&larr; Back to Catalog</a>
+  
+  <div id="loading" class="text-center py-20 text-gray-500 font-bold animate-pulse">Loading product details...</div>
+  <div id="error" class="hidden text-center py-20 text-red-500 font-bold">Product not found.</div>
+
+  <div id="product-container" class="hidden grid grid-cols-1 md:grid-cols-2 gap-12">
+    <!-- Image Gallery -->
+    <div>
+      <div class="aspect-square bg-white rounded-3xl border border-gray-200 overflow-hidden mb-4 shadow-sm">
+        <img id="main-image" src="" class="w-full h-full object-cover">
+      </div>
+      <div id="thumbnail-container" class="flex gap-3 overflow-x-auto pb-2"></div>
+    </div>
+
+    <!-- Product Info -->
+    <div class="flex flex-col">
+      <div class="mb-6 border-b border-gray-200 pb-6">
+        <span id="p-category" class="text-xs font-bold px-3 py-1 bg-gray-100 text-gray-600 rounded-full uppercase tracking-wide mb-3 inline-block"></span>
+        <h1 id="p-name" class="font-display text-3xl md:text-4xl font-extrabold text-charcoal mb-4 tracking-tight"></h1>
+        <div class="flex items-end gap-2 mb-2">
+          <span id="p-price" class="font-display text-3xl font-extrabold text-forest"></span>
+          <span id="p-unit" class="text-gray-500 font-medium mb-1"></span>
+        </div>
+        <span id="p-payment" class="text-xs font-bold text-pink-600 bg-pink-50 border border-pink-100 px-2 py-1 rounded hidden">Advance Payment Required</span>
+      </div>
+
+      <div class="mb-8 flex-grow">
+        <h3 class="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3">Description</h3>
+        <p id="p-desc" class="text-gray-600 leading-relaxed font-medium whitespace-pre-wrap"></p>
+      </div>
+
+      <div class="bg-white p-6 rounded-3xl border border-gray-200 shadow-sm">
+        <h3 class="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3">Select Package</h3>
+        <div id="package-container" class="flex flex-wrap gap-2 mb-6"></div>
+        <p id="pkg-err" class="hidden text-red-500 text-sm font-bold mb-4">Please select a package size.</p>
+        
+        <div class="flex items-center justify-between border-t border-gray-100 pt-4 mt-2">
+          <div>
+            <p class="text-xs font-bold text-gray-400 uppercase">Subtotal</p>
+            <p id="subtotal" class="font-bold text-xl">৳0</p>
+          </div>
+          <button onclick="addToCart()" class="btn-primary px-8 py-3 rounded-xl font-bold text-lg">Add to Cart</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+  const db = supabase.createClient('https://frifscjexvqhtptiwear.supabase.co', 'sb_publishable_BQFducZtr7aIkYW4G8t7VA_p77ORs24');
+  let product = null;
+  let selectedPkg = null;
+  let allPackages = [];
+  let images = [];
+
+  async function loadProduct() {
+    updateCartBadge();
+    const urlParams = new URLSearchParams(window.location.search);
+    const id = urlParams.get('id');
+    
+    if (!id) return showError();
+
+    const { data, error } = await db.from('products').select('*').eq('id', id).single();
+    if (error || !data) return showError();
+
+    product = data;
+    document.getElementById('loading').classList.add('hidden');
+    document.getElementById('product-container').classList.remove('hidden');
+    renderProduct();
+  }
+
+  function showError() {
+    document.getElementById('loading').classList.add('hidden');
+    document.getElementById('error').classList.remove('hidden');
+  }
+
+  function renderProduct() {
+    document.getElementById('p-name').textContent = product.name;
+    document.getElementById('p-desc').textContent = product.description;
+    document.getElementById('p-category').textContent = product.category || 'Live Feed';
+    
+    if(product.payment_option === 'Advance Payment') {
+      document.getElementById('p-payment').classList.remove('hidden');
+    }
+
+    // Images
+    images = product.image_urls;
+    if(typeof images === 'string') { try { images = JSON.parse(images); } catch(e) { images = [images]; } }
+    if(!images || images.length === 0) images = ['https://placehold.co/600x600?text=No+Image'];
+    
+    document.getElementById('main-image').src = images[0];
+    if(images.length > 1) {
+      document.getElementById('thumbnail-container').innerHTML = images.map((img, i) => 
+        `<button onclick="setMainImage(${i})" class="slider-thumb w-20 h-20 rounded-xl overflow-hidden opacity-60 transition hover:opacity-100 ${i===0 ? 'active' : ''}" id="thumb-${i}">
+          <img src="${img}" class="w-full h-full object-cover">
+        </button>`
+      ).join('');
+    }
+
+    // Packages
+    if(product.packages) {
+      allPackages = product.packages.split(',').map(p => {
+        const [qty, price] = p.trim().split(':');
+        return { qty: parseInt(qty), price: parseFloat(price) };
+      }).filter(p => !isNaN(p.qty));
+    } else {
+      allPackages = [{ qty: 1, price: product.price }];
+    }
+
+    const unit = product.unit_type || 'pcs';
+    document.getElementById('package-container').innerHTML = allPackages.map((pkg, i) => 
+      `<button onclick="selectPkg(${i})" id="pkg-btn-${i}" class="pkg-btn px-4 py-2 rounded-xl font-bold text-sm">
+        ${pkg.qty} ${unit}
+      </button>`
+    ).join('');
+
+    // Select first package by default
+    if(allPackages.length > 0) selectPkg(0);
+  }
+
+  window.setMainImage = function(index) {
+    document.getElementById('main-image').src = images[index];
+    document.querySelectorAll('.slider-thumb').forEach(el => el.classList.remove('active'));
+    document.getElementById(`thumb-${index}`).classList.add('active');
+  }
+
+  window.selectPkg = function(index) {
+    selectedPkg = allPackages[index];
+    document.querySelectorAll('.pkg-btn').forEach(btn => btn.classList.remove('active'));
+    document.getElementById(`pkg-btn-${index}`).classList.add('active');
+    
+    document.getElementById('pkg-err').classList.add('hidden');
+    document.getElementById('subtotal').textContent = `৳${selectedPkg.price}`;
+    
+    const perUnit = selectedPkg.price / selectedPkg.qty;
+    document.getElementById('p-price').textContent = `৳${Math.round(perUnit*100)/100}`;
+    document.getElementById('p-unit').textContent = `/ ${product.unit_type || 'pcs'}`;
+  }
+
+  window.addToCart = function() {
+    if (!selectedPkg) {
+      document.getElementById('pkg-err').classList.remove('hidden');
+      return;
+    }
+
+    let cart = JSON.parse(localStorage.getItem('bp_cart') || '[]');
+    cart.push({ 
+      id: product.id, 
+      name: product.name, 
+      qty: selectedPkg.qty, 
+      total: selectedPkg.price, 
+      unit: product.unit_type || 'pcs',
+      payment_option: product.payment_option
+    });
+    
+    localStorage.setItem('bp_cart', JSON.stringify(cart));
+    updateCartBadge();
+    
+    // Animate button
+    const btn = document.querySelector('button[onclick="addToCart()"]');
+    btn.textContent = 'Added! ✓';
+    btn.classList.replace('bg-forest', 'bg-green-500');
+    setTimeout(() => { 
+      btn.textContent = 'Add to Cart'; 
+      btn.classList.replace('bg-green-500', 'bg-forest'); 
+    }, 2000);
+  }
+
+  function updateCartBadge() {
+    const cart = JSON.parse(localStorage.getItem('bp_cart') || '[]');
+    const badge = document.getElementById('cart-count');
+    if (cart.length > 0) {
+      badge.textContent = cart.length;
+      badge.classList.remove('hidden');
+    }
+  }
+
+  loadProduct();
+</script>
+</body>
+</html>
