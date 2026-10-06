@@ -23,207 +23,277 @@
   }
 </script>
 <style>
-  body { background: #FCF9FA; color: #020706; }
-  .btn-primary { background: #016236; color: white; transition: all 0.2s; box-shadow: 0 4px 14px rgba(1,98,54,0.15); }
+  body { background: #FCF9FA; color: #020706; font-family: 'Inter', sans-serif;}
+  .btn-primary { background: #016236; color: white; transition: all 0.2s; box-shadow: 0 4px 14px rgba(1,98,54,0.15); display: inline-flex; align-items: center; justify-content: center; border: none; cursor: pointer;}
   .btn-primary:hover { background: #014A28; transform: translateY(-2px); }
-  .pkg-btn { border: 2px solid #E2E8F0; background: white; color: #475569; transition: all 0.2s; }
+  .pkg-btn { border: 2px solid #E2E8F0; background: white; color: #475569; transition: all 0.2s; padding: 0.6rem 1rem; border-radius: 0.75rem; font-weight: 700; cursor: pointer; white-space: nowrap;}
   .pkg-btn.active { border-color: #016236; background: #016236; color: white; }
-  .slider-thumb.active { border: 2px solid #016236; opacity: 1; }
+  .slider-thumb { border: 2px solid transparent; opacity: 0.6; cursor: pointer; border-radius: 0.5rem; overflow: hidden; padding: 0; background: none; transition: all 0.15s;}
+  .slider-thumb.active { border-color: #016236; opacity: 1; }
+  
+  /* Modals (Mirrored from index.html) */
+  .modal-overlay { display: none; position: fixed; inset: 0; z-index: 50; align-items: center; justify-content: center; padding: 1rem; background: rgba(2, 7, 6, 0.5); backdrop-filter: blur(8px); opacity: 0; transition: opacity 0.3s ease; }
+  .modal-overlay.open { display: flex; opacity: 1; }
+  .modal-box { background: #FFFFFF; border-radius: 2rem; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); transform: translateY(20px) scale(0.95); transition: all 0.3s ease; padding: 2rem;}
+  .modal-overlay.open .modal-box { transform: translateY(0) scale(1); }
+  .input-field { width: 100%; border: 1.5px solid #E2E8F0; background: #F8FAFC; border-radius: 1rem; padding: 1rem 1.25rem; font-size: 1rem; font-weight: 500; color: #020706; outline: none; transition: all 0.2s ease; }
+  .input-field:focus { border-color: #016236; background: #FFFFFF; box-shadow: 0 0 0 4px rgba(1, 98, 54, 0.1); }
+  .price-row, .sum-row { display: flex; justify-content: space-between; padding: 0.75rem 0; border-bottom: 1px dashed #E2E8F0; }
+  .sum-row.total-line { border-bottom: none; font-weight: bold; font-size: 1.1rem;}
 </style>
 </head>
-<body class="antialiased font-sans flex flex-col min-h-screen">
+<body class="antialiased flex flex-col min-h-screen">
 
-<header class="fixed w-full top-0 z-40 bg-white/80 backdrop-blur-md border-b border-gray-200">
-  <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
-    <a href="index.html" class="flex items-center gap-2">
-      <div class="w-8 h-8 rounded-lg bg-forest flex items-center justify-center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2"><path d="M12 22V12M12 12C12 7 8 5 4 5c0 5 3 8 8 8M12 12c0-5 4-7 8-7 0 5-3 8-8 8"/></svg></div>
-      <span class="font-display font-bold text-xl">Bitolpoka</span>
+<header class="fixed w-full top-0 z-40 bg-white/80 backdrop-blur-xl border-b border-gray-200 shadow-sm">
+  <div class="max-w-[80rem] mx-auto px-6 py-4 flex justify-between items-center">
+    <a href="index.html" class="flex items-center gap-3 group">
+      <div class="w-10 h-10 rounded-2xl bg-forest flex items-center justify-center transition-transform group-hover:scale-105"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22V12M12 12C12 7 8 5 4 5c0 5 3 8 8 8M12 12c0-5 4-7 8-7 0 5-3 8-8 8"/></svg></div>
+      <span class="font-display font-bold text-[1.4rem] tracking-tight">Bitolpoka</span>
     </a>
-    <nav class="flex gap-4 items-center">
-      <a href="catalog.html" class="font-semibold text-gray-600 hover:text-forest">Catalog</a>
-      <a href="checkout.html" class="btn-primary px-4 py-2 rounded-xl text-sm font-bold relative">
-        Cart <span id="cart-count" class="absolute -top-2 -right-2 bg-red-500 text-white w-5 h-5 rounded-full text-xs flex items-center justify-center hidden">0</span>
-      </a>
-    </nav>
+    <button id="cart-header-btn" class="hidden items-center gap-2 px-4 py-2.5 rounded-2xl bg-forest/5 text-forest font-bold text-sm transition-all hover:bg-forest/10 hover:scale-105" onclick="openCartModal()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+      <span class="bg-forest text-white px-2 py-0.5 rounded-full text-xs" id="cart-count">0</span>
+    </button>
   </div>
 </header>
 
-<main class="flex-grow pt-28 pb-20 max-w-5xl mx-auto px-6 w-full">
-  <a href="catalog.html" class="text-forest font-bold text-sm mb-6 inline-block hover:underline">&larr; Back to Catalog</a>
+<main class="flex-grow pt-32 pb-20 max-w-[60rem] mx-auto px-6 w-full">
+  <a href="index.html" class="text-forest font-bold text-sm mb-6 inline-flex items-center gap-2 hover:underline"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg> Back to Home</a>
   
   <div id="loading" class="text-center py-20 text-gray-500 font-bold animate-pulse">Loading product details...</div>
   <div id="error" class="hidden text-center py-20 text-red-500 font-bold">Product not found.</div>
 
-  <div id="product-container" class="hidden grid grid-cols-1 md:grid-cols-2 gap-12">
+  <div id="product-container" class="hidden grid grid-cols-1 md:grid-cols-2 gap-12 bg-white rounded-[2rem] p-8 border border-borderline shadow-sm">
     <!-- Image Gallery -->
     <div>
-      <div class="aspect-square bg-white rounded-3xl border border-gray-200 overflow-hidden mb-4 shadow-sm">
-        <img id="main-image" src="" class="w-full h-full object-cover">
+      <div class="aspect-square bg-slate-50 rounded-2xl border border-gray-200 overflow-hidden mb-4 relative">
+        <img id="main-image" src="" class="w-full h-full object-cover transition-opacity duration-300">
       </div>
       <div id="thumbnail-container" class="flex gap-3 overflow-x-auto pb-2"></div>
     </div>
 
-    <!-- Product Info -->
+    <!-- Info -->
     <div class="flex flex-col">
-      <div class="mb-6 border-b border-gray-200 pb-6">
-        <span id="p-category" class="text-xs font-bold px-3 py-1 bg-gray-100 text-gray-600 rounded-full uppercase tracking-wide mb-3 inline-block"></span>
+      <div class="mb-6 border-b border-gray-100 pb-6">
+        <span id="p-category" class="text-[10px] font-bold px-3 py-1 bg-forest/10 text-forest rounded-full uppercase tracking-wider mb-3 inline-block"></span>
         <h1 id="p-name" class="font-display text-3xl md:text-4xl font-extrabold text-charcoal mb-4 tracking-tight"></h1>
-        <div class="flex items-end gap-2 mb-2">
-          <span id="p-price" class="font-display text-3xl font-extrabold text-forest"></span>
-          <span id="p-unit" class="text-gray-500 font-medium mb-1"></span>
+        <div class="flex items-baseline gap-2 mb-3">
+          <span id="p-price" class="font-display text-4xl font-extrabold text-forest"></span>
+          <span id="p-unit" class="text-gray-500 font-medium"></span>
         </div>
-        <span id="p-payment" class="text-xs font-bold text-pink-600 bg-pink-50 border border-pink-100 px-2 py-1 rounded hidden">Advance Payment Required</span>
+        <div id="p-payment" class="hidden p-2.5 bg-pink-50 border border-pink-100 rounded-xl inline-flex items-center gap-2 text-pink-600">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+            <span class="text-[10px] font-bold uppercase tracking-wider">Advance Payment Required</span>
+        </div>
       </div>
 
       <div class="mb-8 flex-grow">
-        <h3 class="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3">Description</h3>
-        <p id="p-desc" class="text-gray-600 leading-relaxed font-medium whitespace-pre-wrap"></p>
+        <p id="p-desc" class="text-slate-600 leading-relaxed font-medium whitespace-pre-wrap"></p>
       </div>
 
-      <div class="bg-white p-6 rounded-3xl border border-gray-200 shadow-sm">
-        <h3 class="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3">Select Package</h3>
-        <div id="package-container" class="flex flex-wrap gap-2 mb-6"></div>
+      <div>
+        <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Select Package</p>
+        <div id="package-container" class="flex flex-wrap gap-2 mb-4"></div>
         <p id="pkg-err" class="hidden text-red-500 text-sm font-bold mb-4">Please select a package size.</p>
         
-        <div class="flex items-center justify-between border-t border-gray-100 pt-4 mt-2">
+        <div class="flex items-center justify-between border-t border-gray-100 pt-6 mt-4">
           <div>
-            <p class="text-xs font-bold text-gray-400 uppercase">Subtotal</p>
-            <p id="subtotal" class="font-bold text-xl">৳0</p>
+            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Subtotal</p>
+            <p id="subtotal" class="font-mono text-xl font-bold text-charcoal">৳0</p>
           </div>
-          <button onclick="addToCart()" class="btn-primary px-8 py-3 rounded-xl font-bold text-lg">Add to Cart</button>
+          <button onclick="addToCart()" id="add-btn" class="btn-primary px-8 py-3.5 rounded-xl font-bold text-lg">Add to Cart</button>
         </div>
       </div>
     </div>
   </div>
 </main>
 
+<!-- CART / CHECKOUT MODALS -->
+<div id="modal-overlay" class="modal-overlay" onclick="overlayClick(event)">
+  <div id="modal-box" class="modal-box">
+    
+    <div id="modal-cart" style="display:none;">
+      <div class="flex justify-between items-start mb-6">
+        <div><h3 class="font-display text-3xl font-extrabold tracking-tight">Shopping Cart</h3></div>
+        <button onclick="closeModal()" class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-500"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      </div>
+      <div id="cart-items-container" class="mb-6 max-h-[40vh] overflow-y-auto pr-2"></div>
+      <div class="bg-slate-50 p-5 rounded-2xl border border-slate-100 mb-6"><div id="cart-price-breakdown"></div></div>
+      <button class="btn-primary w-full py-4 rounded-2xl text-lg font-bold" onclick="proceedToCheckout()">Proceed to Checkout</button>
+    </div>
+
+    <div id="modal-form" style="display:none;">
+      <button onclick="openCartModal()" class="text-forest font-bold text-sm mb-4 hover:underline">&larr; Back to Cart</button>
+      <h3 class="font-display text-3xl font-extrabold mb-4">Delivery Details</h3>
+      <div id="modal-recap" class="mb-4"></div>
+      
+      <div class="space-y-4">
+        <input id="f-name" type="text" placeholder="Full Name" class="input-field"><span id="e-name" class="hidden text-xs text-red-500 font-bold"></span>
+        <input id="f-phone" type="tel" placeholder="Phone (01...)" class="input-field"><span id="e-phone" class="hidden text-xs text-red-500 font-bold"></span>
+        <textarea id="f-address" rows="2" placeholder="Full Address" class="input-field resize-none"></textarea><span id="e-address" class="hidden text-xs text-red-500 font-bold"></span>
+        
+        <div id="advance-payment-section" class="hidden mt-4 p-4 bg-pink-50 border border-pink-100 rounded-xl">
+            <p class="text-sm font-bold text-slate-900 mb-2">Advance Payment Required</p>
+            <p id="payment-instructions" class="text-xs text-slate-600 mb-2"></p>
+            <p class="font-mono font-bold text-[#E2136E] mb-3" id="bkash-number-display"></p>
+            <input id="f-trxid" type="text" placeholder="TrxID" class="input-field"><span id="e-trxid" class="hidden text-xs text-red-500 font-bold"></span>
+        </div>
+      </div>
+      <p id="submit-error" class="hidden text-sm text-red-600 font-bold mt-4"></p>
+      <button id="confirm-btn" class="btn-primary w-full py-4 rounded-2xl text-lg font-bold mt-6" onclick="submitOrder()"><span id="btn-text">Confirm Order</span></button>
+    </div>
+
+    <div id="modal-success" style="display:none; text-align: center;">
+      <h3 class="font-display text-3xl font-extrabold text-green-600 mb-2">Order Confirmed!</h3>
+      <p id="success-message" class="text-slate-600 font-medium mb-6">Thank you.</p>
+      <button class="btn-primary w-full py-4 rounded-2xl text-lg font-bold" onclick="closeModal()">Done</button>
+    </div>
+
+  </div>
+</div>
+
 <script>
   const db = supabase.createClient('https://frifscjexvqhtptiwear.supabase.co', 'sb_publishable_BQFducZtr7aIkYW4G8t7VA_p77ORs24');
-  let product = null;
-  let selectedPkg = null;
-  let allPackages = [];
-  let images = [];
+  let product = null; let selectedPkg = null; let allPackages = []; let images = [];
+  let CART = []; let DELIVERY_CHARGE = 150; let STORE_SETTINGS = {};
 
   async function loadProduct() {
-    updateCartBadge();
-    const urlParams = new URLSearchParams(window.location.search);
-    const id = urlParams.get('id');
-    
-    if (!id) return showError();
+    updateCartHeader();
+    const id = new URLSearchParams(window.location.search).get('id');
+    if (!id) return document.getElementById('error').classList.remove('hidden');
 
-    const { data, error } = await db.from('products').select('*').eq('id', id).single();
-    if (error || !data) return showError();
+    const [prodRes, setRes] = await Promise.all([
+        db.from('products').select('*').eq('id', id).single(),
+        db.from('store_settings').select('*').eq('id', 1).single()
+    ]);
 
-    product = data;
+    if(setRes.data) {
+        STORE_SETTINGS = setRes.data;
+        if(STORE_SETTINGS.delivery_charge) DELIVERY_CHARGE = Number(STORE_SETTINGS.delivery_charge);
+        if (STORE_SETTINGS.bkash_number) document.getElementById('bkash-number-display').textContent = "Send to: " + STORE_SETTINGS.bkash_number;
+        if (STORE_SETTINGS.payment_instructions) document.getElementById('payment-instructions').textContent = STORE_SETTINGS.payment_instructions;
+    }
+
+    if (prodRes.error || !prodRes.data) {
+        document.getElementById('loading').classList.add('hidden');
+        return document.getElementById('error').classList.remove('hidden');
+    }
+
+    product = prodRes.data;
     document.getElementById('loading').classList.add('hidden');
     document.getElementById('product-container').classList.remove('hidden');
     renderProduct();
-  }
-
-  function showError() {
-    document.getElementById('loading').classList.add('hidden');
-    document.getElementById('error').classList.remove('hidden');
   }
 
   function renderProduct() {
     document.getElementById('p-name').textContent = product.name;
     document.getElementById('p-desc').textContent = product.description;
     document.getElementById('p-category').textContent = product.category || 'Live Feed';
-    
-    if(product.payment_option === 'Advance Payment') {
-      document.getElementById('p-payment').classList.remove('hidden');
-    }
+    if(product.payment_option === 'Advance Payment') document.getElementById('p-payment').classList.remove('hidden');
 
-    // Images
+    // Parse Images safely
     images = product.image_urls;
     if(typeof images === 'string') { try { images = JSON.parse(images); } catch(e) { images = [images]; } }
-    if(!images || images.length === 0) images = ['https://placehold.co/600x600?text=No+Image'];
-    
-    document.getElementById('main-image').src = images[0];
-    if(images.length > 1) {
-      document.getElementById('thumbnail-container').innerHTML = images.map((img, i) => 
-        `<button onclick="setMainImage(${i})" class="slider-thumb w-20 h-20 rounded-xl overflow-hidden opacity-60 transition hover:opacity-100 ${i===0 ? 'active' : ''}" id="thumb-${i}">
-          <img src="${img}" class="w-full h-full object-cover">
-        </button>`
-      ).join('');
+    if(!Array.isArray(images)) images = [];
+    images = images.filter(Boolean);
+
+    if(images.length > 0) {
+        document.getElementById('main-image').src = images[0];
+        if(images.length > 1) {
+            document.getElementById('thumbnail-container').innerHTML = images.map((img, i) => 
+            `<button onclick="setMainImage(${i})" class="slider-thumb w-16 h-16 shrink-0 ${i===0?'active':''}" id="thumb-${i}"><img src="${img}" class="w-full h-full object-cover"></button>`
+            ).join('');
+        }
+    } else {
+        document.getElementById('main-image').parentElement.innerHTML = `<div class="w-full h-full bg-slate-100 flex items-center justify-center text-slate-400">No Image</div>`;
     }
 
-    // Packages
+    // Parse Packages
     if(product.packages) {
       allPackages = product.packages.split(',').map(p => {
         const [qty, price] = p.trim().split(':');
         return { qty: parseInt(qty), price: parseFloat(price) };
       }).filter(p => !isNaN(p.qty));
-    } else {
-      allPackages = [{ qty: 1, price: product.price }];
     }
+    if(allPackages.length === 0) allPackages = [{ qty: 1, price: product.price }];
 
     const unit = product.unit_type || 'pcs';
     document.getElementById('package-container').innerHTML = allPackages.map((pkg, i) => 
-      `<button onclick="selectPkg(${i})" id="pkg-btn-${i}" class="pkg-btn px-4 py-2 rounded-xl font-bold text-sm">
-        ${pkg.qty} ${unit}
-      </button>`
+      `<button onclick="selectPkg(${i})" id="pkg-btn-${i}" class="pkg-btn">${pkg.qty} ${unit}</button>`
     ).join('');
 
-    // Select first package by default
     if(allPackages.length > 0) selectPkg(0);
   }
 
-  window.setMainImage = function(index) {
-    document.getElementById('main-image').src = images[index];
+  window.setMainImage = function(idx) {
+    document.getElementById('main-image').src = images[idx];
     document.querySelectorAll('.slider-thumb').forEach(el => el.classList.remove('active'));
-    document.getElementById(`thumb-${index}`).classList.add('active');
+    if(document.getElementById(`thumb-${idx}`)) document.getElementById(`thumb-${idx}`).classList.add('active');
   }
 
-  window.selectPkg = function(index) {
-    selectedPkg = allPackages[index];
+  window.selectPkg = function(idx) {
+    selectedPkg = allPackages[idx];
     document.querySelectorAll('.pkg-btn').forEach(btn => btn.classList.remove('active'));
-    document.getElementById(`pkg-btn-${index}`).classList.add('active');
+    document.getElementById(`pkg-btn-${idx}`).classList.add('active');
     
     document.getElementById('pkg-err').classList.add('hidden');
     document.getElementById('subtotal').textContent = `৳${selectedPkg.price}`;
-    
     const perUnit = selectedPkg.price / selectedPkg.qty;
     document.getElementById('p-price').textContent = `৳${Math.round(perUnit*100)/100}`;
     document.getElementById('p-unit').textContent = `/ ${product.unit_type || 'pcs'}`;
   }
 
   window.addToCart = function() {
-    if (!selectedPkg) {
-      document.getElementById('pkg-err').classList.remove('hidden');
-      return;
-    }
-
-    let cart = JSON.parse(localStorage.getItem('bp_cart') || '[]');
-    cart.push({ 
-      id: product.id, 
-      name: product.name, 
-      qty: selectedPkg.qty, 
-      total: selectedPkg.price, 
-      unit: product.unit_type || 'pcs',
-      payment_option: product.payment_option
-    });
-    
-    localStorage.setItem('bp_cart', JSON.stringify(cart));
-    updateCartBadge();
-    
-    // Animate button
-    const btn = document.querySelector('button[onclick="addToCart()"]');
-    btn.textContent = 'Added! ✓';
-    btn.classList.replace('bg-forest', 'bg-green-500');
-    setTimeout(() => { 
-      btn.textContent = 'Add to Cart'; 
-      btn.classList.replace('bg-green-500', 'bg-forest'); 
-    }, 2000);
+    if (!selectedPkg) return document.getElementById('pkg-err').classList.remove('hidden');
+    CART.push({ id: product.id, name: product.name, qty: selectedPkg.qty, total: selectedPkg.price, unit: product.unit_type || 'pcs', payment_option: product.payment_option, img: images[0]||'' });
+    localStorage.setItem('bitol_cart', JSON.stringify(CART));
+    updateCartHeader();
+    openCartModal();
   }
 
-  function updateCartBadge() {
-    const cart = JSON.parse(localStorage.getItem('bp_cart') || '[]');
-    const badge = document.getElementById('cart-count');
-    if (cart.length > 0) {
-      badge.textContent = cart.length;
-      badge.classList.remove('hidden');
-    }
+  // Cart Functions (Duplicated from index logic for consistency)
+  function updateCartHeader() {
+    CART = JSON.parse(localStorage.getItem('bitol_cart')) || [];
+    var btn = document.getElementById('cart-header-btn');
+    if (CART.length > 0) { document.getElementById('cart-count').textContent = CART.length; btn.style.display = 'flex'; } 
+    else { btn.style.display = 'none'; }
+  }
+  
+  function openCartModal() {
+    CART = JSON.parse(localStorage.getItem('bitol_cart')) || [];
+    if(CART.length === 0) return;
+    let html = ''; let sub = 0;
+    CART.forEach((item, i) => { sub += item.total; html += `<div class="sum-row"><span>${item.name} (${item.qty} ${item.unit})</span><span>৳${item.total} <button onclick="rm(${i})" class="text-red-500 ml-2">X</button></span></div>`; });
+    document.getElementById('cart-items-container').innerHTML = html;
+    document.getElementById('cart-price-breakdown').innerHTML = `<div class="sum-row"><span>Subtotal</span><span>৳${sub}</span></div><div class="sum-row total-line"><span>Total</span><span>৳${sub+DELIVERY_CHARGE}</span></div>`;
+    document.getElementById('modal-cart').style.display = 'block'; document.getElementById('modal-form').style.display = 'none'; document.getElementById('modal-success').style.display = 'none';
+    document.getElementById('modal-overlay').classList.add('open');
+  }
+  
+  window.rm = function(i) { CART.splice(i, 1); localStorage.setItem('bitol_cart', JSON.stringify(CART)); updateCartHeader(); if(CART.length===0) closeModal(); else openCartModal(); }
+  function proceedToCheckout() {
+      const needsAdv = CART.some(i => i.payment_option === 'Advance Payment');
+      document.getElementById('advance-payment-section').style.display = needsAdv ? 'block' : 'none';
+      document.getElementById('btn-text').textContent = needsAdv ? 'Submit TrxID' : 'Confirm COD Order';
+      document.getElementById('modal-cart').style.display = 'none'; document.getElementById('modal-form').style.display = 'block';
+  }
+  function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); }
+  function overlayClick(e) { if(e.target.id === 'modal-overlay') closeModal(); }
+  
+  async function submitOrder() {
+      const needsAdv = CART.some(i => i.payment_option === 'Advance Payment');
+      const name = document.getElementById('f-name').value; const phone = document.getElementById('f-phone').value; const addr = document.getElementById('f-address').value; const trx = document.getElementById('f-trxid').value;
+      if(!name || !phone || !addr || (needsAdv && !trx)) return alert('Please fill all required fields');
+      
+      document.getElementById('btn-text').textContent = 'Processing...';
+      const payloads = CART.map((item, i) => ({
+          product_id: item.id, product_name: item.name, quantity: item.qty, unit_type: item.unit, unit_price: item.total/item.qty, total_amount: i===0 ? item.total+DELIVERY_CHARGE : item.total,
+          customer_name: name, customer_phone: phone, delivery_address: addr, transaction_id: needsAdv ? trx : null, payment_method: needsAdv ? 'bKash/Nagod' : 'Cash on Delivery'
+      }));
+      await db.from('orders').insert(payloads);
+      
+      document.getElementById('modal-form').style.display = 'none'; document.getElementById('modal-success').style.display = 'block';
+      CART = []; localStorage.setItem('bitol_cart', JSON.stringify(CART)); updateCartHeader();
   }
 
   loadProduct();
