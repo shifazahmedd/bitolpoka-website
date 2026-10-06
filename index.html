@@ -26,78 +26,268 @@
           charcoal: '#020706',
           surface: '#FFFFFF',
           borderline: '#E2E8F0', 
+        },
+        boxShadow: {
+          'premium': '0 20px 40px -15px rgba(1, 98, 54, 0.1)',
+          'premium-hover': '0 30px 60px -15px rgba(1, 98, 54, 0.2)',
         }
       }
     }
   }
 </script>
 
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@600&display=swap" rel="stylesheet">
 
 <style>
-  body { font-family: 'Inter', sans-serif; background: #FCF9FA; color: #020706; }
+  :root { --canvas: #FCF9FA; --forest: #016236; --charcoal: #020706; --surface: #FFFFFF; --border: #E2E8F0; }
+  body { font-family: 'Inter', system-ui, sans-serif; background: var(--canvas); color: var(--charcoal); margin: 0; -webkit-font-smoothing: antialiased; }
   .font-display { font-family: 'Fraunces', serif; }
-  .skeleton { border-radius: 1rem; background: #E2E8F0; animation: pulse 1.5s infinite; }
+  .font-mono    { font-family: 'IBM Plex Mono', monospace; }
+
+  @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+  .animate-float { animation: float 6s ease-in-out infinite; }
+  .animate-float-delayed { animation: float 6s ease-in-out 3s infinite; }
+
+  .btn-primary {
+    background: var(--forest); color: var(--surface); border: none; cursor: pointer;
+    transition: all 0.3s ease; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    box-shadow: 0 10px 25px -5px rgba(1, 98, 54, 0.3);
+  }
+  .btn-primary:hover { background: #014A28; transform: translateY(-3px) scale(1.02); box-shadow: 0 20px 35px -5px rgba(1, 98, 54, 0.4); }
+
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+  .skeleton { border-radius: 1rem; background: #E2E8F0; animation: pulse 1.5s ease-in-out infinite; }
+
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; z-index: 50; align-items: center; justify-content: center; padding: 1rem;
+    background: rgba(2, 7, 6, 0.5); backdrop-filter: blur(8px); opacity: 0; transition: opacity 0.3s ease;
+  }
+  .modal-overlay.open { display: flex; opacity: 1; }
+  .guide-modal-box {
+    background: var(--surface); border-radius: 2rem; width: 100%; max-width: 650px; max-height: 90vh; overflow-y: auto;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); transform: translateY(20px) scale(0.95); transition: all 0.3s ease;
+  }
+  .modal-overlay.open .guide-modal-box { transform: translateY(0) scale(1); }
+  .guide-text h4 { color: var(--forest); font-size: 1.25rem; font-weight: 800; margin-top: 2rem; margin-bottom: 0.75rem; font-family: 'Fraunces', serif; }
+  .guide-text p, .guide-text li { color: #475569; font-size: 1rem; line-height: 1.7; font-weight: 500; }
+  .guide-text ul { padding-left: 1.25rem; margin-bottom: 1.25rem; list-style-type: disc; }
+  .highlight-box { background: #F0FDF4; border: 1px solid #BBF7D0; padding: 1.5rem; border-radius: 1rem; margin: 2rem 0; }
 </style>
 </head>
 <body>
 
-<header class="fixed w-full top-0 z-40 bg-white/70 backdrop-blur-xl border-b border-gray-200">
+<!-- HEADER -->
+<header class="fixed w-full top-0 z-40 bg-white/70 backdrop-blur-xl border-b border-white/20 shadow-sm">
   <div class="max-w-[80rem] mx-auto px-6 py-4 flex items-center justify-between">
-    <a href="index.html" class="flex items-center gap-3">
-      <div class="w-10 h-10 rounded-2xl bg-forest flex items-center justify-center">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round"><path d="M12 22V12"/><path d="M12 12C12 7 8 5 4 5c0 5 3 8 8 8"/><path d="M12 12c0-5 4-7 8-7 0 5-3 8-8 8"/></svg>
+    <div class="flex items-center gap-3 cursor-pointer group" onclick="window.scrollTo({top:0, behavior:'smooth'})">
+      <div class="w-10 h-10 rounded-2xl bg-forest flex items-center justify-center shadow-lg shadow-forest/20 transition-transform group-hover:scale-105">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22V12"/><path d="M12 12C12 7 8 5 4 5c0 5 3 8 8 8"/><path d="M12 12c0-5 4-7 8-7 0 5-3 8-8 8"/>
+        </svg>
       </div>
-      <span class="font-display text-[1.4rem] font-bold">Bitolpoka</span>
-    </a>
+      <span class="font-display text-[1.4rem] font-bold text-charcoal tracking-tight">Bitolpoka</span>
+    </div>
   </div>
 </header>
 
-<section class="pt-32 pb-16 lg:pt-40 lg:pb-32 px-6 max-w-[80rem] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12">
-    <div>
-        <h1 class="font-display text-5xl font-extrabold mb-6">Bred Fresh.<br><span class="text-forest">Delivered Live.</span></h1>
-        <p class="text-lg mb-8">Bitolpoka farms premium mealworms and superworms. Stop wasting money on chemical feeds.</p>
-        <button onclick="document.getElementById('products-section').scrollIntoView({behavior:'smooth'})" class="bg-forest text-white px-8 py-4 rounded-2xl font-bold">Browse Live Feed</button>
-    </div>
-</section>
+<!-- HERO SECTION -->
+<section class="relative overflow-hidden bg-canvas pt-32 pb-16 lg:pt-40 lg:pb-32">
+  <div class="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-forest/5 blur-[120px] rounded-full pointer-events-none"></div>
+  <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-amber-500/5 blur-[120px] rounded-full pointer-events-none"></div>
 
-<section id="products-section" class="py-20 lg:py-32 relative z-20">
-  <div class="max-w-[80rem] mx-auto px-6 lg:px-8">
-    <h2 class="font-display text-4xl text-center font-extrabold text-charcoal mb-16">Choose Your Live Feed</h2>
-
-    <div id="products-loading" class="grid grid-cols-1 md:grid-cols-3 gap-8">
-      <div class="bg-white rounded-3xl p-6 border"><div class="skeleton aspect-video mb-4"></div><div class="skeleton h-6 w-1/2 mb-3"></div></div>
+  <div class="relative max-w-[80rem] mx-auto px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+    <div class="max-w-2xl z-10">
+      <div class="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-white border border-borderline shadow-sm text-forest text-[11px] font-bold tracking-widest mb-6 uppercase">
+        <span class="relative flex h-2.5 w-2.5"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-forest opacity-50"></span><span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-forest"></span></span>
+        Farmed Weekly in Khulna
+      </div>
+      <h1 class="font-display text-[2.8rem] leading-[1.1] sm:text-6xl lg:text-[4.5rem] font-extrabold text-charcoal tracking-tight mb-6">
+        Bred Fresh.<br><span class="text-forest bg-gradient-to-r from-forest to-green-500 bg-clip-text text-transparent">Delivered Live.</span>
+      </h1>
+      <p class="text-[#475569] text-lg sm:text-xl mb-10 max-w-lg leading-relaxed font-medium">
+        Bitolpoka farms premium mealworms and superworms. Stop wasting money on chemical feeds—give your poultry and pets the organic protein they crave.
+      </p>
+      <div class="flex flex-col sm:flex-row items-center gap-4 mb-10">
+        <button class="btn-primary px-8 py-4 rounded-2xl font-bold text-base w-full sm:w-auto" onclick="document.getElementById('products-section').scrollIntoView({ behavior: 'smooth' })">
+          Browse Live Feed
+        </button>
+        <button class="px-8 py-4 rounded-2xl font-bold text-base w-full sm:w-auto border-2 border-borderline text-charcoal hover:border-forest hover:text-forest bg-white/50 transition-all duration-300 hover:shadow-lg" onclick="document.getElementById('guides-section').scrollIntoView({ behavior: 'smooth' })">
+          Read Free Guides
+        </button>
+      </div>
     </div>
-    <div id="products-grid" class="hidden grid grid-cols-1 md:grid-cols-3 gap-8"></div>
+
+    <!-- Hero Image -->
+    <div class="relative w-full max-w-[550px] mx-auto h-[320px] sm:h-[450px] lg:h-[500px] mt-8 lg:mt-0">
+      <div class="absolute inset-0 rounded-[2.5rem] overflow-hidden shadow-2xl border border-white/50 bg-gradient-to-br from-forest to-[#014A28] flex items-center justify-center relative">
+        <div class="relative z-10 flex flex-col items-center justify-center text-center px-6">
+          <div class="w-24 h-24 sm:w-32 sm:h-32 bg-white/10 backdrop-blur-xl rounded-[2rem] border border-white/20 flex items-center justify-center mb-6 shadow-2xl shadow-black/10">
+            <svg class="w-12 h-12 sm:w-16 sm:h-16 text-[#E8A33D]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"/><path d="M8.5 5a4.5 4.5 0 0 1 7 0"/><path d="M5 10a7 7 0 0 1 14 0c0 4-3.5 9-7 9s-7-5-7-9z"/><path d="M4 14l3-3"/><path d="M20 14l-3-3"/><path d="M6 8l2 2"/><path d="M18 8l-2 2"/></svg>
+          </div>
+          <h3 class="text-white font-display font-bold text-2xl sm:text-4xl tracking-tight mb-2">Premium Live Feed</h3>
+          <p class="text-white/80 text-sm sm:text-lg font-medium tracking-wide uppercase">100% Organic</p>
+        </div>
+      </div>
+      <!-- Floating Badges -->
+      <div class="animate-float absolute -bottom-6 -left-4 bg-white/90 backdrop-blur-md p-4 rounded-2xl shadow-premium border border-white flex items-center gap-4 z-10">
+        <div class="w-10 h-10 rounded-full bg-forest/10 flex items-center justify-center text-forest shrink-0"><svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+        <div><p class="text-[10px] text-[#64748B] font-bold uppercase tracking-widest mb-1">High Yield</p><p class="text-base font-display font-bold text-charcoal leading-none">50%+ Protein</p></div>
+      </div>
+    </div>
   </div>
 </section>
 
-<footer class="bg-charcoal text-white pt-16 pb-8 text-center text-sm">
-  <p>&copy; 2026 Bitolpoka Farms.</p>
+<!-- PRODUCTS SECTION -->
+<section id="products-section" class="py-20 lg:py-32 relative z-20">
+  <div class="max-w-[80rem] mx-auto px-6 lg:px-8">
+    <div class="max-w-2xl mb-16 text-center mx-auto">
+      <p class="font-mono text-forest text-sm font-bold tracking-widest uppercase mb-3 bg-forest/5 inline-block px-4 py-1.5 rounded-full">Farm Direct</p>
+      <h2 class="font-display text-4xl lg:text-5xl font-extrabold text-charcoal mb-4 tracking-tight">Choose Your Feed</h2>
+    </div>
+
+    <!-- Skeletons -->
+    <div id="products-loading" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div class="bg-white rounded-3xl p-6 border border-borderline shadow-sm"><div class="skeleton aspect-video mb-4"></div><div class="skeleton h-6 w-1/2 mb-3"></div><div class="skeleton h-4 w-3/4 mb-6"></div></div>
+      <div class="bg-white rounded-3xl p-6 border border-borderline shadow-sm"><div class="skeleton aspect-video mb-4"></div><div class="skeleton h-6 w-1/2 mb-3"></div><div class="skeleton h-4 w-3/4 mb-6"></div></div>
+      <div class="bg-white rounded-3xl p-6 border border-borderline shadow-sm"><div class="skeleton aspect-video mb-4"></div><div class="skeleton h-6 w-1/2 mb-3"></div><div class="skeleton h-4 w-3/4 mb-6"></div></div>
+    </div>
+
+    <!-- Dynamic Grid -->
+    <div id="products-grid" class="hidden grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="bg-white py-24 border-t border-slate-100">
+  <div class="max-w-[80rem] mx-auto px-6 lg:px-8">
+    <h3 class="font-display text-3xl font-extrabold text-center text-charcoal mb-16 tracking-tight">How It Works</h3>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
+      <div><div class="w-20 h-20 rounded-[2rem] bg-white text-forest flex items-center justify-center mx-auto mb-6 shadow-premium border border-slate-100"><span class="font-display font-extrabold text-3xl">1</span></div><p class="font-bold text-xl mb-3 text-charcoal">Select Product</p><p class="text-[#64748B] font-medium">Browse our catalog and choose your preferred feed.</p></div>
+      <div><div class="w-20 h-20 rounded-[2rem] bg-white text-forest flex items-center justify-center mx-auto mb-6 shadow-premium border border-slate-100"><span class="font-display font-extrabold text-3xl">2</span></div><p class="font-bold text-xl mb-3 text-charcoal">We Pack Fresh</p><p class="text-[#64748B] font-medium">Your batch is pulled and packed directly from our farm.</p></div>
+      <div><div class="w-20 h-20 rounded-[2rem] bg-white text-forest flex items-center justify-center mx-auto mb-6 shadow-premium border border-slate-100"><span class="font-display font-extrabold text-3xl">3</span></div><p class="font-bold text-xl mb-3 text-charcoal">Fast Delivery</p><p class="text-[#64748B] font-medium">Receive your package securely at your doorstep.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- GUIDES SECTION -->
+<section id="guides-section" class="py-24 bg-canvas border-t border-slate-100">
+  <div class="max-w-[80rem] mx-auto px-6 lg:px-8">
+    <div class="text-center mb-16 max-w-2xl mx-auto">
+      <p class="font-mono text-forest text-sm font-bold tracking-widest uppercase mb-3">Farm At Home</p>
+      <h2 class="font-display text-4xl font-extrabold text-charcoal mb-4">Free Breeding Guides</h2>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+      <div class="bg-white border border-borderline rounded-3xl p-6 cursor-pointer hover:shadow-premium group" onclick="openGuideModal('superworm')">
+        <h3 class="font-display text-xl font-bold text-charcoal mb-2">Superworm Guide &rarr;</h3>
+        <p class="text-[#64748B] font-medium">Learn the step-by-step cup separation method for breeding.</p>
+      </div>
+      <div class="bg-white border border-borderline rounded-3xl p-6 cursor-pointer hover:shadow-premium group" onclick="openGuideModal('mealworm')">
+        <h3 class="font-display text-xl font-bold text-charcoal mb-2">Mealworm Guide &rarr;</h3>
+        <p class="text-[#64748B] font-medium">The easier, box-bred method for quick harvesting.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="bg-charcoal pt-16 pb-8 text-white/50 text-center text-sm font-medium">
+  <div class="max-w-[80rem] mx-auto px-6">
+    <p class="font-display font-bold text-white text-2xl mb-4">Bitolpoka</p>
+    <p>&copy; 2026 Bitolpoka Farms. All rights reserved.</p>
+  </div>
 </footer>
 
+<!-- GUIDES MODAL -->
+<div id="guide-modal-overlay" class="modal-overlay" onclick="closeGuideOverlay(event)">
+  <div class="guide-modal-box">
+    <!-- Superworm -->
+    <div id="guide-superworm" class="guide-text" style="display:none; padding: 3rem 2.5rem;">
+      <div class="flex justify-between items-start mb-8">
+        <div><h2 class="font-display text-charcoal text-3xl font-extrabold">সুপারওয়ার্ম গাইডলাইন</h2></div>
+        <button onclick="closeGuide()" class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-500">X</button>
+      </div>
+      <p>সুপারওয়ার্ম (Zophobas morio) হলো একধরনের ডার্কলিং বিটল প্রজাতির লার্ভা। এটি মুরগি, পাখি, ব্যাঙ ও মাছের জন্য উচ্চ-প্রোটিনযুক্ত খাবার।</p>
+      <h4>ধাপ ১: মাদার বিটাল চাষ</h4>
+      <p>মাদারগুলো গামলায় ১ ইঞ্চি গমের ভুসি দিয়ে ছেড়ে দিন। পানির চাহিদা মেটাতে আলু বা পেঁপে দিন।</p>
+      <div class="highlight-box">
+        <h4 style="margin-top:0;">ধাপ ২: পিউপা তৈরি</h4>
+        <p>সুপারওয়ার্ম একসাথে থাকলে পিউপা হয় না — বড় লার্ভাগুলোকে আলাদা ছোট সসের কাপে একটি একটি করে রাখতে হবে।</p>
+      </div>
+    </div>
+    <!-- Mealworm -->
+    <div id="guide-mealworm" class="guide-text" style="display:none; padding: 3rem 2.5rem;">
+      <div class="flex justify-between items-start mb-8">
+        <div><h2 class="font-display text-charcoal text-3xl font-extrabold">মিলওয়ার্ম গাইডলাইন</h2></div>
+        <button onclick="closeGuide()" class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-500">X</button>
+      </div>
+      <p>মিলওয়ার্ম চাষ সুপারওয়ার্মের চেয়ে অনেক সহজ কারণ প্রতিটি লার্ভাকে আলাদা কাপে রাখার কোনো প্রয়োজন নেই — এরা বক্সেই একসাথে পিউপা হয়ে যায়।</p>
+      <h4>ধাপ ১: সেটআপ</h4>
+      <p>মসৃণ প্লাস্টিকের বক্সে ১-২ ইঞ্চি গমের ভুষি ও সবজি দিন।</p>
+      <div class="highlight-box">
+        <h4 style="margin-top:0;">ধাপ ২: পিউপা তৈরি</h4>
+        <p>আলাদা কাপে রাখার প্রয়োজন নেই — চোখে পড়লে পিউপাগুলো আলাদা বক্সে তুলে রাখা ভালো, তবে এটি বাধ্যতামূলক নয়।</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SCRIPTS -->
 <script>
   const db = window.supabase.createClient('https://frifscjexvqhtptiwear.supabase.co', 'sb_publishable_BQFducZtr7aIkYW4G8t7VA_p77ORs24');
 
   async function loadProducts() {
-    const { data, error } = await db.from('products').select('*');
+    const { data, error } = await db.from('products').select('*').order('created_at', { ascending: false });
     document.getElementById('products-loading').style.display = 'none';
-    if(error || !data.length) return;
+
+    if (error || !data || data.length === 0) {
+      document.getElementById('products-empty').style.display = 'block';
+      return;
+    }
 
     const grid = document.getElementById('products-grid');
     grid.innerHTML = data.map(p => {
-      let img = p.image_urls ? (typeof p.image_urls === 'string' ? JSON.parse(p.image_urls)[0] : p.image_urls[0]) : '';
+      // Parse images safely
+      let imgUrl = '';
+      if (p.image_urls && Array.isArray(p.image_urls)) imgUrl = p.image_urls[0];
+      else if (typeof p.image_urls === 'string') {
+        try { imgUrl = JSON.parse(p.image_urls)[0]; } catch(e) { imgUrl = p.image_urls; }
+      }
+
+      // Safe fallback if image is totally missing
+      imgUrl = imgUrl || 'https://placehold.co/400x300/F8FAFC/94A3B8?text=Image+Coming+Soon';
+
       return `
-        <a href="product.html?id=${p.id}" class="bg-white border rounded-[2rem] p-6 hover:-translate-y-2 transition-transform shadow-sm block">
-          <img src="${img}" class="w-full aspect-square object-cover rounded-xl mb-4 bg-slate-50">
-          <h3 class="font-display font-bold text-xl mb-2 text-charcoal">${p.name}</h3>
-          <p class="font-bold text-forest text-lg">৳${p.price} <span class="text-sm text-gray-500 font-normal">/ ${p.unit_type || 'pcs'}</span></p>
-        </a>`;
+        <a href="product.html?id=${p.id}" class="bg-white border border-borderline rounded-[2rem] p-6 transition-all duration-300 hover:-translate-y-2 hover:shadow-premium block group cursor-pointer">
+          <div class="aspect-video w-full rounded-2xl mb-5 overflow-hidden bg-slate-50 border border-slate-100 flex items-center justify-center">
+            <img src="${imgUrl}" onerror="this.src='https://placehold.co/400x300/F8FAFC/94A3B8?text=Image+Error'" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+          </div>
+          <h3 class="font-display text-charcoal text-xl font-bold mb-2 group-hover:text-forest transition-colors">${p.name}</h3>
+          <p class="font-display text-forest text-2xl font-extrabold tracking-tight">৳${p.price} <span class="text-sm text-slate-500 font-medium font-sans">/ ${p.unit_type || 'pcs'}</span></p>
+        </a>
+      `;
     }).join('');
-    grid.classList.remove('hidden');
+    
+    grid.style.display = 'grid';
   }
-  
+
+  // Guide Logic
+  function openGuideModal(type) {
+    document.getElementById('guide-superworm').style.display = 'none';
+    document.getElementById('guide-mealworm').style.display = 'none';
+    document.getElementById(`guide-${type}`).style.display = 'block';
+    document.getElementById('guide-modal-overlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeGuide() {
+    document.getElementById('guide-modal-overlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  function closeGuideOverlay(e) {
+    if (e.target.id === 'guide-modal-overlay') closeGuide();
+  }
+
+  // Run on load
   loadProducts();
 </script>
 </body>
