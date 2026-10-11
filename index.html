@@ -95,58 +95,9 @@
   .btn-primary:active:not(:disabled) { transform: translateY(0) scale(0.98); }
   .btn-primary:disabled { opacity: .65; cursor: not-allowed; transform: none; box-shadow: none; }
 
-  /* Package Selector Buttons (Pills) */
-  .pkg-btn {
-    font-family: 'Inter', sans-serif;
-    font-size: 0.9rem; font-weight: 700;
-    padding: 0.6rem 1rem; border-radius: 0.75rem; cursor: pointer;
-    border: 2px solid var(--border);
-    background: #F8FAFC; color: #475569;
-    transition: all 0.2s ease;
-    white-space: nowrap;
-    display: inline-block;
-  }
-  .pkg-btn:hover { 
-    border-color: var(--forest); 
-    background: #F0FDF4; 
-    color: var(--forest); 
-  }
-  .pkg-btn.active {
-    border-color: var(--forest); 
-    background: var(--forest);
-    color: var(--surface); 
-    box-shadow: 0 4px 12px rgba(1, 98, 54, 0.25);
-  }
-  .pkg-error { font-size: .75rem; color: #DC2626; margin-top: .5rem; display: none; font-weight: 600; }
-
-  /* Form Inputs */
-  .input-field {
-    width: 100%; border: 1.5px solid var(--border);
-    background: #F8FAFC; border-radius: 1rem;
-    padding: 1rem 1.25rem; font-size: 1rem; font-weight: 500; color: var(--charcoal);
-    outline: none; transition: all 0.2s ease; font-family: inherit;
-  }
-  .input-field:focus { 
-    border-color: var(--forest); 
-    background: var(--surface);
-    box-shadow: 0 0 0 4px rgba(1, 98, 54, 0.1); 
-  }
-  .input-field::placeholder { color: #94A3B8; font-weight: 400; }
-
   /* Skeleton Loader */
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
   .skeleton { border-radius: 1rem; background: #E2E8F0; animation: pulse 1.5s ease-in-out infinite; }
-
-  /* Spinner */
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .spinner {
-    display: inline-block; width: 20px; height: 20px; border-radius: 9999px;
-    border: 2.5px solid rgba(255,255,255,0.3); border-top-color: var(--surface);
-    animation: spin .7s linear infinite;
-  }
-
-  /* Grid Layouts */
-  #products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2rem; }
 
   /* Modal Overlays */
   .modal-overlay {
@@ -156,14 +107,6 @@
     opacity: 0; transition: opacity 0.3s ease;
   }
   .modal-overlay.open { display: flex; opacity: 1; }
-  
-  .modal-box {
-    background: var(--surface); border-radius: 2rem;
-    width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-    transform: translateY(20px) scale(0.95); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-  .modal-overlay.open .modal-box { transform: translateY(0) scale(1); }
 
   .guide-modal-box {
     background: var(--surface); border-radius: 2rem;
@@ -179,14 +122,6 @@
   .guide-text ul { padding-left: 1.25rem; margin-bottom: 1.25rem; }
   .guide-text li { color: #475569; font-size: 1rem; line-height: 1.7; margin-bottom: 0.5rem; list-style-type: disc; font-weight: 500; }
   .guide-text .highlight-box { background: #F0FDF4; border: 1px solid #BBF7D0; padding: 1.5rem; border-radius: 1rem; margin: 2rem 0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
-
-  /* Checkout Rows */
-  .price-row, .sum-row { display: flex; justify-content: space-between; gap: 1rem; padding: 0.75rem 0; font-size: 0.95rem; border-bottom: 1px dashed #E2E8F0; }
-  .price-row span:first-child, .sum-row span:first-child { color: #64748B; font-weight: 500; }
-  .price-row span:last-child, .sum-row span:last-child  { color: var(--charcoal); font-weight: 700; text-align: right; }
-  .price-row.total-line, .sum-row.total-line { border-bottom: none; margin-top: 0.5rem; padding-top: 1rem; }
-  .price-row.total-line span:first-child, .sum-row.total-line span:first-child { color: var(--charcoal); font-weight: 800; font-size: 1.1rem;}
-  .price-row.total-line span:last-child, .sum-row.total-line span:last-child { color: var(--forest); font-size: 1.3rem; font-weight: 800; font-family: 'Fraunces', serif; }
 
   /* WhatsApp FAB */
   #wa-fab {
@@ -217,13 +152,7 @@
     
     <!-- Actions -->
     <div class="flex items-center gap-4">
-      <!-- Dynamic Cart Button -->
-      <button id="cart-header-btn" class="hidden items-center gap-2 px-4 py-2.5 rounded-2xl bg-forest/5 text-forest font-bold text-sm transition-all hover:bg-forest/10 hover:scale-105" onclick="openCartModal()">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
-        <span class="bg-forest text-white px-2 py-0.5 rounded-full text-xs" id="cart-count">0</span>
-      </button>
-      
-      <button class="btn-primary rounded-2xl px-7 py-3 text-sm font-bold tracking-wide hidden sm:flex" onclick="scrollToProducts()">
+      <button class="btn-primary rounded-2xl px-7 py-3 text-sm font-bold tracking-wide hidden sm:flex" onclick="document.getElementById('products-section').scrollIntoView({ behavior: 'smooth' })">
         Order Now
       </button>
     </div>
@@ -263,7 +192,7 @@
 
       <!-- Action Area -->
       <div class="flex flex-col sm:flex-row items-center gap-4 mb-10">
-        <button class="btn-primary px-8 py-4 rounded-2xl font-bold text-base w-full sm:w-auto" onclick="scrollToProducts()">
+        <button class="btn-primary px-8 py-4 rounded-2xl font-bold text-base w-full sm:w-auto" onclick="document.getElementById('products-section').scrollIntoView({ behavior: 'smooth' })">
           Browse Live Feed
         </button>
         <button class="px-8 py-4 rounded-2xl font-bold text-base w-full sm:w-auto border-2 border-borderline text-charcoal hover:border-forest hover:text-forest bg-white/50 transition-all duration-300 hover:shadow-lg hover:-translate-y-1" onclick="document.getElementById('guides-section').scrollIntoView({ behavior: 'smooth' })">
@@ -341,7 +270,7 @@
     <div class="max-w-2xl mb-16 text-center mx-auto">
       <p class="font-mono text-forest text-sm font-bold tracking-widest uppercase mb-3 bg-forest/5 inline-block px-4 py-1.5 rounded-full">Farm Direct</p>
       <h2 class="font-display text-4xl lg:text-5xl font-extrabold text-charcoal mb-4 tracking-tight">Choose Your Live Feed</h2>
-      <p class="text-lg text-[#475569] font-medium">Mix and match different items into your cart. Nationwide delivery at a single flat rate.</p>
+      <p class="text-lg text-[#475569] font-medium">Click any product to view packages and add to your cart.</p>
     </div>
 
     <!-- Skeleton Loader -->
@@ -366,7 +295,7 @@
     </div>
 
     <!-- Live Product Grid (Injected by JS) -->
-    <div id="products-grid" class="hidden"></div>
+    <div id="products-grid" class="hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"></div>
   </div>
 </section>
 
@@ -385,16 +314,16 @@
         <div class="w-20 h-20 rounded-[2rem] bg-white text-forest flex items-center justify-center mx-auto mb-6 shadow-premium border border-slate-100 transition-transform hover:scale-110">
           <span class="font-display font-extrabold text-3xl">1</span>
         </div>
-        <p class="font-bold text-xl mb-3 text-charcoal">Place Your Order</p>
-        <p class="text-[#64748B] leading-relaxed font-medium">Mix items in your cart, checkout once, and provide your exact delivery details.</p>
+        <p class="font-bold text-xl mb-3 text-charcoal">Select Product</p>
+        <p class="text-[#64748B] leading-relaxed font-medium">Browse our catalog, choose your package, and provide your exact delivery details.</p>
       </div>
 
       <div class="text-center relative z-10">
         <div class="w-20 h-20 rounded-[2rem] bg-white text-forest flex items-center justify-center mx-auto mb-6 shadow-premium border border-slate-100 transition-transform hover:scale-110">
           <span class="font-display font-extrabold text-3xl">2</span>
         </div>
-        <p class="font-bold text-xl mb-3 text-charcoal">Advance Payment</p>
-        <p class="text-[#64748B] leading-relaxed font-medium">Pay the required amount via bKash/Nagod and submit your TrxID to confirm.</p>
+        <p class="font-bold text-xl mb-3 text-charcoal">Secure Payment</p>
+        <p class="text-[#64748B] leading-relaxed font-medium">Pay via bKash/Nagod (or COD if applicable) and submit to confirm.</p>
       </div>
 
       <div class="text-center relative z-10">
@@ -471,114 +400,6 @@
   </div>
 </footer>
 
-<!-- ═══════════════════ CHECKOUT CART MODAL ═══════════════════ -->
-<div id="modal-overlay" class="modal-overlay" onclick="overlayClick(event)">
-  <div id="modal-box" class="modal-box">
-    
-    <!-- CART VIEW -->
-    <div id="modal-cart" style="display:none; padding: 2rem;">
-      <div class="flex justify-between items-start mb-6">
-        <div>
-          <p class="font-mono text-forest text-xs font-bold uppercase tracking-widest mb-1">Your Selection</p>
-          <h3 class="font-display text-charcoal text-3xl font-extrabold tracking-tight">Shopping Cart</h3>
-        </div>
-        <button onclick="closeModal()" aria-label="Close" class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200 transition-colors">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        </button>
-      </div>
-      
-      <div id="cart-items-container" class="mb-6 max-h-[40vh] overflow-y-auto pr-2"></div>
-      
-      <div class="bg-slate-50 p-5 rounded-2xl border border-slate-100 mb-6">
-        <div id="cart-price-breakdown"></div>
-      </div>
-      
-      <button class="btn-primary w-full py-4 rounded-2xl text-lg font-bold" onclick="proceedToCheckout()">Proceed to Checkout</button>
-      <button onclick="closeModal()" class="w-full mt-4 py-2 text-slate-500 font-bold hover:text-charcoal transition-colors">Continue Shopping</button>
-    </div>
-
-    <!-- FORM VIEW -->
-    <div id="modal-form" style="display:none; padding: 2rem;">
-      <div class="mb-6">
-        <button onclick="openCartModal()" class="flex items-center gap-2 text-forest font-bold text-sm mb-4 hover:underline">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg> Back to Cart
-        </button>
-        <h3 class="font-display text-charcoal text-3xl font-extrabold tracking-tight">Delivery Details</h3>
-      </div>
-      
-      <div id="modal-recap" class="mb-4"></div>
-      <div id="modal-price-breakdown" class="mb-6 bg-slate-50 p-4 rounded-xl border border-slate-100"></div>
-      
-      <div class="space-y-4">
-        <div>
-          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Full Name</label>
-          <input id="f-name" type="text" placeholder="e.g. Rafiqul Islam" class="input-field">
-          <span id="e-name" class="hidden text-xs text-red-500 font-bold mt-1.5"></span>
-        </div>
-        <div>
-          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Phone Number</label>
-          <input id="f-phone" type="tel" inputmode="numeric" maxlength="11" placeholder="01XXXXXXXXX" class="input-field">
-          <span id="e-phone" class="hidden text-xs text-red-500 font-bold mt-1.5"></span>
-        </div>
-        <div>
-          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Full Delivery Address</label>
-          <textarea id="f-address" rows="3" placeholder="House no., road, area, upazila, district" class="input-field resize-none"></textarea>
-          <span id="e-address" class="hidden text-xs text-red-500 font-bold mt-1.5"></span>
-        </div>
-
-        <!-- DYNAMIC ADVANCE PAYMENT BLOCK -->
-        <div id="advance-payment-block" class="mt-6 border-t border-slate-100 pt-6" style="display:none;">
-            <div class="p-5 bg-gradient-to-r from-pink-50 to-orange-50 border border-pink-100 rounded-2xl">
-                <div class="flex items-center gap-2 mb-2">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E2136E" stroke-width="2.5" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-                    <p class="text-sm font-extrabold text-slate-900">Advance Payment Required</p>
-                </div>
-                
-                <!-- Dynamic Instructions pulled from Admin Panel -->
-                <p id="display-payment-instructions" class="text-[0.8rem] text-slate-600 mb-4 font-medium leading-relaxed"></p>
-                
-                <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Send Money to:</p>
-                <div class="flex items-center justify-between bg-white px-4 py-2.5 rounded-xl border border-slate-200 mb-4 shadow-sm">
-                    <!-- Dynamic Number pulled from Admin Panel -->
-                    <span id="display-bkash-number" class="text-[#E2136E] text-lg font-mono font-bold tracking-wider"></span>
-                </div>
-                
-                <div>
-                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Transaction ID (TrxID)</label>
-                    <input id="f-trxid" type="text" placeholder="e.g. 8N3A6H2..." class="input-field uppercase font-mono tracking-wide" style="border-color: #fbcfe8;">
-                    <span id="e-trxid" class="hidden text-xs text-red-500 font-bold mt-1.5"></span>
-                </div>
-            </div>
-        </div>
-      </div>
-      
-      <p id="submit-error" class="hidden text-sm text-red-600 font-bold mt-4 p-3 bg-red-50 rounded-lg border border-red-100"></p>
-      
-      <button id="confirm-btn" class="btn-primary w-full py-4 rounded-2xl text-lg font-bold mt-6" onclick="submitOrder()">
-        <span id="btn-spinner" class="spinner" style="display:none;"></span>
-        <span id="btn-text">Confirm Order</span>
-      </button>
-    </div>
-
-    <!-- SUCCESS VIEW -->
-    <div id="modal-success" style="display:none; padding: 3rem 2rem; text-align: center;">
-      <div class="w-24 h-24 rounded-[2rem] bg-green-50 border border-green-100 text-green-600 flex items-center justify-center mx-auto mb-6 shadow-sm">
-        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
-        </svg>
-      </div>
-      <h3 id="success-title" class="font-display text-charcoal text-3xl font-extrabold tracking-tight mb-2">Order Confirmed!</h3>
-      <p id="success-subtitle" class="font-mono text-forest text-sm font-bold tracking-widest uppercase mb-4" style="display:none;"></p>
-      
-      <p id="success-message-text" class="text-sm text-slate-600 font-medium mb-8 leading-relaxed"></p>
-      
-      <div id="success-rows" class="text-left bg-slate-50 border border-slate-100 rounded-2xl p-5 mb-8"></div>
-      
-      <button class="btn-primary w-full py-4 rounded-2xl text-lg font-bold" onclick="closeModal()">Done</button>
-    </div>
-  </div>
-</div>
-
 <!-- ═══════════════════ GUIDES MODAL ═══════════════════ -->
 <div id="guide-modal-overlay" class="modal-overlay" onclick="closeGuideOverlay(event)">
   <div class="guide-modal-box">
@@ -597,17 +418,17 @@
       </div>
 
       <h4>❓ সুপারওয়ার্ম কী ও এর উপকারিতা</h4>
-      <p>সুপারওয়ার্ম (Zophobas morio) হলো একধরনের ডার্কলিং বিটল প্রজাতির লার্ভা, যা আকারে মিলওয়ার্মের চেয়ে বড় ও পুষ্টিগুণে সমৃদ্ধ। এটি ইউরোপিয়ান উনীয়নের সার্টিফাইড একটি পোকা যা মুরগি, কোয়েল পাখি, ব্যাঙ ও অ্যাকুরিয়ামের মাছের জন্য উচ্চ-প্রোটিনযুক্ত জীবন্ত খাবার হিসেবে বিশ্বব্যাপী ব্যবহৃত হয়। ঘরে বসে অল্প জায়গায় এটি লাভজনকভাবে চাষ করা সম্ভব, তবে পিউপা তৈরির জন্য কিছুটা বাড়তি যত্ন প্রয়োজন হয়।</p>
+      <p>সুপারওয়ার্ম (Zophobas morio) হলো একধরনের ডার্কলিং বিটল প্রজাতির লার্ভা, যা আকারে মিলওয়ার্মের চেয়ে বড় ও পুষ্টিগুণে সমৃদ্ধ। এটি ইউরোপিয়ান উনীয়নের সার্টিফাইড একটি পোকা যা মুরগি, কোয়েল পাখি, ব্যাঙ ও অ্যাকুরিয়ামের মাছের জন্য উচ্চ-প্রোটিনযুক্ত জীবন্ত খাবার হিসেবে বিশ্বব্যাপী ব্যবহৃত হয়। ঘরে বসে অল্প জায়গায় এটি লাভজনকভাবে চাষ করা সম্ভব, তবে পিউপা তৈরির জন্য কিছুটা বাড়তি যত্ন প্রয়োজন হয়।</p>
 
-      <h4>🐞 ধাপ ১: মাদার বিটাল চাষের নিয়ম</h4>
+      <h4>🐞 ধাপ ১: মাদার বিটাল চাষের নিয়ম</h4>
       <ul>
-        <li><strong>সেটআপ:</strong> মাদারগুলো পাওয়ার পর একটি গামলায় ১ ইঞ্চি গমের ভুসি দিয়ে তার ভেতর ছেড়ে দিন।</li>
+        <li><strong>সেটআপ:</strong> মাদারগুলো পাওয়ার পর একটি গামলায় ১ ইঞ্চি গমের ভুসি দিয়ে তার ভেতর ছেড়ে দিন।</li>
         <li><strong>খাবার:</strong> এদের পানির চাহিদা মেটাতে সস্তা সবজি যেমন—আলু, পেঁপে বা শসা পাতলা করে কেটে ভুসির উপরে দিন। সবজি পচে যাবার আগে তুলে ফেলুন।</li>
-        <li><strong>ডিম/বাচ্চা সংগ্রহ:</strong> প্রতি ১৫-২০ দিন পরপর গামলার পুরনো ভুসিগুলো চেলে বা আলাদা করে অন্য একটি পাত্রে সরিয়ে রাখুন (এতেই ডিম থাকে)। এরপর মাদারগুলোকে আবার নতুন ভুসিতে রাখুন।</li>
+        <li><strong>ডিম/বাচ্চা সংগ্রহ:</strong> প্রতি ১৫-২০ দিন পরপর গামলার পুরনো ভুসিগুলো চেলে বা আলাদা করে অন্য একটি পাত্রে সরিয়ে রাখুন (এতেই ডিম থাকে)। এরপর মাদারগুলোকে আবার নতুন ভুসিতে রাখুন।</li>
       </ul>
 
       <h4>📦 ধাপ ২: ডিম ফোটা ও লার্ভা বৃদ্ধি</h4>
-      <p>মাদার থেকে ১৫-২০ দিনের ভিতর ডিম ফোটে। এই লার্ভাই মূল বিক্রয়যোগ্য পণ্য এবং পশু পাখির খাবার। ডিম থেকে ফোটার পর ১-১.৫ মাস হলে লারভা গুলো খাওয়ানোর উপযোগী হয় এবং মাদার বানানোর উপযোগী পূর্ণাঙ্গ লার্ভা হতে প্রায় ৪-৫ মাস সময় লাগে।</p>
+      <p>মাদার থেকে ১৫-২০ দিনের ভিতর ডিম ফোটে। এই লার্ভাই মূল বিক্রয়যোগ্য পণ্য এবং পশু পাখির খাবার। ডিম থেকে ফোটার পর ১-১.৫ মাস হলে লারভা গুলো খাওয়ানোর উপযোগী হয় এবং মাদার বানানোর উপযোগী পূর্ণাঙ্গ লার্ভা হতে প্রায় ৪-৫ মাস সময় লাগে।</p>
       <ul>
         <li><strong>বক্স:</strong> মসৃণ দেয়ালযুক্ত প্লাস্টিকের ট্রে বা গামলা ব্যবহার করুন।</li>
         <li><strong>বেডিং:</strong> বক্সের নিচে ২-৩ ইঞ্চি গমের ভুষি (Wheat Bran) দিন।</li>
@@ -616,7 +437,7 @@
 
       <div class="highlight-box">
         <h4 style="margin-top:0;">🛌 ধাপ ৩: পিউপা তৈরি (সবচেয়ে গুরুত্বপূর্ণ ধাপ)</h4>
-        <p style="margin-bottom:0.5rem;">সুপারওয়ার্ম একসাথে থাকলে পিউপা হয় না — ৩-৪ মাস বয়সী বড় লার্ভাগুলোকে আলাদা ছোট সসের কাপে একটি একটি করে রাখতে হবে।</p>
+        <p style="margin-bottom:0.5rem;">সুপারওয়ার্ম একসাথে থাকলে পিউপা হয় না — ৩-৪ মাস বয়সী বড় লার্ভাগুলোকে আলাদা ছোট সসের কাপে একটি একটি করে রাখতে হবে।</p>
         <ul style="margin-bottom:0;">
           <li>কাপে কোনো খাবার বা পানি দেওয়া যাবে না।</li>
           <li>অন্ধকার জায়গায় রাখলে ১-২ সপ্তাহের মধ্যে পিউপা হবে।</li>
@@ -628,7 +449,7 @@
       <p>পিউপা থেকে নতুন মাদার বিটাল বের হলে তাদের আবার মূল ভুষির বক্সে দিন। এখান থেকেই ধাপ ১ আবার শুরু হয় — বিটল ডিম পাড়ে, ডিম লার্ভা হয়, আর খামার চলতেই থাকে।</p>
 
       <h4>⚠️ সতর্কতা (Safety & Maintenance)</h4>
-      <p>বক্সে কখনোই পানি স্প্রে করবেন ঘন ঘন — মাইটস বা ফাঙ্গাস আক্রমণ করবে। সবজিগুলো যেন পচে না যায় সেদিকে খেয়াল রাখবেন।</p>
+      <p>বক্সে কখনোই পানি স্প্রে করবেন ঘন ঘন — মাইটস বা ফাঙ্গাস আক্রমণ করবে। সবজিগুলো যেন পচে না যায় সেদিকে খেয়াল রাখবেন।</p>
     </div>
 
     <!-- Mealworm Content -->
@@ -648,15 +469,15 @@
       <p>মিলওয়ার্ম (Tenebrio molitor) হলো সুপারওয়ার্মের মতোই একই ডার্কলিং বিটল পরিবারের লার্ভা, তবে আকারে ছোট। এটি পোষা সরীসৃপ, পাখি, ব্যাঙ ও অ্যাকুরিয়ামের মাছের জন্য জনপ্রিয় উচ্চ-প্রোটিনযুক্ত জীবন্ত খাবার। সবচেয়ে বড় সুবিধা হলো — মিলওয়ার্ম চাষ সুপারওয়ার্মের চেয়ে অনেক সহজ ও কম পরিশ্রমসাধ্য।</p>
       <p><strong>কেন সহজ?</strong> মিলওয়ার্ম সুপারওয়ার্মের চেয়ে সহজ চাষযোগ্য কারণ প্রতিটি লার্ভাকে আলাদা কাপে রাখার কোনো প্রয়োজন নেই — এরা বক্সেই একসাথে পিউপা হয়ে যায়। জীবনচক্রও সুপারওয়ার্মের চেয়ে প্রায় দ্বিগুণ দ্রুত — মাত্র ২-২.৫ মাসে পূর্ণাঙ্গ হয়।</p>
 
-      <h4>🐞 ধাপ ১: মাদার বিটাল চাষের নিয়ম</h4>
+      <h4>🐞 ধাপ ১: মাদার বিটাল চাষের নিয়ম</h4>
       <ul>
-        <li><strong>সেটআপ:</strong> মাদারগুলো পাওয়ার পর একটি গামলায় ১ ইঞ্চি গমের ভুসি দিয়ে তার ভেতর ছেড়ে দিন।</li>
+        <li><strong>সেটআপ:</strong> মাদারগুলো পাওয়ার পর একটি গামলায় ১ ইঞ্চি গমের ভুসি দিয়ে তার ভেতর ছেড়ে দিন।</li>
         <li><strong>খাবার:</strong> এদের পানির চাহিদা মেটাতে সস্তা সবজি যেমন—আলু, পেঁপে বা শসা পাতলা করে কেটে ভুসির উপরে দিন। সবজি পচে যাবার আগে তুলে ফেলুন।</li>
-        <li><strong>ডিম/বাচ্চা সংগ্রহ:</strong> প্রতি ১৫-২০ দিন পরপর গামলার পুরনো ভুসিগুলো চেলে বা আলাদা করে অন্য একটি পাত্রে সরিয়ে রাখুন (এতেই ডিম থাকে)। এরপর মাদারগুলোকে আবার নতুন ভুসিতে রাখুন।</li>
+        <li><strong>ডিম/বাচ্চা সংগ্রহ:</strong> প্রতি ১৫-২০ দিন পরপর গামলার পুরনো ভুসিগুলো চেলে বা আলাদা করে অন্য একটি পাত্রে সরিয়ে রাখুন (এতেই ডিম থাকে)। এরপর মাদারগুলোকে আবার নতুন ভুসিতে রাখুন।</li>
       </ul>
 
       <h4>📦 ধাপ ২: ডিম ফোটা ও লার্ভা বৃদ্ধি</h4>
-      <p>ডিম ফুটে বের হওয়া লার্ভাই মূল ফিড ও বিক্রয়যোগ্য পণ্য। লারভা খাবারের উপযুগত হতে মাত্র ১-১.৫ মাস সময় লাগে এবং মাদার হওয়ার উপযুগত পূর্ণাঙ্গ লার্ভা হতে প্রায় ২-২.৫ মাস সময় লাগে — সুপারওয়ার্মের প্রায় অর্ধেক সময়।</p>
+      <p>ডিম ফুটে বের হওয়া লার্ভাই মূল ফিড ও বিক্রয়যোগ্য পণ্য। লারভা খাবারের উপযুগত হতে মাত্র ১-১.৫ মাস সময় লাগে এবং মাদার হওয়ার উপযুগত পূর্ণাঙ্গ লার্ভা হতে প্রায় ২-২.৫ মাস সময় লাগে — সুপারওয়ার্মের প্রায় অর্ধেক সময়।</p>
       <ul>
         <li><strong>বক্স ও বেডিং:</strong> মসৃণ প্লাস্টিকের বক্সে ১-২ ইঞ্চি গমের ভুষি ও সবজি দিন।</li>
       </ul>
@@ -700,9 +521,6 @@ var db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 /* ── App-wide state ── */
 var PRODUCTS         = [];
-var CARD_STATE       = [];
-var CART             = [];
-var DELIVERY_CHARGE  = 150;
 
 /* ═══════════════════════════════════════════════
    GUIDES MODAL LOGIC
@@ -752,440 +570,22 @@ function getImages(product) {
   return arr.filter(function(x){ return x && typeof x === 'string'; });
 }
 
-function parsePackages(raw) {
-  if (!raw) return [];
-  return raw.split(',').reduce(function(acc, token) {
-    var parts = token.trim().split(':');
-    var qty   = parseInt(parts[0], 10);
-    var price = parseFloat(parts[1]);
-    if (!isNaN(qty) && qty > 0 && !isNaN(price) && price >= 0) {
-      acc.push({ qty: qty, totalPrice: price });
-    }
-    return acc;
-  }, []);
-}
-
-function scrollToProducts() {
-  var el = document.getElementById('products-section');
-  if (el) el.scrollIntoView({ behavior: 'smooth' });
-}
-
 /* ═══════════════════════════════════════════════
-   IMAGE SLIDER
+   PRODUCT CARD BUILDER
    ═══════════════════════════════════════════════ */
-function buildSlider(imgs, i) {
-  if (!imgs.length) {
-    return '<div class="slider-main" style="display:flex;align-items:center;justify-content:center;background:#F1F5F9;">'
-      + '<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#CBD5E1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'
-      + '<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/>'
-      + '</svg></div>';
-  }
-  var arrows = imgs.length > 1
-    ? '<button class="slider-arrow left"  onclick="imgStep(' + i + ',-1)" aria-label="Previous photo">'
-        + '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg></button>'
-      + '<button class="slider-arrow right" onclick="imgStep(' + i + ',1)"  aria-label="Next photo">'
-        + '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg></button>'
-    : '';
-  var thumbs = '';
-  if (imgs.length > 1) {
-    thumbs = '<div class="slider-thumbs">';
-    for (var j = 0; j < imgs.length; j++) {
-      thumbs += '<button class="slider-thumb' + (j === 0 ? ' active' : '') + '"'
-        + ' id="thumb-' + i + '-' + j + '"'
-        + ' onclick="imgSelect(' + i + ',' + j + ')"'
-        + ' aria-label="Photo ' + (j+1) + '">'
-        + '<img src="' + esc(imgs[j]) + '" alt="photo ' + (j+1) + '"></button>';
-    }
-    thumbs += '</div>';
-  }
-  return '<div class="slider-main" style="border-radius:1.5rem;">'
-    + '<img id="slide-' + i + '" src="' + esc(imgs[0]) + '" alt="' + esc(PRODUCTS[i].name) + '">'
-    + '<div style="position:absolute;top:16px;right:16px;background:rgba(255,255,255,0.9);backdrop-filter:blur(4px);color:var(--forest);font-size:0.7rem;font-weight:800;letter-spacing:0.05em;padding:6px 12px;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.05);">'
-    +   'FARM FRESH'
-    + '</div>'
-    + arrows
-    + '</div>' + thumbs;
-}
-
-function imgStep(i, dir) {
-  var imgs = getImages(PRODUCTS[i]);
-  var idx  = CARD_STATE[i].activeImg + dir;
-  if (idx < 0) idx = imgs.length - 1;
-  if (idx >= imgs.length) idx = 0;
-  imgSet(i, idx, imgs);
-}
-
-function imgSelect(i, j) { imgSet(i, j, getImages(PRODUCTS[i])); }
-
-function imgSet(i, idx, imgs) {
-  CARD_STATE[i].activeImg = idx;
-  var el = document.getElementById('slide-' + i);
-  if (el) el.src = imgs[idx];
-  for (var k = 0; k < imgs.length; k++) {
-    var t = document.getElementById('thumb-' + i + '-' + k);
-    if (!t) continue;
-    t.classList.toggle('active', k === idx);
-  }
-}
-
-/* ═══════════════════════════════════════════════
-   PACKAGE SELECTOR & CART
-   ═══════════════════════════════════════════════ */
-function selectPkg(cardIdx, pkgIdx) {
-  var pkgs = CARD_STATE[cardIdx].packages;
-  var pkg  = pkgs[pkgIdx];
-  CARD_STATE[cardIdx].selectedPkg = pkg;
-
-  for (var k = 0; k < pkgs.length; k++) {
-    var btn = document.getElementById('pkg-' + cardIdx + '-' + k);
-    if (btn) btn.classList.toggle('active', k === pkgIdx);
-  }
-
-  var errEl = document.getElementById('pkg-err-' + cardIdx);
-  if (errEl) errEl.style.display = 'none';
-
-  var unit     = PRODUCTS[cardIdx].unit_type || 'pcs';
-  var perUnit  = pkg.totalPrice / pkg.qty;
-  var priceEl  = document.getElementById('price-display-' + cardIdx);
-  if (priceEl) {
-    priceEl.innerHTML =
-      '<span class="font-display text-charcoal" style="font-size:2rem;font-weight:800;letter-spacing:-0.02em;">&#2547;' + fmtBDT(perUnit) + '</span>'
-      + '<span style="font-size:.9rem;font-weight:600;color:#64748B;">/ ' + esc(unit) + '</span>';
-  }
-
-  var subEl = document.getElementById('sub-' + cardIdx);
-  if (subEl) subEl.innerHTML = '&#2547;' + fmtBDT(pkg.totalPrice);
-}
-
-function buildCard(product, i) {
+function buildCard(product) {
   var imgs = getImages(product);
-  var pkgs = parsePackages(product.packages);
+  var imgUrl = imgs.length ? imgs[0] : 'https://placehold.co/400x300/F8FAFC/94A3B8?text=No+Image';
 
-  CARD_STATE[i] = { activeImg: 0, packages: pkgs, selectedPkg: null };
-
-  var pkgSection;
-  if (!pkgs.length) {
-    pkgSection = '<p style="font-size:.9rem;color:#94A3B8;font-style:italic;">No package options set for this product.</p>';
-  } else {
-    var btnHtml = '';
-    for (var k = 0; k < pkgs.length; k++) {
-      btnHtml +=
-        '<button id="pkg-' + i + '-' + k + '" class="pkg-btn"'
-        + ' onclick="selectPkg(' + i + ',' + k + ')"'
-        + ' aria-label="Select ' + pkgs[k].qty + ' ' + esc(product.unit_type || 'pcs') + '">'
-        + pkgs[k].qty + ' ' + esc(product.unit_type || 'pcs')
-        + '</button>';
-    }
-    pkgSection =
-      '<div style="margin-top:0.75rem;">'
-      +   '<p style="font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:#64748B;margin:0 0 .75rem;">Select Package</p>'
-      +   '<div style="display:flex;flex-wrap:wrap;gap:.5rem;">' + btnHtml + '</div>'
-      +   '<p id="pkg-err-' + i + '" class="pkg-error mt-2 text-red-500 font-bold hidden">Please select a package size.</p>'
-      + '</div>';
-  }
-
-  return '<div class="bg-white border border-borderline rounded-[2rem] p-6 transition-all duration-300 hover:-translate-y-2 hover:shadow-premium group" id="card-' + i + '">'
-    + buildSlider(imgs, i)
-    + '<div style="margin-top:1.25rem;">'
-    +   '<h3 class="font-display text-charcoal" style="font-size:1.75rem;font-weight:800;margin:0 0 .5rem;letter-spacing:-0.02em;">' + esc(product.name) + '</h3>'
-    +   (product.description ? '<p style="font-size:.95rem;color:#475569;margin:0;line-height:1.6;font-weight:500;">' + esc(product.description) + '</p>' : '')
-    + '</div>'
-    + '<div id="price-display-' + i + '" style="display:flex;align-items:baseline;gap:.5rem;margin-top:1rem;">'
-    +   '<span class="font-display text-charcoal" style="font-size:2rem;font-weight:800;letter-spacing:-0.02em;">&#2547;' + fmtBDT(product.price) + '</span>'
-    +   '<span style="font-size:.9rem;font-weight:600;color:#64748B;">/ ' + esc(product.unit_type || 'pcs') + '</span>'
-    + '</div>'
-    + pkgSection
-    + '<div style="border-top:1px dashed #E2E8F0;padding-top:1.25rem;margin-top:1.5rem;display:flex;align-items:center;justify-content:space-between;">'
-    +   '<div>'
-    +     '<div style="font-size:.7rem;font-weight:800;color:#64748B;text-transform:uppercase;letter-spacing:0.05em;">Subtotal</div>'
-    +     '<div id="sub-' + i + '" class="font-mono text-forest" style="font-size:1.2rem;font-weight:700;">—</div>'
-    +   '</div>'
-    +   '<button class="btn-primary" style="border-radius:1rem;padding:.75rem 1.25rem;font-size:1rem;font-weight:700;" onclick="addToCart(' + i + ')">'
-    +     '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>'
-    +     ' Add'
-    +   '</button>'
-    + '</div>'
-    + '</div>';
-}
-
-function updateCartHeader() {
-  var btn = document.getElementById('cart-header-btn');
-  var countEl = document.getElementById('cart-count');
-  if (CART.length > 0) {
-    countEl.textContent = CART.length;
-    btn.style.display = 'flex';
-  } else {
-    btn.style.display = 'none';
-  }
-}
-
-function addToCart(i) {
-  var state = CARD_STATE[i];
-  if (!state.selectedPkg) {
-    var errEl = document.getElementById('pkg-err-' + i);
-    if (errEl) errEl.style.display = 'block';
-    var cardEl = document.getElementById('card-' + i);
-    if (cardEl) cardEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    return;
-  }
-
-  var product = PRODUCTS[i];
-  var pkgData = state.selectedPkg;
-  
-  CART.push({
-    productId: product.id,
-    name: product.name,
-    qty: pkgData.qty,
-    unit: product.unit_type || 'pcs',
-    total: pkgData.totalPrice,
-    img: getImages(product)[0] || '',
-    payment_option: product.payment_option || 'Cash on Delivery'
-  });
-
-  updateCartHeader();
-  openCartModal();
-}
-
-function removeFromCart(index) {
-  CART.splice(index, 1);
-  updateCartHeader();
-  if (CART.length === 0) {
-    closeModal();
-  } else {
-    openCartModal();
-  }
-}
-
-function openCartModal() {
-  if (CART.length === 0) return;
-  
-  var itemsHtml = '';
-  var subtotal = 0;
-  
-  CART.forEach(function(item, idx) {
-    subtotal += item.total;
-    var perUnit = item.total / item.qty;
-    itemsHtml += 
-      '<div style="display:flex;align-items:center;gap:1rem;padding:1rem 0;border-bottom:1px solid #E2E8F0;">' +
-        '<div style="width:60px;height:60px;flex-shrink:0;background:#F8FAFC;border-radius:1rem;display:flex;align-items:center;justify-content:center;overflow:hidden;border:1px solid #E2E8F0;">' +
-          (item.img ? '<img src="' + esc(item.img) + '" style="width:100%;height:100%;object-fit:cover;">' : '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#CBD5E1" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>') +
-        '</div>' +
-        '<div style="flex:1;min-width:0;">' +
-          '<p style="font-weight:700;font-size:1.05rem;margin:0 0 .2rem;color:var(--charcoal);">' + esc(item.name) + '</p>' +
-          '<p style="font-size:.85rem;font-weight:600;color:#64748B;margin:0;">' + item.qty + ' ' + esc(item.unit) + ' &times; &#2547;' + fmtBDT(perUnit) + '</p>' +
-        '</div>' +
-        '<div style="text-align:right;">' +
-          '<p style="font-weight:800;font-size:1.1rem;margin:0 0 .3rem;color:var(--charcoal);">&#2547;' + fmtBDT(item.total) + '</p>' +
-          '<button onclick="removeFromCart(' + idx + ')" style="background:none;border:none;color:#DC2626;font-size:.8rem;font-weight:700;cursor:pointer;padding:0;transition:opacity 0.2s;">Remove</button>' +
-        '</div>' +
-      '</div>';
-  });
-
-  document.getElementById('cart-items-container').innerHTML = itemsHtml;
-
-  var grandTotal = subtotal + DELIVERY_CHARGE;
-  document.getElementById('cart-price-breakdown').innerHTML =
-    '<div class="price-row"><span>Cart Subtotal</span><span>&#2547;' + fmtBDT(subtotal) + '</span></div>' +
-    '<div class="price-row"><span>Delivery (Flat Rate)</span><span>&#2547;' + fmtBDT(DELIVERY_CHARGE) + '</span></div>' +
-    '<div class="price-row total-line"><span>Grand Total</span><span>&#2547;' + fmtBDT(grandTotal) + '</span></div>';
-
-  document.getElementById('modal-cart').style.display    = '';
-  document.getElementById('modal-form').style.display    = 'none';
-  document.getElementById('modal-success').style.display = 'none';
-
-  document.getElementById('modal-overlay').classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
-
-function proceedToCheckout() {
-  var subtotal = CART.reduce(function(sum, item){ return sum + item.total; }, 0);
-  var grandTotal = subtotal + DELIVERY_CHARGE;
-  
-  // DYNAMIC CHECK: Does any item in the cart require Advance Payment?
-  var requiresAdvance = CART.some(function(item) { return item.payment_option === 'Advance Payment'; });
-
-  document.getElementById('modal-recap').innerHTML =
-    '<div style="padding:1rem;border-radius:1rem;background:#F0FDF4;border:1px solid #BBF7D0;display:flex;align-items:center;gap:.75rem;">' +
-      '<div class="w-8 h-8 rounded-full bg-forest text-white flex items-center justify-center shrink-0 shadow-sm"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div>' +
-      '<p style="font-weight:700;font-size:.95rem;color:var(--forest);margin:0;">' + CART.length + (requiresAdvance ? ' item(s) selected (Advance Payment Required)' : ' item(s) ready for Cash on Delivery') + '</p>' +
-    '</div>';
-
-  document.getElementById('modal-price-breakdown').innerHTML =
-    '<div class="price-row"><span>Cart Subtotal</span><span>&#2547;' + fmtBDT(subtotal) + '</span></div>' +
-    '<div class="price-row"><span>Delivery (Flat Rate)</span><span>&#2547;' + fmtBDT(DELIVERY_CHARGE) + '</span></div>' +
-    '<div class="price-row total-line border-t border-slate-200 mt-2 pt-2"><span>Grand Total</span><span>&#2547;' + fmtBDT(grandTotal) + '</span></div>';
-
-  ['f-name','f-phone','f-address', 'f-trxid'].forEach(function(id){ 
-      if(document.getElementById(id)) document.getElementById(id).value = ''; 
-  });
-  ['e-name','e-phone','e-address', 'e-trxid'].forEach(function(id){ 
-      if(document.getElementById(id)) document.getElementById(id).style.display = 'none'; 
-  });
-  document.getElementById('submit-error').style.display = 'none';
-  setBusy(false);
-  
-  // Toggle the Advance Payment block visibility based on product settings
-  var advanceBlock = document.getElementById('advance-payment-block');
-  var btnText = document.getElementById('btn-text');
-  
-  if (requiresAdvance) {
-      advanceBlock.style.display = 'block';
-      btnText.textContent = 'Confirm Order & Submit TrxID';
-  } else {
-      advanceBlock.style.display = 'none';
-      btnText.textContent = 'Confirm Cash on Delivery Order';
-  }
-
-  document.getElementById('modal-cart').style.display = 'none';
-  document.getElementById('modal-form').style.display = '';
-}
-
-function closeModal() {
-  document.getElementById('modal-overlay').classList.remove('open');
-  setTimeout(() => { document.body.style.overflow = ''; }, 300); // Wait for transition
-}
-
-function overlayClick(e) {
-  if (e.target.id === 'modal-overlay' || e.target.id === 'guide-modal-overlay') {
-    closeModal();
-    closeGuide();
-  }
-}
-
-/* ═══════════════════════════════════════════════
-   CHECKOUT SUBMISSION
-   ═══════════════════════════════════════════════ */
-function setErr(field, msg) {
-  var el = document.getElementById('e-' + field);
-  el.textContent    = msg;
-  el.style.display  = 'block';
-}
-function clearErr(field) { document.getElementById('e-' + field).style.display = 'none'; }
-
-function validate() {
-  clearErr('name'); clearErr('phone'); clearErr('address'); clearErr('trxid');
-  var name    = document.getElementById('f-name').value.trim();
-  var phone   = document.getElementById('f-phone').value.trim();
-  var address = document.getElementById('f-address').value.trim();
-  var trxid   = document.getElementById('f-trxid') ? document.getElementById('f-trxid').value.trim() : '';
-  
-  var advanceBlock = document.getElementById('advance-payment-block');
-  var isAdvance = advanceBlock && advanceBlock.style.display !== 'none';
-  
-  var ok = true;
-  if (!name)                           { setErr('name',    'Please enter your full name.');                    ok = false; }
-  if (!/^01[3-9]\d{8}$/.test(phone))  { setErr('phone',   'Enter a valid BD number, e.g. 01712345678.');     ok = false; }
-  if (!address || address.length < 10) { setErr('address', 'Please enter your full delivery address.');        ok = false; }
-  
-  if (isAdvance && !trxid) { 
-      setErr('trxid', 'Transaction ID is required to confirm the order.'); 
-      ok = false; 
-  }
-  
-  return ok ? { name: name, phone: phone, address: address, trxid: trxid, isAdvance: isAdvance } : null;
-}
-
-async function submitOrder() {
-  var fields = validate();
-  if (!fields || CART.length === 0) return;
-
-  setBusy(true);
-  document.getElementById('submit-error').style.display = 'none';
-
-  var paymentMethod = fields.isAdvance ? 'bKash/Nagod' : 'Cash on Delivery';
-
-  var payloads = CART.map(function(item, index) {
-    var perUnit = Math.round((item.total / item.qty + Number.EPSILON) * 100) / 100;
-    var rowTotal = (index === 0) ? (item.total + DELIVERY_CHARGE) : item.total; 
-    
-    return {
-      product_id:       item.productId,
-      product_name:     item.name,
-      quantity:         item.qty,
-      unit_type:        item.unit,
-      unit_price:       perUnit,
-      total_amount:     rowTotal,
-      customer_name:    fields.name,
-      customer_phone:   fields.phone,
-      delivery_address: fields.address,
-      transaction_id:   fields.trxid || null,
-      payment_method:   paymentMethod
-    };
-  });
-
-  var result = await db.from('orders').insert(payloads).select();
-  setBusy(false);
-
-  if (result.error) {
-    var errEl = document.getElementById('submit-error');
-    errEl.textContent   = result.error.message || 'Something went wrong. Please try again.';
-    errEl.style.display = 'block';
-    return;
-  }
-
-  var row   = result.data && result.data[0];
-  var refId = row && row.id
-    ? 'BP-' + String(row.id).replace(/-/g,'').slice(0,8).toUpperCase()
-    : 'BP-' + Math.floor(100000 + Math.random() * 900000);
-
-  // Success Views Rendering
-  var titleEl = document.getElementById('success-title');
-  var subtitleEl = document.getElementById('success-subtitle');
-  var msgEl = document.getElementById('success-message-text');
-
-  if (fields.isAdvance) {
-      titleEl.textContent = 'Verifying Payment';
-      subtitleEl.style.display = 'block';
-      subtitleEl.textContent = 'TrxID Received!';
-      msgEl.innerHTML = 'Our team will review your payment and will confirm your order within 4-6 hours. And then if the payment is correct we will ship the order soon.<br><br>If anyone needs more queries they should text us on whatsapp: <a href="https://wa.me/8801977475846" target="_blank" style="color:var(--forest); font-weight:bold; text-decoration:underline;">01977475846</a>.';
-  } else {
-      titleEl.textContent = 'Order Confirmed!';
-      subtitleEl.style.display = 'none';
-      msgEl.innerHTML = 'Your Cash on Delivery order has been successfully placed. We will prepare your fresh live feed and dispatch it soon.<br><br>If anyone needs more queries they should text us on whatsapp: <a href="https://wa.me/8801977475846" target="_blank" style="color:var(--forest); font-weight:bold; text-decoration:underline;">01977475846</a>.';
-  }
-
-  var successHtml = '';
-  var subtotal = 0;
-  CART.forEach(function(item) {
-    subtotal += item.total;
-    successHtml += sRow(item.qty + ' ' + esc(item.unit) + ' ' + esc(item.name), '&#2547;' + fmtBDT(item.total));
-  });
-  
-  var grandTotal = subtotal + DELIVERY_CHARGE;
-  successHtml += sRow('Delivery', '&#2547;' + fmtBDT(DELIVERY_CHARGE));
-  successHtml += '<div class="sum-row total-line border-t border-slate-200 mt-2 pt-2"><span>Total (COD)</span><span>&#2547;' + fmtBDT(grandTotal) + '</span></div>';
-  
-  successHtml += '<div class="mt-6 pt-4 border-t border-dashed border-slate-300">';
-  successHtml += sRow('Name',    esc(fields.name));
-  successHtml += sRow('Phone',   esc(fields.phone));
-  successHtml += sRow('Address', esc(fields.address));
-  successHtml += '</div>';
-
-  document.getElementById('success-rows').innerHTML = successHtml;
-
-  document.getElementById('modal-form').style.display    = 'none';
-  document.getElementById('modal-success').style.display = 'block';
-
-  // Fire Meta Pixel Purchase Event
-  if (typeof fbq === 'function') {
-    fbq('track', 'Purchase', { value: grandTotal, currency: 'BDT' });
-  }
-
-  CART = [];
-  updateCartHeader();
-}
-
-function sRow(label, value) {
-  return '<div class="sum-row"><span>' + label + '</span><span>' + value + '</span></div>';
-}
-
-function setBusy(busy) {
-  document.getElementById('confirm-btn').disabled          = busy;
-  document.getElementById('btn-spinner').style.display     = busy ? 'inline-block' : 'none';
-  
-  var advanceBlock = document.getElementById('advance-payment-block');
-  var isAdvance = advanceBlock && advanceBlock.style.display !== 'none';
-  document.getElementById('btn-text').textContent          = busy ? (isAdvance ? 'Verifying TrxID...' : 'Placing order...') : (isAdvance ? 'Confirm Order & Submit TrxID' : 'Confirm Cash on Delivery Order');
+  return `
+    <a href="product.html?id=${product.id}" class="bg-white border border-borderline rounded-[2rem] p-6 transition-all duration-300 hover:-translate-y-2 hover:shadow-premium block group cursor-pointer">
+      <div class="aspect-video w-full rounded-2xl mb-5 overflow-hidden bg-slate-50 border border-slate-100 flex items-center justify-center">
+        <img src="${esc(imgUrl)}" onerror="this.src='https://placehold.co/400x300/F8FAFC/94A3B8?text=Image+Error'" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+      </div>
+      <h3 class="font-display text-charcoal text-xl font-bold mb-2 group-hover:text-forest transition-colors">${esc(product.name)}</h3>
+      <p class="font-display text-forest text-2xl font-extrabold tracking-tight">&#2547;${fmtBDT(product.price)} <span class="text-sm text-slate-500 font-medium font-sans">/ ${esc(product.unit_type || 'pcs')}</span></p>
+    </a>
+  `;
 }
 
 /* ═══════════════════════════════════════════════
@@ -1193,8 +593,8 @@ function setBusy(busy) {
    ═══════════════════════════════════════════════ */
 async function init() {
   var results = await Promise.all([
-    db.from('store_settings').select('whatsapp_number, delivery_charge, meta_pixel_id').eq('id', 1).single(),
-    db.from('products').select('*')
+    db.from('store_settings').select('whatsapp_number, meta_pixel_id').eq('id', 1).single(),
+    db.from('products').select('*').order('created_at', { ascending: false })
   ]);
 
   var settingsResult = results[0];
@@ -1202,7 +602,6 @@ async function init() {
 
   if (!settingsResult.error && settingsResult.data) {
     var s = settingsResult.data;
-    if (s.delivery_charge !== null && s.delivery_charge !== undefined) DELIVERY_CHARGE = Number(s.delivery_charge);
     if (s.whatsapp_number) {
       var num = String(s.whatsapp_number).replace(/\D/g, '');
       var fab = document.getElementById('wa-fab');
@@ -1240,11 +639,11 @@ async function init() {
 
   var grid = document.getElementById('products-grid');
   grid.innerHTML = PRODUCTS.map(buildCard).join('');
-  grid.style.display = 'grid';
+  grid.style.display = 'grid'; // Ensure this matches the Tailwind class
 }
 
 document.addEventListener('DOMContentLoaded', init);
 </script>
 
 </body>
-</html>
+</html>)
