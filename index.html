@@ -1192,7 +1192,7 @@ function setBusy(busy) {
 async function init() {
   var results = await Promise.all([
     db.from('store_settings').select('whatsapp_number, delivery_charge, meta_pixel_id, bkash_number, payment_instructions').eq('id', 1).single(),
-    db.from('products').select('*').order('sort_order', { ascending: true }).order('created_at', { ascending: false })
+    db.from('products').select('*').order('category', { ascending: false }).order('sort_order', { ascending: true }).order('created_at', { ascending: false })
   ]);
 
   var settingsResult = results[0];
@@ -1245,7 +1245,31 @@ async function init() {
   }
 
   var grid = document.getElementById('products-grid');
-  grid.innerHTML = PRODUCTS.map(buildCard).join('');
+  var html = '';
+
+  var grouped = PRODUCTS.reduce(function(acc, p) {
+    var cat = p.category || 'Live Feed';
+    if (!acc[cat]) acc[cat] = [];
+    acc[cat].push(p);
+    return acc;
+  }, {});
+
+  // Force 'Live Feed' to always render first, then any other categories
+  var sortedCategories = Object.keys(grouped).sort(function(a, b) {
+    if (a === 'Live Feed') return -1;
+    if (b === 'Live Feed') return 1;
+    return a.localeCompare(b);
+  });
+
+  sortedCategories.forEach(function(cat) {
+    html += '<h3 class="font-display text-3xl font-extrabold text-charcoal w-full col-span-full mt-10 mb-2 border-b border-borderline pb-4">' + esc(cat) + '</h3>';
+    html += grouped[cat].map(function(p) {
+        var globalIndex = PRODUCTS.findIndex(function(x) { return x.id === p.id; });
+        return buildCard(p, globalIndex);
+    }).join('');
+  });
+
+  grid.innerHTML = html;
   grid.style.display = 'grid';
 }
 
