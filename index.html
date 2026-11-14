@@ -3,21 +3,51 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bitolpoka — Premium Live Insect Feed</title>
 
-<!-- MAGIC SECURITY FIX: Automatically forces HTTPS padlock -->
+<!-- 🚀 SEO: Golden Title Tag for Bangladesh Market -->
+<title>বিটল পোকা চাষ ও প্রিমিয়াম লাইভ ফিড - দেশি মুরগি ও মাছের খাবার | Bitolpoka</title>
+
+<!-- 🚀 SEO: Conversion-Optimized Meta Description -->
+<meta name="description" content="সাশ্রয়ী মূল্যে সুস্থ মাদার বিটল এবং হাই-প্রোটিন সুপারওয়ার্ম। সারা বাংলাদেশে ১০০% ক্যাশ অন ডেলিভারি ও ফ্রি চাষ গাইডলাইন। আজই অর্ডার করুন!">
+
+<!-- 🚀 SEO: Hidden Keywords for Local Search -->
+<meta name="keywords" content="বিটল পোকা, superworm, mealworm, poultry feed bangladesh, হাঁস মুরগির খাবার, মাছের খাবার, mother beetle, insect farm bangladesh, হাই প্রোটিন ফিড, arowana feed">
+
+<!-- 🚀 SEO: Open Graph Tags (Makes links look beautiful when shared on Facebook/WhatsApp) -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://bitolpoka.com/">
+<meta property="og:title" content="বিটল পোকা চাষ ও প্রিমিয়াম লাইভ ফিড | Bitolpoka">
+<meta property="og:description" content="সাশ্রয়ী মূল্যে সুস্থ মাদার বিটল এবং হাই-প্রোটিন সুপারওয়ার্ম। সারা বাংলাদেশে ১০০% ক্যাশ অন ডেলিভারি।">
+<meta property="og:image" content="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=1200&auto=format&fit=crop">
+
+<!-- 🚀 SEO: Schema Markup (Tells Google your exact business details to show in search results) -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  "name": "Bitolpoka",
+  "image": "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=1200&auto=format&fit=crop",
+  "description": "সাশ্রয়ী মূল্যে সুস্থ মাদার বিটল এবং হাই-প্রোটিন সুপারওয়ার্ম লার্ভা সরবরাহকারী।",
+  "address": {
+    "@type": "PostalAddress",
+    "addressLocality": "Khulna",
+    "addressCountry": "BD"
+  },
+  "url": "https://bitolpoka.com",
+  "telephone": "+8801977475846",
+  "priceRange": "৳"
+}
+</script>
+
 <script>
   if (window.location.protocol === 'http:' && window.location.hostname !== 'localhost') {
     window.location.href = window.location.href.replace('http:', 'https:');
   }
 </script>
 
-<meta name="description" content="Live mealworms, superworms and breeder beetles, farmed weekly in Khulna, Bangladesh. Cash on delivery, nationwide.">
-
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<!-- Pre-configuring Tailwind with your exact Brand Colors -->
 <script>
   tailwind.config = {
     theme: {
@@ -55,7 +85,6 @@
   *, *::before, *::after { box-sizing: border-box; }
   body { 
     font-family: 'Inter', system-ui, sans-serif; 
-    /* The outer body is charcoal to create the "App Frame" effect */
     background: var(--charcoal); 
     color: var(--charcoal); 
     margin: 0; 
@@ -64,7 +93,6 @@
   .font-display { font-family: 'Fraunces', serif; }
   .font-mono    { font-family: 'IBM Plex Mono', monospace; }
 
-  /* Smooth floating animations */
   @keyframes float {
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-10px); }
@@ -72,13 +100,11 @@
   .animate-float { animation: float 6s ease-in-out infinite; }
   .animate-float-delayed { animation: float 6s ease-in-out 3s infinite; }
 
-  /* Custom Scrollbar */
   ::-webkit-scrollbar { width: 8px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
   ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
-  /* Premium Buttons */
   .btn-primary {
     background: var(--surface); 
     color: var(--charcoal);
@@ -103,7 +129,6 @@
   }
   .btn-forest:hover:not(:disabled) { background: #014A28; transform: translateY(-2px); }
 
-  /* Package Selector Buttons (Pills) */
   .pkg-btn {
     font-family: 'Inter', sans-serif;
     font-size: 0.9rem; font-weight: 700;
@@ -114,36 +139,22 @@
     white-space: nowrap;
     display: inline-block;
   }
-  .pkg-btn:hover { 
-    border-color: var(--forest); 
-    color: var(--forest); 
-  }
-  .pkg-btn.active {
-    border-color: var(--forest); 
-    background: var(--forest);
-    color: var(--surface); 
-  }
+  .pkg-btn:hover { border-color: var(--forest); color: var(--forest); }
+  .pkg-btn.active { border-color: var(--forest); background: var(--forest); color: var(--surface); }
   .pkg-error { font-size: .75rem; color: #DC2626; margin-top: .5rem; display: none; font-weight: 600; }
 
-  /* Form Inputs */
   .input-field {
     width: 100%; border: 1.5px solid var(--border);
     background: #F8FAFC; border-radius: 1rem;
     padding: 1rem 1.25rem; font-size: 1rem; font-weight: 500; color: var(--charcoal);
     outline: none; transition: all 0.2s ease; font-family: inherit;
   }
-  .input-field:focus { 
-    border-color: var(--forest); 
-    background: var(--surface);
-    box-shadow: 0 0 0 4px rgba(1, 98, 54, 0.1); 
-  }
+  .input-field:focus { border-color: var(--forest); background: var(--surface); box-shadow: 0 0 0 4px rgba(1, 98, 54, 0.1); }
   .input-field::placeholder { color: #94A3B8; font-weight: 400; }
 
-  /* Skeleton Loader */
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
   .skeleton { border-radius: 1rem; background: #E2E8F0; animation: pulse 1.5s ease-in-out infinite; }
 
-  /* Spinner */
   @keyframes spin { to { transform: rotate(360deg); } }
   .spinner {
     display: inline-block; width: 20px; height: 20px; border-radius: 9999px;
@@ -151,10 +162,8 @@
     animation: spin .7s linear infinite;
   }
 
-  /* Grid Layouts */
   #products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 2rem; }
 
-  /* Modal Overlays */
   .modal-overlay {
     display: none; position: fixed; inset: 0; z-index: 100;
     align-items: center; justify-content: center; padding: 1rem;
@@ -163,30 +172,21 @@
   }
   .modal-overlay.open { display: flex; opacity: 1; }
   
-  .modal-box {
+  .modal-box, .guide-modal-box {
     background: var(--surface); border-radius: 2rem;
     width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto;
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
     transform: translateY(20px) scale(0.95); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
-  .modal-overlay.open .modal-box { transform: translateY(0) scale(1); }
+  .guide-modal-box { max-width: 650px; }
+  .modal-overlay.open .modal-box, .modal-overlay.open .guide-modal-box { transform: translateY(0) scale(1); }
 
-  .guide-modal-box {
-    background: var(--surface); border-radius: 2rem;
-    width: 100%; max-width: 650px; max-height: 90vh; overflow-y: auto;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-    transform: translateY(20px) scale(0.95); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-  .modal-overlay.open .guide-modal-box { transform: translateY(0) scale(1); }
-
-  /* Guide Text Formatting */
   .guide-text h4 { color: var(--forest); font-size: 1.25rem; font-weight: 800; margin-top: 2rem; margin-bottom: 0.75rem; font-family: 'Fraunces', serif; letter-spacing: -0.02em; }
   .guide-text p { color: #475569; font-size: 1rem; line-height: 1.7; margin-bottom: 1.25rem; font-weight: 500; }
   .guide-text ul { padding-left: 1.25rem; margin-bottom: 1.25rem; }
   .guide-text li { color: #475569; font-size: 1rem; line-height: 1.7; margin-bottom: 0.5rem; list-style-type: disc; font-weight: 500; }
   .guide-text .highlight-box { background: #F0FDF4; border: 1px solid #BBF7D0; padding: 1.5rem; border-radius: 1rem; margin: 2rem 0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
 
-  /* Checkout Rows */
   .price-row, .sum-row { display: flex; justify-content: space-between; gap: 1rem; padding: 0.75rem 0; font-size: 0.95rem; border-bottom: 1px dashed #E2E8F0; }
   .price-row span:first-child, .sum-row span:first-child { color: #64748B; font-weight: 500; }
   .price-row span:last-child, .sum-row span:last-child  { color: var(--charcoal); font-weight: 700; text-align: right; }
@@ -194,7 +194,6 @@
   .price-row.total-line span:first-child, .sum-row.total-line span:first-child { color: var(--charcoal); font-weight: 800; font-size: 1.1rem;}
   .price-row.total-line span:last-child, .sum-row.total-line span:last-child { color: var(--forest); font-size: 1.3rem; font-weight: 800; font-family: 'Fraunces', serif; }
 
-  /* WhatsApp FAB */
   #wa-fab {
     position: fixed; bottom: 2rem; right: 2rem; z-index: 60;
     width: 64px; height: 64px; border-radius: 9999px;
@@ -204,7 +203,6 @@
   }
   #wa-fab:hover { transform: translateY(-5px) scale(1.05); box-shadow: 0 15px 35px rgba(37, 211, 102, 0.5); }
   
-  /* Modern slider styling */
   .slider-main { position: relative; overflow: hidden; width: 100%; aspect-ratio: 4/3; display: flex; align-items: center; justify-content: center; background: #F1F5F9; }
   .slider-main img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
   .slider-arrow { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.9); border: none; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1); color: var(--charcoal); transition: all 0.2s ease; z-index: 10; opacity: 0; }
@@ -258,9 +256,9 @@
   <!-- ═══════════════════ CINEMATIC HERO SECTION ═══════════════════ -->
   <section class="relative pt-40 pb-32 lg:pt-48 lg:pb-40 px-6 lg:px-12 flex flex-col justify-center min-h-[85vh]">
     
-    <!-- Deep Cinematic Background Image -->
+    <!-- Deep Cinematic Background Image with 🚀 SEO Alt text -->
     <div class="absolute inset-0 z-0">
-      <img src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=2071&auto=format&fit=crop" alt="Deep nature background" class="w-full h-full object-cover opacity-60">
+      <img src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=2071&auto=format&fit=crop" alt="দেশি মুরগির জন্য হাই প্রোটিন সুপারওয়ার্ম লার্ভা - বিটল পোকা খামার" class="w-full h-full object-cover opacity-60">
     </div>
 
     <!-- The Fade Gradient (Charcoal -> Forest -> Canvas) -->
@@ -278,7 +276,7 @@
         Farmed Weekly in Khulna
       </div>
 
-      <!-- Razor Sharp Headline -->
+      <!-- Razor Sharp Headline (Using Semantic H1 for SEO) -->
       <h1 class="font-display text-5xl sm:text-6xl lg:text-[5.5rem] leading-[1.05] font-extrabold text-white tracking-tight mb-8 drop-shadow-2xl">
         Bred Fresh.<br>
         <span class="text-transparent bg-clip-text bg-gradient-to-r from-green-300 to-emerald-500">Delivered Live.</span>
@@ -318,7 +316,10 @@
     <div class="max-w-[80rem] mx-auto px-6 lg:px-12">
       <div class="max-w-2xl mb-16 text-center mx-auto">
         <p class="font-mono text-forest text-sm font-bold tracking-widest uppercase mb-3 bg-forest/5 inline-block px-4 py-1.5 rounded-full">Farm Direct</p>
-        <h2 class="font-display text-4xl lg:text-5xl font-extrabold text-charcoal mb-4 tracking-tight">Choose Your Live Feed</h2>
+        
+        <!-- 🚀 SEO: Using a highly searched keyword heading for this section -->
+        <h2 class="font-display text-4xl lg:text-5xl font-extrabold text-charcoal mb-4 tracking-tight">কম খরচে প্রোটিন ফিড ও প্যাকেজ</h2>
+        
         <p class="text-lg text-[#475569] font-medium">Mix and match different items into your cart. Nationwide delivery at a single flat rate.</p>
       </div>
 
@@ -392,7 +393,10 @@
     <div class="max-w-[80rem] mx-auto px-6 lg:px-12">
       <div class="text-center mb-16 max-w-2xl mx-auto">
         <p class="font-mono text-forest text-sm font-bold tracking-widest uppercase mb-3">Farm At Home</p>
-        <h2 class="font-display text-4xl lg:text-5xl font-extrabold text-charcoal mb-4 tracking-tight">Free Breeding Guides</h2>
+        
+        <!-- 🚀 SEO: Using H2 for the guides to target farming queries -->
+        <h2 class="font-display text-4xl lg:text-5xl font-extrabold text-charcoal mb-4 tracking-tight">সুপারওয়ার্ম ও মিলওয়ার্ম চাষের পূর্ণাঙ্গ গাইডলাইন</h2>
+        
         <p class="text-lg text-[#475569] font-medium">Read our step-by-step instructions to successfully breed your own live feed right at home.</p>
       </div>
 
@@ -513,12 +517,10 @@
                     <p class="text-sm font-extrabold text-slate-900">Advance Payment Required</p>
                 </div>
                 
-                <!-- Dynamic Instructions pulled from Admin Panel -->
                 <p id="display-payment-instructions" class="text-[0.8rem] text-slate-600 mb-4 font-medium leading-relaxed"></p>
                 
                 <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Send Money to:</p>
                 <div class="flex items-center justify-between bg-white px-4 py-2.5 rounded-xl border border-slate-200 mb-4 shadow-sm">
-                    <!-- Dynamic Number pulled from Admin Panel -->
                     <span id="display-bkash-number" class="text-[#E2136E] text-lg font-mono font-bold tracking-wider"></span>
                 </div>
                 
@@ -597,7 +599,7 @@
         <h4 style="margin-top:0;">🛌 ধাপ ৩: পিউপা তৈরি (সবচেয়ে গুরুত্বপূর্ণ ধাপ)</h4>
         <p style="margin-bottom:0.5rem;">সুপারওয়ার্ম একসাথে থাকলে পিউপা হয় গঠন — ৩-৪ মাস বয়সী বড় লার্ভাগুলোকে আলাদা ছোট সসের কাপে একটি একটি করে রাখতে হবে।</p>
         <ul style="margin-bottom:0;">
-          <li>কাপে কোনো খাবার বা পানি দেওয়া যাবে না।</li>
+          <li>কাপে কোনো খাবার বা পানি দেওয়া যাবে কেজি।</li>
           <li>অন্ধকার জায়গায় রাখলে ১-২ সপ্তাহের মধ্যে পিউপা হবে।</li>
           <li>পিউপা হবার ৭-১০ দিনের ভিতর মাদার হবে।</li>
         </ul>
@@ -777,8 +779,10 @@ function buildSlider(imgs, i) {
     }
     thumbs += '</div>';
   }
+  
+  // 🚀 SEO: Added descriptive Alt text to the dynamically generated images
   return '<div class="slider-main rounded-[1.5rem] group">'
-    + '<img id="slide-' + i + '" src="' + esc(imgs[0]) + '" alt="' + esc(PRODUCTS[i].name) + '" class="group-hover:scale-105">'
+    + '<img id="slide-' + i + '" src="' + esc(imgs[0]) + '" alt="' + esc(PRODUCTS[i].name) + ' - হাই প্রোটিন লাইভ ফিড" class="group-hover:scale-105">'
     + '<div style="position:absolute;top:16px;right:16px;background:rgba(255,255,255,0.9);backdrop-filter:blur(4px);color:var(--forest);font-size:0.7rem;font-weight:800;letter-spacing:0.05em;padding:6px 12px;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.05);">'
     +   'FARM FRESH'
     + '</div>'
@@ -863,6 +867,7 @@ function buildCard(product, i) {
       + '</div>';
   }
 
+  // 🚀 SEO: Wrap the product title in an <h3> for semantic structure
   return '<div class="bg-white border border-borderline rounded-[2rem] p-6 transition-all duration-300 hover:-translate-y-2 hover:shadow-premium flex flex-col" id="card-' + i + '">'
     + buildSlider(imgs, i)
     + '<div style="margin-top:1.25rem;">'
@@ -949,7 +954,7 @@ function openCartModal() {
     itemsHtml += 
       '<div style="display:flex;align-items:center;gap:1rem;padding:1rem 0;border-bottom:1px solid #E2E8F0;">' +
         '<div style="width:60px;height:60px;flex-shrink:0;background:#F8FAFC;border-radius:1rem;display:flex;align-items:center;justify-content:center;overflow:hidden;border:1px solid #E2E8F0;">' +
-          (item.img ? '<img src="' + esc(item.img) + '" style="width:100%;height:100%;object-fit:cover;">' : '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#CBD5E1" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>') +
+          (item.img ? '<img src="' + esc(item.img) + '" style="width:100%;height:100%;object-fit:cover;" alt="' + esc(item.name) + '"> ' : '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#CBD5E1" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>') +
         '</div>' +
         '<div style="flex:1;min-width:0;">' +
           '<p style="font-weight:700;font-size:1.05rem;margin:0 0 .2rem;color:var(--charcoal);">' + esc(item.name) + '</p>' +
@@ -1175,7 +1180,7 @@ function setBusy(busy) {
 async function init() {
   var results = await Promise.all([
     db.from('store_settings').select('whatsapp_number, delivery_charge, meta_pixel_id, bkash_number, payment_instructions').eq('id', 1).single(),
-    db.from('products').select('*').order('created_at', { ascending: false })
+    db.from('products').select('*').order('sort_order', { ascending: true }).order('created_at', { ascending: false })
   ]);
 
   var settingsResult = results[0];
